@@ -1,0 +1,141 @@
+html, body {
+    background-color: #bdc3cd;
+    font-family: verdana;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+object {
+    height: 0;
+    width: 0;
+
+    position: absolute;
+    bottom: 0;
+}
+
+label {
+    margin-left: 8px;
+}
+
+#container {
+    height: auto !important;
+    min-height: 100%;
+    position: relative;
+}
+
+#content {
+    padding: 8px;
+    padding-bottom: 260px;
+}
+
+#code-view {
+    display: none;
+}
+
+#console {
+    background-color: white;
+    color: black;
+
+    border-top: 6px solid gray;
+
+    font-family: monospace;
+    font-size: 12pt;
+
+    position: fixed;
+    bottom: 0;
+
+    overflow-y: auto;
+    word-wrap: break-word;
+
+    height: 250px;
+    max-height: 30%;
+    width: 100%;
+}
+
+.test-element {
+    display: block;
+    clear: both;
+
+    margin-top: 8px;
+    margin-left: 8px;
+}
+
+.test-element.input{
+    padding-left: 5px;
+}
+
+.test-element p{
+    margin: 1px;
+}
+
+.test {
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+}
+
+.container-list {
+    margin-bottom: 10px;
+}
+
+.ui-widget-header {
+    font-weight: normal;
+}
+
+#container #content .test-common {
+	overflow: hidden;
+    margin: 10px 0 10px 10px;
+}
+
+#container #content .test-common label {
+	display: block;
+	float: left;
+	margin: 2px 0 2px 10px;
+}
+
+#container #content .test-common-red{
+    overflow: hidden;
+    margin: 10px 0 10px 10px;
+    color: red;
+}
+
+#container #content .test-common .item-list{
+    display: block;
+    float: left;
+    max-width: 750px;
+    min-width: 100px;
+    font-family: monospace;
+}
+
+#container #content .radio-button {
+    margin: 1px;
+    clear: both;
+}
+
+#container #content .text-input,
+#container #content .text-output {
+    width: 550px;
+    height: 127px;
+    font-family: monospace;
+    font-size: 13px;
+    display: inline-block;
+}
+
+#container #content .smaller-font {
+    font-size: 12px;
+}
+
+#container #content .subject-input {
+    float: right;
+    padding-left: 2px;
+}
+
+#container #content .test-common .refresh-btn {
+    float: left;
+    margin-left: 5px;
+}
+
+#container #content .test-common label{
+    margin-right: 10px;
+}
+

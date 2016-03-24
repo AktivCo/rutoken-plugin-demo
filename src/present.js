@@ -812,7 +812,7 @@ var TestSuite = new(function () {
     this.FormatToken = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Фроматирование токена";
+            return "Форматирование токена";
         };
 
         this.runTest = function () {
@@ -913,7 +913,7 @@ var TestSuite = new(function () {
     this.GetJournal = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Получения журнала операций на токене";
+            return "Получение журнала операций на токене";
         };
         this.runTest = function () {
             plugin.getJournal(ui.device(), ui.key(), {}, $.proxy(function (j) {

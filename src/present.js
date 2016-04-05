@@ -747,9 +747,6 @@ var TestSuite = new(function () {
                         case plugin.TOKEN_TYPE_RUTOKEN_WEB:
                             message = "Рутокен Web";
                             break;
-                        case plugin.TOKEN_TYPE_RUTOKEN_PINPAD_IN:
-                            message = "Рутокен PINPad";
-                            break;
                         case plugin.TOKEN_TYPE_RUTOKEN_PINPAD_2:
                             message = "Рутокен PINPad 2";
                             break;

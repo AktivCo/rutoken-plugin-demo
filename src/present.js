@@ -837,6 +837,7 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-pin") == "on") options.needPin = true;
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
+            options.id = ui.getContent(this.container, 4);
             plugin.generateKeyPair(ui.device(), "A", ui.getContent(this.container, 3), options, $.proxy(function () {
                 $.proxy(ui.printResult, ui)();
                 if (plugin.autoRefresh) plugin.enumerateKeys();

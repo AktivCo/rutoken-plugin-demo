@@ -1292,42 +1292,6 @@ var TestSuite = new(function () {
         }
     });
 
-    this.Encrypt = new(function () {
-        Test.call(this);
-        this.description = function () {
-            return "Симметричное шифрование сообщения";
-        };
-
-        this.runTest = function () {
-            ui.setContent(this.container, "");
-            plugin.encrypt(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), $.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("encryptSym");
-                }
-                ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
-            }, this), $.proxy(ui.printError, ui));
-        }
-    });
-
-    this.Decrypt = new(function () {
-        Test.call(this);
-        this.description = function () {
-            return "Симметричное расшифрование сообщения";
-        };
-
-        this.runTest = function () {
-            ui.setContent(this.container, "");
-            plugin.decrypt(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), $.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("decryptSym");
-                }
-                ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
-            }, this), $.proxy(ui.printError, ui));
-        }
-    });
-
     this.ParseCertificate = new(function () {
         Test.call(this);
         this.description = function () {

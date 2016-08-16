@@ -738,9 +738,6 @@ var TestSuite = new(function () {
                         case plugin.TOKEN_TYPE_UNKNOWN:
                             message = "Неизвестное устройство";
                             break;
-                        case plugin.TOKEN_TYPE_KAZTOKEN:
-                            message = "KazToken";
-                            break;
                         case plugin.TOKEN_TYPE_RUTOKEN_ECP:
                             message = "Рутокен ЭЦП";
                             break;

@@ -4,18 +4,18 @@ function testUi(useConsole) {
 
     this.useConsole = (useConsole === undefined) ? false : useConsole;
 
-    var header = '<div class="ui-widget-header ui-corner-all"></div>';
-    var codeBlock = '<div id="code"><button id="code-button" class="button test-element">Показать код</button>' + '<div id="code-view"><pre class = "brush: js"></pre></div></div>';
-    var runButton = '<button id="test-run" class="button test-element">Запустить тест</button>';
+    var header = '<div class="group_header ui-widget-header ui-corner-all"></div>';
+    var codeBlock = '<div id="code"><button id="code-button" class="example button test-element">Показать код</button>' + '<div id="code-view"><pre class="brush: js"></pre></div></div>';
+    var runButton = '<button id="test-run" class="execute button test-element">Запустить тест</button>';
 
-    $(".test").each(function (index) {
+    $(".group").each(function (index) {
         if (!TestSuite[$(this).attr("id")]) return;
         var test = TestSuite[$(this).attr("id")];
         test.container = $(this);
         test.section = $(this).parent();
 
         $(this).html(header + codeBlock + $(this).html() + runButton);
-        $(this).find(".ui-widget-header").text(test.description);
+        $(this).find(".group_header").text(test.description);
 
         $(this).find("#code-view > pre").text(test.runTest.toString());
         $(this).find("#test-run").click($.proxy(test.run, test));
@@ -29,7 +29,7 @@ function testUi(useConsole) {
     });
 
     $(".button").button();
-    SyntaxHighlighter.all();
+    SyntaxHighlighter.highlight();
 
     $("#section").tabs({
         select: function () {

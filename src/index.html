@@ -1,481 +1,585 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
+    <head>
+        <meta charset="UTF-8">
 
-<script type="text/javascript" src="libs/jquery/1.7.1/jquery.min.js"></script>
-<script type="text/javascript" src="libs/jquery/1.7.1/jquery-base64.min.js"></script>
+        <script type="text/javascript" src="libs/jquery/1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="libs/jquery/1.7.1/jquery-base64.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="libs/jqueryui/1.8.16/themes/black-tie/jquery-ui.css">
-<script type="text/javascript" src="libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="libs/syntaxhighligher/3.0.83/css/shCore.css">
-<link rel="stylesheet" type="text/css" href="libs/syntaxhighligher/3.0.83/css/shThemeFadeToGrey.css">
-<script type="text/javascript" src="libs/syntaxhighligher/3.0.83/js/shCore.js"></script>
-<script type="text/javascript" src="libs/syntaxhighligher/3.0.83/js/shBrushJScript.js"></script>
+        <script type="text/javascript" src="libs/syntaxhighligher/3.0.83/js/shCore.js"></script>
+        <script type="text/javascript" src="libs/syntaxhighligher/3.0.83/js/shBrushJScript.js"></script>
 
-<link rel="stylesheet" type="text/css" href="present.css">
-<script type="text/javascript" src="dependencies.js"></script>
-<script type="text/javascript" src="present.js"></script>
+        <link rel="stylesheet" type="text/css" href="libs/syntaxhighligher/3.0.83/css/shCore.css">
+        <link rel="stylesheet" type="text/css" href="style.css">
 
-<title>Business test page</title>
 
-</head>
-<body>
+        <script type="text/javascript" src="present.js"></script>
+                <script type="text/javascript" src="dependencies.js"></script>
 
-<div id="container">
-    <div id="content">
-        <div class="test-common ui-widget-content ui-corner-all" id="ui-controls">
-            <div class="test-common">
-                <label for="device-list">Доступные устройства: </label>
-                <select id="device-list" class="item-list">
-                    <option>Обновите список устройств</option>
-                </select>
-                <button id="refresh-dev" class="refresh-btn">↓↑</button>
-            </div>
-            <div class="test-common">
-                <label for="device-list">PIN-код:</label>
-                <input id="device-pin" value="12345678" size="15"/>
-                <button id="login">Войти</button>
-                <button id="logout">Выйти</button>
-                <button id="save-pin">Сохранить PIN</button>
-                <button id="remove-pin">Удалить PIN</button>
-            </div>
-            <div class="test-common">
-                <label for="key-list">Ключи на устройстве: </label>
-                <select id="key-list" class="item-list">
-                    <option>Выполните вход на устройство</option>
-                </select>
-                <button id="refresh-keys" class="refresh-btn">↓↑</button>
-           </div>
-            <div class="test-common">
-                <label for="cert-list">Сертификаты на уcтройстве: </label>
-                <select id="cert-list" class="item-list">
-                    <option>Обновите список сертификатов</option>
-                </select>
-                <button id="refresh-certs" class="refresh-btn">↓↑</button>
-           </div>
-        </div>
-        <div id="section">
-            <ul>
-                <li><a href="#section-1">Работа с устройством и ключевыми парами</a></li>
-                <li><a href="#section-2">Формирование запроса на сертификат</a></li>
-                <li><a href="#section-3">Работа с сертификатами</a></li>
-                <li><a href="#section-4">ЭЦП и аутентификация</a></li>
-                <li><a href="#section-5">Шифрование</a></li>
-            </ul>
-            <div id="section-1">
-                <div id="DevInfo" class="test ui-widget-content ui-corner-all">
-                    <label for="device-info-radio" class="temp">Тип информации:
-                        <div class="test-element" id="device-info-radio">
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="model" checked="checked"/>Модель</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="reader"/>Считыватель</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="label"/>Метка</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="type"/>Тип устройства</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="serial"/>Серийный номер</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="pin cache"/>PIN закэширован</label></div>
-                            <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="logged"/>Авторизация</label></div>
-			    <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="formats"/>Поддерживаемые форматы</label></div>
-			    <div class="radio-button"><label><input class="radio-input" type="radio" name="device-info" value="features"/>Возможности устройства</label></div>
+        <title>SDK Рутокен Плагин</title>
+
+    </head>
+    <body>
+        <div id="container">
+            <header id="header">
+                <dl>
+                    <dt><img src="images/logo_rutoken.png" width="165" height="71" alt="" /></dt>
+                    <dd>
+                        <ul>
+                            <li><a href="http://www.rutoken.ru/products/all/rutoken-plugin/" target="_blank">Рутокен Плагин</a></li>
+                            <li><a href="http://www.rutoken.ru/support/download/rutoken-plugin/" target="_blank">Загрузить</a></li>
+                            <li><a href="http://dev.rutoken.ru/pages/viewpage.action?pageId=3801104" target="_blank">Документация</a></li>
+                            <li><a href="http://forum.rutoken.ru/forum/15/" target="_blank">Форум</a></li>
+                        </ul>
+                    </dd>
+                </dl>
+            </header>
+            <div id="content">
+                <div class="common">
+                    <dl>
+                        <dt><label for="device-list">Доступные устройства:</label></dt>
+                        <dd>
+                            <select id="device-list">
+                                <option>Обновите список устройств</option>
+                            </select>
+                            <button id="refresh-dev">↓↑</button>
+                        </dd>
+                    </dl><dl>
+                        <dt><label for="device-list">PIN-код:</label></dt>
+                        <dd>
+                            <input    id="device-pin" type="text"    value="12345678" />
+                            <button id="login">Войти</button>
+                            <button id="logout">Выйти</button>
+                            <button id="save-pin">Сохранить PIN</button>
+                            <button id="remove-pin">Удалить PIN</button>
+                        </dd>
+                    </dl><dl>
+                        <dt><label for="key-list">Ключи на устройстве: </label></dt>
+                        <dd>
+                            <select id="key-list">
+                                <option>Выполните вход на устройство</option>
+                            </select>
+                            <button id="refresh-keys">↓↑</button>
+                        </dd>
+                    </dl><dl>
+                        <dt><label for="cert-list">Сертификаты на уcтройстве: </label></dt>
+                        <dd>
+                            <select id="cert-list">
+                                <option>Обновите список сертификатов</option>
+                            </select>
+                            <button id="refresh-certs">↓↑</button>
+                        </dd>
+                    </dl>
+                </div>
+                <div id="section">
+                    <ul>
+                        <li><a href="#section-1"><span>Токены и ключевые пары</span></a></li>
+                        <li><a href="#section-2"><span>Запрос на сертификат</span></a></li>
+                        <li><a href="#section-3"><span>Работа с сертификатами</span></a></li>
+                        <li><a href="#section-4"><span>ЭЦП и аутентификация</span></a></li>
+                        <li><a href="#section-5"><span>Шифрование</span></a></li>
+                    </ul>
+                    <div id="section-1">
+                        <div id="DevInfo" class="group">
+                            <ul>
+                                <li>
+                                    <label for="device-info-radio">Тип информации:</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="model" checked="checked"/>Модель</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="reader"/>Считыватель</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="label"/>Метка</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="type"/>Тип устройства</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="serial"/>Серийный номер</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="pin cache"/>PIN закэширован</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="logged"/>Авторизация</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="formats"/>Поддерживаемые форматы</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="features"/>Возможности устройства</label>
+                                </li>
+                            </ul>
                         </div>
-                    </label>
-                </div>
-                <div id="ChangePin" class="test ui-widget-content ui-corner-all">
-                    <label for=old-pin" class="temp">Старый ПИН:</label>
-                    <input id="old-pin" value="12345678" class="test-element input"/>
-                    <label for=new-pin" class="temp">Новый ПИН:</label>
-                    <input id="new-pin" value="123456" class="test-element input"/>
-                </div>
-                <div id="ChangePin2" class="test ui-widget-content ui-corner-all">
-                </div>
-                <div id="FormatToken" class="test ui-widget-content ui-corner-all">
-                    <label for=admin-pin" class="temp">ПИН администратора:</label>
-                    <input id="admin-pin" class="test-element input"/>
-                    <label for=new-user-pin" class="temp">Новый ПИН пользователя:</label>
-                    <input id="new-user-pin" class="test-element input"/>
-                    <label for=label" class="temp">Метка:</label>
-                    <input id="label" class="test-element input"/>
-                </div>
-                <div id="GenerateKeyPair" class="test ui-widget-content ui-corner-all">
-                    <div class="test-element">
-                        <input type="checkbox" name="need-pin" class="input" />
-                        <label for="need-pin">Требовать ввод PIN на каждую операцию с ключевой парой в PINPad 2</label><br>
-                        <input type="checkbox" name="need-confirm" class="input" />
-                        <label for="need-confirm">Требовать подтверждения на каждую операцию с ключевой парой в PINPad 2</label><br>
-                        <input type="checkbox" name="journal" class="input" />
-                        <label for="need-confirm">Создать журнальную ключевую пару</label>
-                    </div>
-                    <label for="generate-key-marker">Маркер ключа:</label>
-                    <input id="generate-key-marker" value="BusinessTests" class="test-element input"/>
-                    <label for="generate-key-id">Id ключа:</label>
-                    <input id="generate-key-id" value="AA:BB:CC:DD" class="test-element input"/>
-                </div>
-                <div id="EnumerateKeys" class="test ui-widget-content ui-corner-all">
-                    <input id="enumerate-key-marker" value="BusinessTests" class="test-element input"/>
-                </div>
-                <div id="SetKeyLabel" class="test ui-widget-content ui-corner-all">
-                    <input id="key-label" value="test key" class="test-element input"/>
-                </div>
-                <div id="GetKeyLabel" class="test ui-widget-content ui-corner-all"></div>
-                <div id="GetPublicKey" class="test ui-widget-content ui-corner-all"></div>
-                <div id="DeleteKeyPair" class="test ui-widget-content ui-corner-all"></div>
-                <div id="GetJournal" class="test ui-widget-content ui-corner-all">
-                    <textarea id="get-journal-result" class="text-output test-element"></textarea>
-                </div>
-            </div>
-            <div id="section-2">
-                <div id="CreatePkcs10" class="test ui-widget-content ui-corner-all">
-                    <div class="smaller-font">
-                        <div class="test-element" id="cert-subject">
-                            <table>
-                                <tr>
-                                    <td><div class="input-cell"><label>countryName<input id="countryName" value="RU" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>stateOrProvinceName<input id="stateOrProvinceName" value="Moscow" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>localityName<input id="localityName" value="msk" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>streetAddress<input id="streetAddress" value="street" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>organizationName<input id="organizationName" value="Aktiv" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>organizationalUnitName<input id="organizationalUnitName" value="IT" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>postalAddress<input id="postalAddress" value="postal address" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>title<input id="title" value="должность" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>INN<input id="INN" value="12345678987" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>SNILS<input id="SNILS" value="12345678987" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>OGRN<input id="OGRN" value="12345678987" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>OGRNIP<input id="OGRNIP" value="12345678987" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>commonName<input id="commonName" value="Фамилия Имя Отчество" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>pseudonym<input id="pseudonym" value="pseudonym" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>surname<input id="surname" value="surname" class="subject-input"/></label></td></div>
-                                    <td><div class="input-cell"><label>givenName<input id="givenName" value="given name" class="subject-input"/></label></td></div>
-                                </tr>
-                                <tr>
-                                    <td><div class="input-cell"><label>emailAddress<input id="emailAddress" value="example@example.com" class="subject-input"/></label></td></div>
-                                </tr>
-                            </table>
+                        <div id="ChangePin" class="group">
+                            <ul>
+                                <li>
+                                    <label for="old-pin">Старый ПИН:</label>
+                                      <input type="text" class="input" id="old-pin" value="12345678" />
+                                </li>
+                                <li>
+                                    <label for=new-pin>Новый ПИН:</label>
+                                    <input type="text" class="input" id="new-pin" value="123456" />
+                                </li>
+                            </ul>
                         </div>
-
-                        <div class="test-element" id="cert-extensions">
-                            <table>
-                                <tr><th>Key Usage</th><th>Ext Key Usage</th><th>Policies</th></tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="digitalSignature" checked="checked"/>digitalSignature</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="emailProtection" checked="checked"/>emailProtection</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.1" checked="checked"/>КС1</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="nonRepudiation" checked="checked"/>nonRepudiation</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="clientAuth" /></label>clientAuth</td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.2"/>КС2</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyEncipherment"/>keyEncipherment</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="serverAuth" /></label>serverAuth</td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.3"/>КС3</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="dataEncipherment" />dataEncipherment</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="codeSigning" /></label>codeSigning</td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.4"/>КВ1</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyAgreement"/>keyAgreement</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="timeStamping" /></label>timeStamping</td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.5"/>КВ2</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyCertSign"/>keyCertSign</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCodeInd" /></label>msCodeInd</td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.6"/>КА1</label></td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="cRLSign"/>cRLSign</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCodeCom" /></label>msCodeCom</td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="encipherOnly"/>encipherOnly</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCTLSign" /></label>msCTLSign</td>
-                                </tr>
-                                <tr>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="decipherOnly"/>decipherOnly</label></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="1.3.6.1.5.5.7.3.9" /></label>OCSP</td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="1.2.643.2.2.34.6" /></label>CryptoPro RA user</td>
-                                </tr>
-                            </table>
+                        <div id="ChangePin2" class="group">
+                        </div>
+                        <div id="FormatToken" class="group">
+                            <ul>
+                                <li>
+                                    <label for=admin-pin>ПИН администратора:</label>
+                                    <input type="text" id="admin-pin" class="input"/>
+                                </li>
+                                <li>
+                                    <label for=new-user-pin>Новый ПИН пользователя:</label>
+                                    <input type="text" id="new-user-pin" class="input"/>
+                                </li>
+                                <li>
+                                    <label for=label>Метка:</label>
+                                    <input type="text" id="label" class="input"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="GenerateKeyPair" class="group">
+                            <ul>
+                                <li>
+                                    <label for="generate-key-id">Id ключа:</label>
+                                    <input type="text" id="generate-key-id" value="AA:BB:CC:DD" class="input"/>
+                                </li>
+                                <li>
+                                    <label for="generate-key-marker">Маркер ключа:</label>
+                                    <input type="text" id="generate-key-marker" value="BusinessTests" class="input"/>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="need-pin" class="input" />Требовать ввод PIN на каждую операцию с ключевой парой в PINPad 2</label><br>
+                                    <label><input type="checkbox" name="need-confirm" class="input" />Требовать подтверждения на каждую операцию с ключевой парой в PINPad 2</label><br>
+                                    <label><input type="checkbox" name="journal" class="input" />Создать журнальную ключевую пару</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="EnumerateKeys" class="group">
+                            <ul>
+                                <li>
+                                    <label for="enumerate-key-marker" class="temp">Маркер ключевой пары:</label>
+                                    <input type="text" id="enumerate-key-marker" value="BusinessTests" class="input"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="SetKeyLabel" class="group">
+                            <ul>
+                                <li>
+                                    <label for="key-label" class="temp">Метка ключевой пары:</label>
+                                    <input type="text" id="key-label" value="test key" class="input"/>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="GetKeyLabel" class="group"></div>
+                        <div id="GetPublicKey" class="group"></div>
+                        <div id="DeleteKeyPair" class="group"></div>
+                        <div id="GetJournal" class="group">
+                            <ul>
+                                <li>
+                                    <textarea id="get-journal-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <textarea id="create-pkcs10-result" class="text-output test-element"></textarea>
-                </div>
-            </div>
-            <div id="section-3">
-                <div id="ImportCertificate" class="test ui-widget-content ui-corner-all">
-                    <label for="import-cert-body" class="test-element">Cертификат в формате PEM</label>
-                    <textarea id="import-cert-body" class="text-input test-element">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
-                    <label class="test-element">Категория сертификата:
-                        <div class="test-element">
-                            <p><label><input class="radio-input" type="radio" name="certificate-category" value="user" checked="checked"/>Пользовательский</label></p>
-                            <p><label><input class="radio-input" type="radio" name="certificate-category" value="ca"/>Корневой</label></p>
-                            <p><label><input class="radio-input" type="radio" name="certificate-category" value="other"/>Другой</label></p>
+                    <div id="section-2">
+                        <div id="CreatePkcs10" class="group">
+                            <ul>
+                                <li id="cert-subject">
+                                    <table>
+                                        <tr>
+                                            <th><label>countryName</label></th>
+                                            <td><input type="text" id="countryName" value="RU" class="subject-input"/></td>
+                                            <th><label>stateOrProvinceName</label></th>
+                                            <td><input type="text" id="stateOrProvinceName" value="Moscow" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>localityName</label></th>
+                                            <td><input type="text" id="localityName" value="msk" class="subject-input"/></td>
+                                            <th><label>streetAddress</label></th>
+                                            <td><input type="text" id="streetAddress" value="street" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>organizationName</label></th>
+                                            <td><input type="text" id="organizationName" value="Aktiv" class="subject-input"/></td>
+                                            <th><label>organizationalUnitName</label></th>
+                                            <td><input type="text" id="organizationalUnitName" value="IT" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>postalAddress</label></th>
+                                            <td><input type="text" id="postalAddress" value="postal address" class="subject-input"/></td>
+                                            <th><label>title</label></th>
+                                            <td><input type="text" id="title" value="должность" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>INN</label></th>
+                                            <td><input type="text" id="INN" value="12345678987" class="subject-input"/></td>
+                                            <th><label>SNILS</label></th>
+                                            <td><input type="text" id="SNILS" value="12345678987" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>OGRN</label></th>
+                                            <td><input type="text" id="OGRN" value="12345678987" class="subject-input"/></td>
+                                            <th><label>OGRNIP</label></th>
+                                            <td><input type="text" id="OGRNIP" value="12345678987" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>commonName</label></th>
+                                            <td><input type="text" id="commonName" value="Фамилия Имя Очество" class="subject-input"/></td>
+                                            <th><label>pseudonym</label></th>
+                                            <td><input type="text" id="pseudonym" value="pseudonym" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>surname</label></th>
+                                            <td><input type="text" id="surname" value="surname" class="subject-input"/></td>
+                                            <th><label>givenName</label></th>
+                                            <td><input type="text" id="givenName" value="given name" class="subject-input"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th><label>emailAddress</label></th>
+                                            <td><input type="text" id="emailAddress" value="example@example.com" class="subject-input"/></td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </li>
+                                <li id="cert-extensions">
+                                    <table>
+                                        <tr>
+                                            <th>Key Usage</th>
+                                            <th>Ext Key Usage</th>
+                                            <th>Policies</th>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="digitalSignature" checked="checked"/>digitalSignature</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="emailProtection" checked="checked"/>emailProtection</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.1" checked="checked"/>КС1</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="nonRepudiation" checked="checked"/>nonRepudiation</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="clientAuth" />clientAuth</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.2"/>КС2</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyEncipherment"/>keyEncipherment</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="serverAuth" />serverAuth</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.3"/>КС3</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="dataEncipherment" />dataEncipherment</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="codeSigning" />codeSigning</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.4"/>КВ1</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyAgreement"/>keyAgreement</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="timeStamping" />timeStamping</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.5"/>КВ2</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="keyCertSign"/>keyCertSign</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCodeInd" />msCodeInd</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-policies" value="1.2.643.100.113.6"/>КА1</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="cRLSign"/>cRLSign</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCodeCom" />msCodeCom</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="encipherOnly"/>encipherOnly</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="msCTLSign" />msCTLSign</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-keyusage" value="decipherOnly"/>decipherOnly</label></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="1.3.6.1.5.5.7.3.9" />OCSP</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="1.2.643.2.2.34.6" />CryptoPro RA user</label></td>
+                                        </tr>
+                                    </table>
+                                </li>
+                                <li>
+                                    <textarea id="create-pkcs10-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
                         </div>
-                    </label>
-                </div>
-                <div id="DeleteCertificate" class="test ui-widget-content ui-corner-all"></div>
-                <div id="GetCertificate" class="test ui-widget-content ui-corner-all">
-                    <textarea id="get-cert-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="ParseCertificate" class="test ui-widget-content ui-corner-all">
-                    <textarea id="parse-cert-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="ParseCertificateFromString" class="test ui-widget-content ui-corner-all">
-                	<label for="parse-cert-body" class="test-element">Cертификат в формате PEM</label>
-                    <textarea id="parse-cert-string-body" class="text-input test-element">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
-                    <textarea id="parse-cert-string-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="GetKeyByCertificate" class="test ui-widget-content ui-corner-all"></div>
-            </div>
-            <div id="section-4">
-                <div id="SignMessage" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-message" class="test-element">Сообщение</label>
-                    <textarea id="sign-message" class="text-input test-element">Текст очень важного платежного документа</textarea>
-                     <p>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" /><br>
-                        <label for="detached-sign">Создавать отсоединенную подпись</label>
-                        <input type="checkbox" name="detached-sign" /><br>
-                        <label for="add-user-cert">Включать сертификат пользователя</label>
-                        <input type="checkbox" name="add-user-cert" checked="checked"/><br>
-                        <label for="in-base64">Данные в base64</label>
-                        <input type="checkbox" name="in-base64"/>
-                    </p>
-                    <textarea id="sign-message-result" class="text-output test-element"></textarea>
-                </div>
-				<div id="CalcHash" class="test ui-widget-content ui-corner-all">
-                    <label for="calc-hash" class="test-element">Хеш</label>
-                    <textarea id="calc-hash" class="text-input test-element">01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef</textarea>
-                    <p>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" />
-                    </p>
-					<p><label><input class="radio-input" type="radio" name="hash-type" value="3411_94" checked="checked"/>ГОСТ Р 34.11-94</label></p>
-                    <textarea id="hash-message-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="SignHash" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-hash" class="test-element">Хеш</label>
-                    <textarea id="sign-hash" class="text-input test-element">01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef</textarea>
-                    <p>
-                        <label for="compute-hash">Предварительно хешировать данные</label>
-                        <input type="checkbox" name="compute-hash" /><br>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" /><br>
-                        <label for="invisible">Подписывать без отображения</label>
-                        <input type="checkbox" name="invisible"/>
-                    </p>
-                    <textarea id="sign-message-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="SignMessagePinPad" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-message" class="test-element">Сообщение</label>
-                    <textarea id="sign-message" class="text-input test-element"><!PINPADFILE UTF8><N>ФИО:<V>Петров Петр Петрович<N>Адрес:<V>Москва, Пионерская ул, д. 3, кв. 72<N>Перевод со счета:<V>42301810001000075212<N>Сумма:<V>150000<N>Валюта:<V>RUR<N>Наименование получателя:<V>Иванова Елена Ивановна<N>Номер счета получателя:<V>40817810338295201618<N>БИК банка получателя:<V>044525225<N>Наименование банка получателя:<V>ОАО 'СБЕРБАНК РОССИИ' Г. МОСКВА<N>Номер счета банка получателя:<V>30101810400000000225<N>Назначение платежа:<V>перевод личных средств</textarea>
-                    <p>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" /><br>
-                        <label for="invisible">Подписывать без отображения</label>
-                        <input type="checkbox" name="invisible"/><br>
-                        <label for="detached-sign">Создавать отсоединенную подпись</label>
-                        <input type="checkbox" name="detached-sign" /><br>
-                        <label for="add-user-cert">Включать сертификат пользователя</label>
-                        <input type="checkbox" name="add-user-cert" checked="checked"/>
-                    </p>
-                    <textarea id="sign-message-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="SignXmlPinPad" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-message" class="test-element">Сообщение</label>
-                    <textarea id="sign-message" class="text-input test-element">
+                    </div>
+                    <div id="section-3">
+                        <div id="ImportCertificate" class="group">
+                            <ul>
+                                <li class='bottom'>
+                                    <label for="import-cert-body">Cертификат в формате PEM</label>
+                                    <textarea id="import-cert-body" class="text-input" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
+                                </li>
+                                   <li>Категория сертификата:</li>
+                                <li>
+                                    <label><input type="radio" class="radio-input" name="certificate-category" value="user" checked="checked"/>Пользовательский</label> <br>
+                                    <label><input type="radio" class="radio-input" name="certificate-category" value="ca"/>Корневой</label> <br>
+                                    <label><input type="radio" class="radio-input" name="certificate-category" value="other"/>Другой</label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="DeleteCertificate" class="group"></div>
+                        <div id="GetCertificate" class="group">
+                            <ul>
+                                <li><textarea id="get-cert-result" class="text-output" rows="7"></textarea></li>
+                            </ul>
+                        </div>
+                        <div id="ParseCertificate" class="group">
+                            <ul>
+                                <li><textarea id="parse-cert-result" class="text-output" rows="7"></textarea></li>
+                            </ul>
+                        </div>
+                        <div id="ParseCertificateFromString" class="group">
+                        <ul>
+                            <li>
+                            <label for="parse-cert-string-body">Cертификат в формате PEM:</label>
+                            <textarea id="parse-cert-string-body" class="text-input" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
+                            </li>
+                            <li><textarea id="parse-cert-string-result" class="text-output" rows="7"></textarea></li>
+                        </ul>
+                    </div>
+                        <div id="GetKeyByCertificate" class="group"></div>
+                    </div>
+                    <div id="section-4">
+                        <div id="SignMessage" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign-message">Сообщение</label>
+                                    <textarea id="sign-message" class="text-input" rows="7">Текст очень важного платежного документа</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
+                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
+                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label><br>
+                                    <label><input type="checkbox" name="in-base64" />Данные в base64</label>
+                                </li>
+                                <li>
+                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="CalcHash" class="group">
+                            <ul>
+                                <li>
+                                    <label for="calc-hash">Хеш</label>
+                                    <textarea id="calc-hash" class="text-input" rows="7">01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label>
+                                    
+                                </li>
+                                <li>
+                                    <label for="hash-type">Алгоритм хеширования:</label><br>
+                                    <label><input class="radio-input" type="radio" name="hash-type" value="3411_94" checked="checked"/>ГОСТ Р 34.11-94</label>
+                                </li>
+                                <li>
+                                    <textarea id="hash-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="SignHash" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign-hash">Хеш</label>
+                                    <textarea id="sign-hash" class="text-input" rows="7">01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef:01:23:45:67:89:ab:cd:ef</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="compute-hash" />Предварительно хешировать данные</label><br>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
+                                    <label><input type="checkbox" name="invisible"/>Подписывать без отображения</label>
+                                </li>
+                                <li>
+                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="SignMessagePinPad" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign-message">Сообщение</label>
+                                    <textarea id="sign-message" class="text-input" rows="7"><!PINPADFILE UTF8><N>ФИО:<V>Петров Петр Петрович<N>Адрес:<V>Москва, Пионерская ул, д. 3, кв. 72<N>Перевод со счета:<V>42301810001000075212<N>Сумма:<V>150000<N>Валюта:<V>RUR<N>Наименование получателя:<V>Иванова Елена Ивановна<N>Номер счета получателя:<V>40817810338295201618<N>БИК банка получателя:<V>044525225<N>Наименование банка получателя:<V>ОАО 'СБЕРБАНК РОССИИ' Г. МОСКВА<N>Номер счета банка получателя:<V>30101810400000000225<N>Назначение платежа:<V>перевод личных средств</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
+                                    <label><input type="checkbox" name="invisible"/>Подписывать без отображения</label><br>
+                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
+                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
+                                </li>
+                                <li>
+                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="SignXmlPinPad" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign-message">Сообщение</label>
+                                    <textarea id="sign-message" class="text-input" rows="7">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;ФайлПФР&gt;
-  &lt;ИмяФайла&gt;PFR-700-Y-2014-ORG-087-201-001370-DCK-00000-DPT-000001-DCK-38852.XML&lt;/ИмяФайла&gt;
-  &lt;ЗаголовокФайла&gt;
-    &lt;ВерсияФормата&gt;07.00&lt;/ВерсияФормата&gt;
-    &lt;ТипФайла&gt;ВНЕШНИЙ&lt;/ТипФайла&gt;
-    &lt;ПрограммаПодготовкиДанных&gt;
-      &lt;НазваниеПрограммы&gt;ЛК ИИТ НПФ&lt;/НазваниеПрограммы&gt;
-      &lt;Версия&gt;1.0.135&lt;/Версия&gt;
-    &lt;/ПрограммаПодготовкиДанных&gt;
-    &lt;ИсточникДанных&gt;ОПФР-ПРОЧЕЕ&lt;/ИсточникДанных&gt;
-  &lt;/ЗаголовокФайла&gt;
-  &lt;ПачкаВходящихДокументов Окружение="В составе файла" Стадия="До обработки"&gt;
-    &lt;ВХОДЯЩАЯ_ОПИСЬ&gt;
-      &lt;НомерВпачке&gt;1&lt;/НомерВпачке&gt;
-      &lt;ТипВходящейОписи&gt;ОПИСЬ ПАЧКИ&lt;/ТипВходящейОписи&gt;
-      &lt;СоставительПачки&gt;
-        &lt;НалоговыйНомер&gt;
-          &lt;ИНН&gt;7743020560&lt;/ИНН&gt;
-          &lt;КПП&gt;771401001&lt;/КПП&gt;
-        &lt;/НалоговыйНомер&gt;
-        &lt;Форма&gt;ОАО&lt;/Форма&gt;
-        &lt;НаименованиеОрганизации&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеОрганизации&gt;
-        &lt;НаименованиеКраткое&gt;ОАО "ИИТ"&lt;/НаименованиеКраткое&gt;
-        &lt;РегистрационныйНомер&gt;087-201-001370&lt;/РегистрационныйНомер&gt;
-        &lt;Подразделение&gt;
-            &lt;НаименованиеПодразделения&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеПодразделения&gt;
-            &lt;НомерПодразделения&gt;1&lt;/НомерПодразделения&gt;
-        &lt;/Подразделение&gt;
-      &lt;/СоставительПачки&gt;
-      &lt;НомерПачки&gt;
-        &lt;ПоПодразделению&gt;38852&lt;/ПоПодразделению&gt;
-      &lt;/НомерПачки&gt;
-      &lt;СоставДокументов&gt;
-        &lt;Количество&gt;1&lt;/Количество&gt;
-        &lt;НаличиеДокументов&gt;
-          &lt;ТипДокумента&gt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&lt;/ТипДокумента&gt;
-          &lt;Количество&gt;1&lt;/Количество&gt;
-        &lt;/НаличиеДокументов&gt;
-      &lt;/СоставДокументов&gt;
-      &lt;ДатаСоставления&gt;04.12.2014&lt;/ДатаСоставления&gt;
-    &lt;/ВХОДЯЩАЯ_ОПИСЬ&gt;
-    &lt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
-      &lt;НомерВпачке&gt;2&lt;/НомерВпачке&gt;
-      &lt;СтраховойНомер&gt;133-209-578 38&lt;/СтраховойНомер&gt;
-      &lt;ФИО&gt;
-        &lt;Фамилия&gt;МУСХАДЖИЕВА&lt;/Фамилия&gt;
-        &lt;Имя&gt;МАРИНА&lt;/Имя&gt;
-        &lt;Отчество&gt;КИРОВНА&lt;/Отчество&gt;
-      &lt;/ФИО&gt;
-      &lt;Пол&gt;Ж&lt;/Пол&gt;
-      &lt;ДатаРождения&gt;02.10.1965&lt;/ДатаРождения&gt;
-      &lt;ДатаЗаполнения&gt;04.12.2014&lt;/ДатаЗаполнения&gt;
-      &lt;НПФ&gt;
-        &lt;НалоговыйНомер&gt;
-          &lt;ИНН&gt;7730001909&lt;/ИНН&gt;
-          &lt;КПП&gt;&lt;/КПП&gt;
-        &lt;/НалоговыйНомер&gt;
-        &lt;НаименованиеОрганизации&gt;РГС НПФ&lt;/НаименованиеОрганизации&gt;
-      &lt;/НПФ&gt;
-      &lt;НомерПоЖурналу&gt;003-022-0000000&lt;/НомерПоЖурналу&gt;
-      &lt;ДатаРегистрацииДокумента&gt;04.12.2014&lt;/ДатаРегистрацииДокумента&gt;
-    &lt;/ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
-  &lt;/ПачкаВходящихДокументов&gt;
+&lt;ИмяФайла&gt;PFR-700-Y-2014-ORG-087-201-001370-DCK-00000-DPT-000001-DCK-38852.XML&lt;/ИмяФайла&gt;
+&lt;ЗаголовокФайла&gt;
+&lt;ВерсияФормата&gt;07.00&lt;/ВерсияФормата&gt;
+&lt;ТипФайла&gt;ВНЕШНИЙ&lt;/ТипФайла&gt;
+&lt;ПрограммаПодготовкиДанных&gt;
+&lt;НазваниеПрограммы&gt;ЛК ИИТ НПФ&lt;/НазваниеПрограммы&gt;
+&lt;Версия&gt;1.0.135&lt;/Версия&gt;
+&lt;/ПрограммаПодготовкиДанных&gt;
+&lt;ИсточникДанных&gt;ОПФР-ПРОЧЕЕ&lt;/ИсточникДанных&gt;
+&lt;/ЗаголовокФайла&gt;
+&lt;ПачкаВходящихДокументов Окружение="В составе файла" Стадия="До обработки"&gt;
+&lt;ВХОДЯЩАЯ_ОПИСЬ&gt;
+&lt;НомерВпачке&gt;1&lt;/НомерВпачке&gt;
+&lt;ТипВходящейОписи&gt;ОПИСЬ ПАЧКИ&lt;/ТипВходящейОписи&gt;
+&lt;СоставительПачки&gt;
+&lt;НалоговыйНомер&gt;
+&lt;ИНН&gt;7743020560&lt;/ИНН&gt;
+&lt;КПП&gt;771401001&lt;/КПП&gt;
+&lt;/НалоговыйНомер&gt;
+&lt;Форма&gt;ОАО&lt;/Форма&gt;
+&lt;НаименованиеОрганизации&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеОрганизации&gt;
+&lt;НаименованиеКраткое&gt;ОАО "ИИТ"&lt;/НаименованиеКраткое&gt;
+&lt;РегистрационныйНомер&gt;087-201-001370&lt;/РегистрационныйНомер&gt;
+&lt;Подразделение&gt;
+&lt;НаименованиеПодразделения&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеПодразделения&gt;
+&lt;НомерПодразделения&gt;1&lt;/НомерПодразделения&gt;
+&lt;/Подразделение&gt;
+&lt;/СоставительПачки&gt;
+&lt;НомерПачки&gt;
+&lt;ПоПодразделению&gt;38852&lt;/ПоПодразделению&gt;
+&lt;/НомерПачки&gt;
+&lt;СоставДокументов&gt;
+&lt;Количество&gt;1&lt;/Количество&gt;
+&lt;НаличиеДокументов&gt;
+&lt;ТипДокумента&gt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&lt;/ТипДокумента&gt;
+&lt;Количество&gt;1&lt;/Количество&gt;
+&lt;/НаличиеДокументов&gt;
+&lt;/СоставДокументов&gt;
+&lt;ДатаСоставления&gt;04.12.2014&lt;/ДатаСоставления&gt;
+&lt;/ВХОДЯЩАЯ_ОПИСЬ&gt;
+&lt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
+&lt;НомерВпачке&gt;2&lt;/НомерВпачке&gt;
+&lt;СтраховойНомер&gt;133-209-578 38&lt;/СтраховойНомер&gt;
+&lt;ФИО&gt;
+&lt;Фамилия&gt;МУСХАДЖИЕВА&lt;/Фамилия&gt;
+&lt;Имя&gt;МАРИНА&lt;/Имя&gt;
+&lt;Отчество&gt;КИРОВНА&lt;/Отчество&gt;
+&lt;/ФИО&gt;
+&lt;Пол&gt;Ж&lt;/Пол&gt;
+&lt;ДатаРождения&gt;02.10.1965&lt;/ДатаРождения&gt;
+&lt;ДатаЗаполнения&gt;04.12.2014&lt;/ДатаЗаполнения&gt;
+&lt;НПФ&gt;
+&lt;НалоговыйНомер&gt;
+&lt;ИНН&gt;7730001909&lt;/ИНН&gt;
+&lt;КПП&gt;&lt;/КПП&gt;
+&lt;/НалоговыйНомер&gt;
+&lt;НаименованиеОрганизации&gt;РГС НПФ&lt;/НаименованиеОрганизации&gt;
+&lt;/НПФ&gt;
+&lt;НомерПоЖурналу&gt;003-022-0000000&lt;/НомерПоЖурналу&gt;
+&lt;ДатаРегистрацииДокумента&gt;04.12.2014&lt;/ДатаРегистрацииДокумента&gt;
+&lt;/ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
+&lt;/ПачкаВходящихДокументов&gt;
 &lt;/ФайлПФР&gt;
-                    </textarea>
-                    <p>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" /><br>
-                        <label for="detached-sign">Создавать отсоединенную подпись</label>
-                        <input type="checkbox" name="detached-sign" /><br>
-                        <label for="add-user-cert">Включать сертификат пользователя</label>
-                        <input type="checkbox" name="add-user-cert" checked="checked"/>
-                    </p>
-                    <textarea id="sign-message-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="SignMessageSafeTouch" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-message" class="test-element">Сообщение</label>
-                    <textarea id="sign-message" class="text-input test-element">AQACNTUCAAEBgQAJMDQwNDA0MDQwggAKNzcwMTAwMTAwMYMADVNhZmVUZWNoIEx0ZC6EABQ0MDgxNzgxMDg5NzYyMDAwMDAwMIUACjk5OTk5OTk5OTmGAANSVUL/AA0wMDAwMDAwMDAwMDAw</textarea>
-                    <p>
-                        <label for="detached-sign">Создавать отсоединенную подпись</label>
-                        <input type="checkbox" name="detached-sign" /><br/>
-                        <label for="in-base64">Данные в base64</label>
-                        <input type="checkbox" name="in-base64"/><br>
-                        <label for="add-user-cert">Включать сертификат пользователя</label>
-                        <input type="checkbox" name="add-user-cert" checked="checked"/>
-                    </p>
-                    <textarea id="sign-message-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="Authenticate" class="test ui-widget-content ui-corner-all">
-                    <label for="authenticate" class="test-element">Собщение от сервера</label>
-                    <textarea id="authenticate" class="text-input test-element"><!PINPADFILE UTF8><T>Выполнить аутентификацию?<T>Случайные данные от сервера:<T></textarea>
-                    <textarea id="authenticate-result" class="text-output test-element"></textarea>
-                </div>
-                <div id="Verify" class="test ui-widget-content ui-corner-all">
-                    <label for="sign" class="test-element">Подпись в формате CMS</label>
-                    <textarea placeholder="Введите CMS" id="sign" class="text-input test-element"></textarea>
-                    <p>
-                        <label for="use-hw-hash">Вычислять хеш на устройстве</label>
-                        <input type="checkbox" name="use-hw-hash" /><br>
-                        <label for="verify-signer-cert">Проверять сертификат</label>
-                        <input type="checkbox" checked="checked" name="verify-signer-cert" /><br>
-                        <label for="in-base64">Данные в base64</label>
-                        <input type="checkbox" name="in-base64"/>
-                    </p>
-                    <label for="data" class="test-element">Подписанные данные</label>
-                    <textarea placeholder="Опционально - в случае если проверяется detached подпись" id="data" class="text-input test-element"></textarea>
-                    <label for="cert" class="test-element">Сертификат</label>
-                    <textarea placeholder="Опционально - в случае если он не включен в cms" id="cert" class="text-input test-element"></textarea>
-                    <label for="ca-cert" class="test-element">СА</label>
-                    <textarea placeholder="СА" id="ca-cert" class="text-input test-element"></textarea>
-                </div>
-<!-- file reading is not supported in IE yet, so disable it
-                <div id="SignFile" class="test ui-widget-content ui-corner-all">
-                    <label for="sign-file" class="test-element">Выберите файл</label>
-                    <input id="sign-file" type="file" class="test-element" />
-                    <textarea id="sign-file-result" class="text-output test-element"></textarea>
-                </div>
- -->
-            </div>
-            <div id="section-5">
-                <div id="EncryptMessage" class="test ui-widget-content ui-corner-all">
-                    <label for="encrypt-certificate" class="test-element">Тело сертификата</label>
-                    <textarea id="encrypt-certificate" class="text-input test-element">-----BEGIN CERTIFICATE-----
-MIIEWzCCBAqgAwIBAgIKfFP2xQACAALbSzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3
-DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD
-UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy
-MTAzMTEyMjIyNloXDTE0MTAwNDA3MDk0MVowggGDMQswCQYDVQQGEwJSVTEPMA0G
-A1UECBMGTW9zY293MQwwCgYDVQQHEwNtc2sxDzANBgNVBAkTBnN0cmVldDEOMAwG
-A1UEChMFQWt0aXYxCzAJBgNVBAsTAklUMRcwFQYDVQQQEw5wb3N0YWwgYWRkcmVz
-czEbMBkGA1UEDB4SBDQEPgQ7BDYEPQQ+BEEEQgRMMRkwFwYIKoUDA4EDAQESCzEy
-MzQ1Njc4OTg3MRYwFAYFKoUDZAMSCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAESCzEy
-MzQ1Njc4OTg3MRYwFAYFKoUDZAUSCzEyMzQ1Njc4OTg3MS8wLQYDVQQDHiYEJAQw
-BDwEOAQ7BDgETwAgBBgEPARPACAEHgRHBDUEQQRCBDIEPjESMBAGA1UEQRMJcHNl
-dWRvbnltMRAwDgYDVQQEEwdzdXJuYW1lMRMwEQYDVQQqEwpnaXZlbiBuYW1lMSIw
-IAYJKoZIhvcNAQkBFhNleGFtcGxlQGV4YW1wbGUuY29tMGMwHAYGKoUDAgITMBIG
-ByqFAwICIwEGByqFAwICHgEDQwAEQAhY4OcPvPJanf/8RhuIh3jt3MAOgtHwJSsp
-vQwPi0SUNU4wILT1M9//WlAAz4hEXqx+9pGfyUiYsg/bgKwLsmWjggF4MIIBdDAL
-BgNVHQ8EBAMCBsAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwQwEwYDVR0gBAwwCjAI
-BgYqhQNkcQEwHQYDVR0OBBYEFOxa5YWf5fGZiFQew1lp0FyhfrogMB8GA1UdIwQY
-MBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBIoEaGRGh0dHA6
-Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENlbnRlciUyMENS
-WVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggrBgEFBQcwAYYn
-aHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3JmMFkGCCsGAQUF
-BzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xsL3BraS1zaXRl
-X1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYqhQMCAgMDQQAu
-WkeHdQran99h1XeLuepMQA9FIf4PwMzgwCi3bs4ThFQMvh5ZtSXY6aEJ1ohNxzvE
-AWN8elkoasoZJhWjj9zF
------END CERTIFICATE-----
-                    </textarea>
-                    <label for="encrypt-message" class="test-element">Сообщение</label>
-                    <textarea id="encrypt-message" class="text-input test-element">Зашифруй меня полностью</textarea>
-                    <textarea id="encrypt-message-result" class="text-output test-element"></textarea>
-                    <p>
-                        <label for="use-hw-encryption">Шифровать на устройстве</label>
-                        <input type="checkbox" name="use-hw-encryption" /><br>
-                        <label for="in-base64">Данные в base64</label>
-                        <input type="checkbox" name="in-base64"/>
-                    </p>
-                </div>
-                <div id="DecryptMessage" class="test ui-widget-content ui-corner-all">
-                    <label for="decrypt-message" class="test-element">Сообщение</label>
-                    <textarea placeholder="Расшифруй меня полностью" id="decrypt-message" class="text-input test-element"></textarea>
-                    <textarea id="decrypt-message-result" class="text-output test-element"></textarea>
+                                    </textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
+                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
+                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
+                                </li>
+                                <li>
+                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="SignMessageSafeTouch" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign-message">Сообщение</label>
+                                    <textarea id="sign-message" class="text-input" rows="7">AQACNTUCAAEBgQAJMDQwNDA0MDQwggAKNzcwMTAwMTAwMYMADVNhZmVUZWNoIEx0ZC6EABQ0MDgxNzgxMDg5NzYyMDAwMDAwMIUACjk5OTk5OTk5OTmGAANSVUL/AA0wMDAwMDAwMDAwMDAw</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br/>
+                                    <label><input type="checkbox" name="in-base64"/>Данные в base64</label><br>
+                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
+                                </li>
+                                <li>
+                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="Authenticate" class="group">
+                            <ul>
+                                <li>
+                                    <label for="authenticate">Собщение от сервера</label>
+                                    <textarea id="authenticate" class="text-input" rows="7"><!PINPADFILE UTF8><T>Выполнить аутентификацию?<T>Случайные данные от сервера:<T></textarea>
+                                </li>
+                                <li>
+                                    <textarea id="authenticate-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="Verify" class="group">
+                            <ul>
+                                <li>
+                                    <label for="sign">Подпись в формате CMS</label>
+                                    <textarea placeholder="Введите CMS" id="sign" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
+                                    <label><input type="checkbox" checked="checked" name="verify-signer-cert" />Проверять сертификат</label><br>
+                                    <label><input type="checkbox" name="in-base64"/>Данные в base64</label>
+                                </li>
+                                <li>
+                                    <label for="data">Подписанные данные</label>
+                                    <textarea placeholder="Опционально - в случае если проверяется detached подпись" id="data" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <label for="cert">Сертификат</label>
+                                    <textarea placeholder="Опционально - в случае если он не включен в cms" id="cert" class="text-input"></textarea>
+                                </li>
+                                <li>
+                                    <label for="ca-cert">СА</label>
+                                    <textarea placeholder="СА" id="ca-cert" class="text-input" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="section-5">
+                        <div id="EncryptMessage" class="group">
+                            <ul>
+                                <li>
+                                    <label for="encrypt-certificate">Тело сертификата</label>
+                                    <textarea id="encrypt-certificate" class="text-input" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIEWzCCBAqgAwIBAgIKfFP2xQACAALbSzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpDUllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEyMTAzMTEyMjIyNloXDTE0MTAwNDA3MDk0MVowggGDMQswCQYDVQQGEwJSVTEPMA0GA1UECBMGTW9zY293MQwwCgYDVQQHEwNtc2sxDzANBgNVBAkTBnN0cmVldDEOMAwGA1UEChMFQWt0aXYxCzAJBgNVBAsTAklUMRcwFQYDVQQQEw5wb3N0YWwgYWRkcmVzczEbMBkGA1UEDB4SBDQEPgQ7BDYEPQQ+BEEEQgRMMRkwFwYIKoUDA4EDAQESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAMSCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAUSCzEyMzQ1Njc4OTg3MS8wLQYDVQQDHiYEJAQwBDwEOAQ7BDgETwAgBBgEPARPACAEHgRHBDUEQQRCBDIEPjESMBAGA1UEQRMJcHNldWRvbnltMRAwDgYDVQQEEwdzdXJuYW1lMRMwEQYDVQQqEwpnaXZlbiBuYW1lMSIwIAYJKoZIhvcNAQkBFhNleGFtcGxlQGV4YW1wbGUuY29tMGMwHAYGKoUDAgITMBIGByqFAwICIwEGByqFAwICHgEDQwAEQAhY4OcPvPJanf/8RhuIh3jt3MAOgtHwJSspvQwPi0SUNU4wILT1M9//WlAAz4hEXqx+9pGfyUiYsg/bgKwLsmWjggF4MIIBdDALBgNVHQ8EBAMCBsAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwQwEwYDVR0gBAwwCjAIBgYqhQNkcQEwHQYDVR0OBBYEFOxa5YWf5fGZiFQew1lp0FyhfrogMB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBIoEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENlbnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggrBgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3JmMFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xsL3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYqhQMCAgMDQQAuWkeHdQran99h1XeLuepMQA9FIf4PwMzgwCi3bs4ThFQMvh5ZtSXY6aEJ1ohNxzvEAWN8elkoasoZJhWjj9zF&#10;-----END CERTIFICATE-----
+                                    </textarea>
+                                </li>
+                                <li>
+                                    <label for="encrypt-message">Сообщение</label>
+                                    <textarea id="encrypt-message" class="text-input" rows="7">Зашифруй меня полностью</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-hw-encryption" />Шифровать на устройстве</label><br>
+                                    <label><input type="checkbox" name="in-base64"/>Данные в base64</label>
+                                </li>
+                                <li>
+                                    <textarea id="encrypt-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="DecryptMessage" class="group">
+                            <ul>
+                                <li>
+                                    <label for="decrypt-message">Сообщение</label>
+                                    <textarea placeholder="Расшифруй меня полностью" id="decrypt-message" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <textarea id="decrypt-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="console"></div>
-</div>
+        <div class="dummy">
+        <div id="bottom-bar-container">
+        <div id="console-container">
+            <div id="console"></div>
+        </div>
+        </div>
 
-</body>
+    </body>
 </html>
 <!-- vim: tabstop=4:softtabstop=4:shiftwidth=4:expandtab
-->
+        ->

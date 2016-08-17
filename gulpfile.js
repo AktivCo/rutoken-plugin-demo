@@ -35,9 +35,14 @@ gulp.task('scripts', ['deps'], function () {
 
 gulp.task('styles', function () {
 	return gulp.src('src/*.css')
-		.pipe(gulp.dest('build'));
+		.pipe(gulp.dest('build/'));
+});
+
+gulp.task('images', function () {
+	return gulp.src('src/images/*.png')
+		.pipe(gulp.dest('build/images'));
 });
 
 gulp.task('default', ['clean'], function () {
-	gulp.start('pages', 'scripts', 'styles');
+	gulp.start('pages', 'scripts', 'styles', 'images');
 });

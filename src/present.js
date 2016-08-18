@@ -1333,9 +1333,7 @@ var TestSuite = new(function () {
 function onPluginLoaded(pluginObject) {
     try {
         var noAutoRefresh = (document.location.search.indexOf("noauto") !== -1);
-        var useConsole = (document.location.search.indexOf("log") !== -1);
 
-        ui = new testUi(useConsole);
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
     } catch (error) {
@@ -1343,8 +1341,22 @@ function onPluginLoaded(pluginObject) {
     }
 }
 
+function initUi() {
+    var useConsole = (document.location.search.indexOf("log") !== -1);
+    ui = new testUi(useConsole);
+}
+
+function showError(reason) {
+    $("#content").css("display", "none");
+    $("#console-container").css("border", "none");
+    $("#bottom-bar-container").css("top", "0%");
+    ui.writeln(reason);
+    console.log(reason);
+}
+
 window.onload = function () {
     rutoken.ready.then(function () {
+        initUi();
         if (window.chrome) {
             return rutoken.isExtensionInstalled();
         } else {
@@ -1354,19 +1366,19 @@ window.onload = function () {
         if (result) {
             return rutoken.isPluginInstalled();
         } else {
-            throw "Rutoken Extension wasn't found";
+            throw "Расширение \"Адаптер Рутокен Плагин\" не установлено";
         }
     }).then(function (result) {
         if (result) {
             return rutoken.loadPlugin();
         } else {
-            throw "Rutoken Plugin wasn't found";
+            throw "Рутокен Плагин не установлен";
         }
     }).then(function (plugin) {
         return plugin.wrapWithOldInterface();
     }).then(function (wrappedPlugin) {
         onPluginLoaded(wrappedPlugin);
     }).then(undefined, function (reason) {
-        console.log(reason);
+        showError(reason);
     });
 }

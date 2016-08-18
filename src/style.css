@@ -24,7 +24,7 @@ object {
     width: 80%;
     min-width: 960px;
     margin: 0 auto;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .dummy {

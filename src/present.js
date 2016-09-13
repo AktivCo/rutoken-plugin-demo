@@ -482,6 +482,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.PIN_CHANGED] = "PIN-код был изменен";
     this.errorDescription[this.errorCodes.SESSION_INVALID] = "Состояние токена изменилось";
     this.errorDescription[this.errorCodes.USER_NOT_LOGGED_IN] = "Выполните вход на устройство";
+    this.errorDescription[this.errorCodes.ALREADY_LOGGED_IN] = "Вход на устройство уже был выполнен";
 
     this.errorDescription[this.errorCodes.ATTRIBUTE_READ_ONLY] = "Свойство не может быть изменено";
     this.errorDescription[this.errorCodes.KEY_NOT_FOUND] = "Соответствующая сертификату ключевая пара не найдена";
@@ -769,7 +770,7 @@ var TestSuite = new(function () {
 		    if (info == plugin.TOKEN_INFO_FEATURES) {
 			message = JSON.stringify(result);
 		    }
-		    
+
                     message += " (" + info + ")";
                     ui.printResult(message);
                 }
@@ -1019,10 +1020,10 @@ var TestSuite = new(function () {
             var options = {};
             ui.setContent(this.container, "");
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
-			
+
             if (ui.useConsole) {
                 console.time("calc-hash");
-                console.log("HW", options.useHardwareHash);                
+                console.log("HW", options.useHardwareHash);
             }
             plugin.digest(ui.device(), ui.hashType(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
                 if (ui.useConsole) {
@@ -1255,7 +1256,7 @@ var TestSuite = new(function () {
                 useHardwareEncryption: hw,
                 base64: b64
             };
-            
+
             plugin.cmsEncrypt(ui.device(), "", ui.getContent(this.container, 0), ui.getContent(this.container, 1),
                 options, $.proxy(function (res) {
                     if (ui.useConsole) {

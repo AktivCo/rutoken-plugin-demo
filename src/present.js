@@ -835,7 +835,7 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-pin") == "on") options.needPin = true;
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
-            if (this.container.find(".set-external-id").checked) options.id = this.container.find("#generate-key-id").val();
+            if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
             var marker = this.container.find("#generate-key-marker").val();
             plugin.generateKeyPair(ui.device(), "A", marker, options, $.proxy(function () {
                 $.proxy(ui.printResult, ui)();

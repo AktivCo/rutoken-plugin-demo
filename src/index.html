@@ -143,6 +143,12 @@
                                     <label><input type="checkbox" name="need-confirm" class="input" />Требовать подтверждения на каждую операцию с ключевой парой в PINPad 2</label><br>
                                     <label><input type="checkbox" name="journal" class="input" />Создать журнальную ключевую пару</label>
                                 </li>
+                                <li>
+                                    <select class="public-key-algorithm">
+                                        <option value="PUBLIC_KEY_ALGORITHM_GOST3410_2001">ГОСТ Р 34.10-2001</option>
+                                        <option value="PUBLIC_KEY_ALGORITHM_RSA">RSA</option>
+                                    </select>
+                                </li>
                             </ul>
                         </div>
                         <div id="EnumerateKeys" class="group">
@@ -175,6 +181,18 @@
                     <div id="section-2">
                         <div id="CreatePkcs10" class="group">
                             <ul>
+                                <li>
+                                    <label>subjectSignTool:</label>
+                                    <input type="text" class="subject-sign-tool input" value='СКЗИ "РУТОКЕН ЭЦП"' />
+                                    <label>Алгоритм хэширования:</label>
+                                    <select class="hash-algorithm">
+                                        <option value="HASH_TYPE_GOST3411_94">ГОСТ Р 34.11-94</option>
+                                        <option value="HASH_TYPE_MD5">MD5</option>
+                                        <option value="HASH_TYPE_SHA1">SHA1</option>
+                                        <option value="HASH_TYPE_SHA256">SHA256</option>
+                                        <option value="HASH_TYPE_SHA512">SHA512</option>
+                                    </select>
+                                </li>
                                 <li id="cert-subject">
                                     <table>
                                         <tr>
@@ -357,7 +375,7 @@
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label>
-                                    
+
                                 </li>
                                 <li>
                                     <label for="hash-type">Алгоритм хеширования:</label><br>
@@ -378,6 +396,16 @@
                                     <label><input type="checkbox" name="compute-hash" />Предварительно хешировать данные</label><br>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве</label><br>
                                     <label><input type="checkbox" name="invisible"/>Подписывать без отображения</label>
+                                </li>
+                                <li>
+                                    <label>Алгоритм хэширования:</label>
+                                    <select class="hash-algorithm">
+                                        <option value="HASH_TYPE_GOST3411_94">ГОСТ Р 34.11-94</option>
+                                        <option value="HASH_TYPE_MD5">MD5</option>
+                                        <option value="HASH_TYPE_SHA1">SHA1</option>
+                                        <option value="HASH_TYPE_SHA256">SHA256</option>
+                                        <option value="HASH_TYPE_SHA512">SHA512</option>
+                                    </select>
                                 </li>
                                 <li>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>

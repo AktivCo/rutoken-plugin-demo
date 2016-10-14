@@ -828,21 +828,31 @@ var TestSuite = new(function () {
     this.GenerateKeyPair = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Генерация ключевой пары ГОСТ Р 34.10-2001 с указанным маркером на устройстве";
+            return "Генерация ключевой пары на устройстве";
         };
         this.runTest = function () {
-            var options = {};
+            var algorithm = plugin[this.container.find(".public-key-algorithm").val()];
+            var marker = this.container.find("#generate-key-marker").val();
+
+            var options = {"publicKeyAlgorithm": algorithm};
             if (ui.checkboxState(this.container, "need-pin") == "on") options.needPin = true;
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
-            var marker = this.container.find("#generate-key-marker").val();
-            plugin.generateKeyPair(ui.device(), "A", marker, options, $.proxy(function () {
+
+            if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
+                options.paramset = "A";
+                options.signatureSize = 512;
+            } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
+                options.signatureSize = 2048;
+            }
+
+            plugin.generateKeyPair(ui.device(), undefined, marker, options, $.proxy(function () {
                 $.proxy(ui.printResult, ui)();
                 if (plugin.autoRefresh) plugin.enumerateKeys();
                 else ui.clearKeyList("Обновите список ключевых пар");
             }, this), $.proxy(ui.printError, ui));
-        }
+        };
     })();
 
     this.EnumerateKeys = new(function () {
@@ -896,7 +906,7 @@ var TestSuite = new(function () {
     this.DeleteKeyPair = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Удаление ключевой пары ГОСТ Р 34.10-2001 с устройства";
+            return "Удаление ключевой пары с устройства";
         };
         this.runTest = function () {
             plugin.deleteKeyPair(ui.device(), ui.key(), $.proxy(function () {
@@ -929,8 +939,11 @@ var TestSuite = new(function () {
             return "Формирование PKCS10 запроса";
         };
         this.runTest = function () {
-            var includeSubjectSignToolExt = true;
-            plugin.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), includeSubjectSignToolExt, $.proxy(function (res) {
+            var options = {
+                "subjectSignTool": this.container.find(".subject-sign-tool").val(),
+                "hashAlgorithm": plugin[this.container.find(".hash-algorithm").val()]
+            };
+            plugin.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options, $.proxy(function (res) {
                 ui.setContent(this.container, res);
                 $.proxy(ui.printResult, ui)(res);
             }, this), $.proxy(ui.printError, ui));
@@ -1048,6 +1061,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.computeHash = ui.checkboxState(this.container, "compute-hash") == "on" ? true : false;
             options.invisible = ui.checkboxState(this.container, "invisible") == "on" ? true : false;
+            options.hashAlgorithm = plugin[this.container.find(".hash-algorithm").val()];
 
             if (ui.useConsole) {
                 console.time("sign-hash");
@@ -1062,7 +1076,7 @@ var TestSuite = new(function () {
                 ui.setContent(this.container, res);
                 $.proxy(ui.printResult, ui)(res);
             }, this), $.proxy(ui.printError, ui));
-        }
+        };
     });
 
     this.SignMessagePinPad = new(function () {

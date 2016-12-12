@@ -490,6 +490,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CEK_NOT_AUTHENTIC] = "Выбран неправильный ключ";
     this.errorDescription[this.errorCodes.KEY_LABEL_NOT_UNIQUE] = "Метка ключевой пары не уникальна";
     this.errorDescription[this.errorCodes.WRONG_KEY_TYPE] = "Неправильный тип ключа";
+    this.errorDescription[this.errorCodes.LICENCE_READ_ONLY] = "Лицензия доступна только для чтения";
 
     this.errorDescription[this.errorCodes.DATA_INVALID] = "Неверные данные";
     this.errorDescription[this.errorCodes.UNSUPPORTED_BY_TOKEN] = "Операция не поддерживается токеном";
@@ -931,6 +932,28 @@ var TestSuite = new(function () {
                     ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
                 }
             }, this), $.proxy(ui.printError, ui));
+        };
+    })();
+
+    this.setLicence = new (function () {
+        Test.call(this);
+        this.description = function () {
+            return "Запись лицензии на токен";
+        };
+        this.runTest = function () {
+            plugin.setLicence(ui.device(), this.container.find(".licence-id").val(), ui.getContent(this.container, 0),$.proxy(function () {
+                $.proxy(ui.printResult, ui)();
+            }, this), $.proxy(ui.printError, ui));
+        };
+    })();
+
+    this.getLicence = new (function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение лицензии с токена";
+        };
+        this.runTest = function () {
+            plugin.getLicence(ui.device(), this.container.find(".licence-id").val(), $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
         };
     })();
 

@@ -1058,12 +1058,12 @@ var TestSuite = new(function () {
             var options = {};
             ui.setContent(this.container, "");
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
-            options.hex = ui.checkboxState(this.container, "in-hex") == "on" ? true : false;
+            options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
 
             if (ui.useConsole) {
                 console.time("calc-hash");
                 console.log("HW", options.useHardwareHash);
-                console.log("hex", options.hex);
+                console.log("base64", options.base64);
             }
             plugin.digest(ui.device(), ui.hashType(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
                 if (ui.useConsole) {

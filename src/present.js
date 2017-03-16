@@ -1399,7 +1399,9 @@ function showError(reason) {
 window.onload = function () {
     rutoken.ready.then(function () {
         initUi();
-        if (window.chrome) {
+        var isChrome = !!window.chrome;
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+        if (isChrome || isFirefox) {//for firefox 50+ only
             return rutoken.isExtensionInstalled();
         } else {
             return Promise.resolve(true);

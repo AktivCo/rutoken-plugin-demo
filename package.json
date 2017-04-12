@@ -13,7 +13,7 @@
   "dependencies": {
     "console-polyfill": "^0.2.2",
     "es6-promise": "^3.0.2",
-    "rutoken": "^1.0.7"
+    "rutoken": "^1.0.8"
   },
   "devDependencies": {
     "browserify": "^11.2.0",

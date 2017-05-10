@@ -274,8 +274,8 @@
                                         </tr>
                                     </table>
                                 </li>
-                                <li id="cert-extensions">
-                                    <table>
+                                <li>
+                                    <table id="cert-extensions" class="inlineblock">
                                         <tr>
                                             <th>Key Usage</th>
                                             <th>Ext Key Usage</th>
@@ -326,6 +326,26 @@
                                         <tr>
                                             <td></td>
                                             <td><label><input class="checkbox-input" type="checkbox" name="cert-exts-extkeyusage" value="1.2.643.2.2.34.6" />CryptoPro RA user</label></td>
+                                        </tr>
+                                    </table>
+                                    <table id="custom-extensions" class="inlineblock">
+                                        <tr>
+                                            <th colspan="2">Custom Extensions</th>
+                                        </tr>
+                                        <tr>
+                                            <td><label>OID</label></td>
+                                            <td><input type="text" value="1.3.6.1.4.1.311.21.7" name="custom-ext-oid"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label>value</label></td>
+                                            <td><input type="text" value="MA0GCCqFAwICLgAIAgEB" name="custom-ext-value"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><label><input class="checkbox-input" type="checkbox" name="custom-ext-crit">Critical</label></td>
+                                            <td><label style="color: grey;">value должен быть в base64</label></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button id="add-custom-extension" class="example">Добавить новое расширение</button></td>
                                         </tr>
                                     </table>
                                 </li>

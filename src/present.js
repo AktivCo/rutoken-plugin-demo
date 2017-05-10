@@ -28,6 +28,8 @@ function testUi(useConsole) {
         });
     });
 
+    $("#add-custom-extension").click($.proxy(this.newCustomExtension, this));
+
     $(".button").button();
     SyntaxHighlighter.highlight();
 
@@ -413,6 +415,27 @@ testUi.prototype = {
         return extensions;
     },
 
+    getCustomExtensions: function () {
+        var inputs = $("#custom-extensions input");
+        var customExtensions = [];
+
+        for (var i = 0; i < inputs.length/3; i++) {
+            var oid = inputs[i*3].value;
+            var asnBase64 = inputs[i*3+1].value;
+            var crit = inputs[i*3+2];
+
+            if (oid.length == 0 || asnBase64.length == 0)
+                continue;
+
+            customExtensions.push({
+                "oid": oid,
+                "value": asnBase64,
+                "criticality": crit.checked
+            });
+        }
+        return customExtensions;
+    },
+
     readFile: function (container, callback) {
         if (undefined === window.FileReader) {
             throw "Браузер не поддерживает объект FileReader";
@@ -426,6 +449,43 @@ testUi.prototype = {
         r.onloadend = function (event) {
             callback($.base64.encode(event.target.result));
         };
+    },
+
+    newCustomExtension: function() {
+        var table = document.getElementById("custom-extensions");
+
+        var row = table.insertRow(table.rows.length - 1);
+        var cell = row.insertCell(0);
+        cell.colSpan = 2;
+        cell.innerHTML = "<hr>";
+
+        row = table.insertRow(table.rows.length - 1);
+        cell = row.insertCell(0);
+        cell.innerHTML = "<label>OID</label>";
+        cell = row.insertCell(1);
+        cell.innerHTML = "<input type=\"text\" name=\"custom-ext-oid\">";
+        cell = row.insertCell(2);
+        cell.innerHTML = "<img src=\"images/close.png\" alt=\"x\" width=24 height=24/>";
+        cell.onclick = this.deleteCustomExtension;
+
+        row = table.insertRow(table.rows.length - 1);
+        cell = row.insertCell(0);
+        cell.innerHTML = "<label>value</label>";
+        cell = row.insertCell(1);
+        cell.innerHTML = "<input type=\"text\" name=\"custom-ext-value\">";
+
+        row = table.insertRow(table.rows.length - 1);
+        cell = row.insertCell(0);
+        cell.innerHTML = "<label><input class=\"checkbox-input\" type=\"checkbox\" name=\"custom-ext-crit\">Critical</label>";
+    },
+
+    deleteCustomExtension: function() {
+        var table = document.getElementById("custom-extensions");
+        var row = $(this).closest("tr");
+        rIndex = row[0].rowIndex;
+
+        for(var i = 0; i < 4; i++)
+            table.deleteRow(rIndex-1);
     }
 }
 
@@ -965,12 +1025,14 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var options = {
                 "subjectSignTool": this.container.find(".subject-sign-tool").val(),
-                "hashAlgorithm": plugin[this.container.find(".hash-algorithm").val()]
+                "hashAlgorithm": plugin[this.container.find(".hash-algorithm").val()],
+                "customExtensions": ui.getCustomExtensions()
             };
-            plugin.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options, $.proxy(function (res) {
-                ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
-            }, this), $.proxy(ui.printError, ui));
+            plugin.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options,
+                $.proxy(function (res) {
+                    ui.setContent(this.container, res);
+                    $.proxy(ui.printResult, ui)(res);
+                }, this), $.proxy(ui.printError, ui));
         };
     })();
 

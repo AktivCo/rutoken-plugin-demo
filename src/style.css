@@ -393,6 +393,11 @@ object {
     min-width: 150px;
 }
 
+.group table.inlineblock {
+    display: inline-block;
+    vertical-align: top;
+}
+
 /* --------------------------------------------------------------------------------
      SyntaxHighlighter
 -------------------------------------------------------------------------------- */

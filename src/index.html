@@ -421,8 +421,12 @@
                                     <label><input type="checkbox" name="in-base64" />Данные в base64</label>
                                 </li>
                                 <li>
-                                    <label for="hash-type">Алгоритм хеширования:</label><br>
-                                    <label><input class="radio-input" type="radio" name="hash-type" value="3411_94" checked="checked"/>ГОСТ Р 34.11-94</label>
+                                    <label for="hash-type">Алгоритм хеширования:</label>
+                                    <select class="hash-algorithm">
+                                        <option value="HASH_TYPE_GOST3411_94">ГОСТ Р 34.11-94</option>
+                                        <option value="HASH_TYPE_GOST3411_12_256">ГОСТ Р 34.11-12 256</option>
+                                        <option value="HASH_TYPE_GOST3411_12_512">ГОСТ Р 34.11-12 512</option>
+                                    </select>
                                 </li>
                                 <li>
                                     <textarea id="hash-message-result" class="text-output" rows="7"></textarea>

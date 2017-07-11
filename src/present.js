@@ -1122,12 +1122,14 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
 
+            var hashType = plugin[this.container.find(".hash-algorithm").val()];
+
             if (ui.useConsole) {
                 console.time("calc-hash");
                 console.log("HW", options.useHardwareHash);
                 console.log("base64", options.base64);
             }
-            plugin.digest(ui.device(), ui.hashType(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
+            plugin.digest(ui.device(), hashType, ui.getContent(this.container, 0), options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("calc-hash");
                 }

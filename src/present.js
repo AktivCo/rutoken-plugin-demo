@@ -905,6 +905,12 @@ var TestSuite = new(function () {
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
                 options.paramset = "A";
                 options.signatureSize = 512;
+            } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256) {
+                options.paramset = "A";
+                options.signatureSize = 512;
+            } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512) {
+                options.paramset = "A";
+                options.signatureSize = 1024;
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
                 options.signatureSize = 2048;
             }

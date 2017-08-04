@@ -29,6 +29,7 @@ function testUi(useConsole) {
     });
 
     $("#add-custom-extension").click($.proxy(this.newCustomExtension, this));
+    $("#add-new-recipient").click($.proxy(this.newCmsEncryptRecipient, this));
 
     $(".button").button();
     SyntaxHighlighter.highlight();
@@ -449,6 +450,16 @@ testUi.prototype = {
         r.onloadend = function (event) {
             callback($.base64.encode(event.target.result));
         };
+    },
+    
+    newCmsEncryptRecipient: function() {
+        var ul = document.getElementById("EncryptMessageUl");
+
+        var libtn = document.getElementById("newRecipientButton");
+        var li = document.createElement("li");
+        li.innerHTML = '<label for="encrypt-certificate">Тело сертификата</label>\
+            <textarea id="encrypt-certificate" class="recipient" rows="7"></textarea>'
+        ul.insertBefore(li, libtn);
     },
 
     newCustomExtension: function() {
@@ -1364,7 +1375,12 @@ var TestSuite = new(function () {
                 base64: b64
             };
 
-            plugin.cmsEncrypt(ui.device(), "", ui.getContent(this.container, 0), ui.getContent(this.container, 1),
+            var elements = this.container.find(".recipient");
+            var recipients = [];
+            for (var i = 0; i < elements.length; i++)
+                recipients.push(elements[i].value);
+
+            plugin.cmsEncrypt(ui.device(), "", recipients, ui.getContent(this.container, 0),
                 options, $.proxy(function (res) {
                     if (ui.useConsole) {
                         console.timeEnd("encrypt");

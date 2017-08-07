@@ -219,6 +219,14 @@ testUi.prototype = {
         }
     },
 
+    keyInfoType: function () {
+        var value = $(".radio-input:radio[name=key-info]:checked").val();
+        switch (value) {
+        case "algorithm":
+            return plugin.KEY_INFO_ALGORITHM;
+        }
+    },
+
     certificateType: function () {
         var value = $(".radio-input:radio[name=certificate-category]:checked").val();
         switch (value) {
@@ -968,6 +976,42 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             plugin.getKeyLabel(ui.device(), ui.key(), $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
+        }
+    })();
+
+    this.GetKeyInfo = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение информации о ключевой паре";
+        };
+        this.runTest = function () {
+            var info = ui.keyInfoType();
+            function successCallback(result) {
+                var message = result;
+                switch(info) {
+                case plugin.KEY_INFO_ALGORITHM:
+                    switch(result) {
+                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001:
+                        message = "ГОСТ Р 34.10-2001";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256:
+                        message = "ГОСТ Р 34.10-2012 256";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512:
+                        message = "ГОСТ Р 34.10-2012 512";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA:
+                        message = "RSA";
+                        break;
+                    default:
+                        message = "Неизвестный тип алгоритма ключа: " + result;
+                        break;
+                    }
+                    break;
+                }
+                ui.printResult(message);
+            };
+            plugin.getKeyInfo(ui.device(), ui.key(), info, successCallback, $.proxy(ui.printError, ui));
         }
     })();
 

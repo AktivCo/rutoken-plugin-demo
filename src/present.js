@@ -1168,6 +1168,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.CMS = ui.getContent(this.container, 1);
 
             var isBase64 = false
             isBase64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
@@ -1261,6 +1262,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.CMS = ui.getContent(this.container, 1);
 
             if (ui.useConsole) {
                 console.time("sign");
@@ -1293,6 +1295,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.CMS = ui.getContent(this.container, 1);
 
             if (ui.useConsole) {
                 console.time("sign");
@@ -1325,6 +1328,7 @@ var TestSuite = new(function () {
             ui.setContent(this.container, "");
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.CMS = ui.getContent(this.container, 1);
 
             var isBase64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
 

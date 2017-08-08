@@ -408,8 +408,13 @@
                         <div id="SignMessage" class="group">
                             <ul>
                                 <li>
-                                    <label for="sign-message">Сообщение</label>
+                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
                                     <textarea id="sign-message" class="text-input" rows="7">Текст очень важного платежного документа</textarea>
+                                </li>
+                                <li>
+                                    
+                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
+                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
@@ -475,8 +480,12 @@
                         <div id="SignMessagePinPad" class="group">
                             <ul>
                                 <li>
-                                    <label for="sign-message">Сообщение</label>
+                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
                                     <textarea id="sign-message" class="text-input" rows="7"><!PINPADFILE UTF8><N>ФИО:<V>Петров Петр Петрович<N>Адрес:<V>Москва, Пионерская ул, д. 3, кв. 72<N>Перевод со счета:<V>42301810001000075212<N>Сумма:<V>150000<N>Валюта:<V>RUR<N>Наименование получателя:<V>Иванова Елена Ивановна<N>Номер счета получателя:<V>40817810338295201618<N>БИК банка получателя:<V>044525225<N>Наименование банка получателя:<V>ОАО 'СБЕРБАНК РОССИИ' Г. МОСКВА<N>Номер счета банка получателя:<V>30101810400000000225<N>Назначение платежа:<V>перевод личных средств</textarea>
+                                </li>
+                                <li>
+                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
+                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
@@ -491,7 +500,7 @@
                         <div id="SignXmlPinPad" class="group">
                             <ul>
                                 <li>
-                                    <label for="sign-message">Сообщение</label>
+                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
                                     <textarea id="sign-message" class="text-input" rows="7">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;ФайлПФР&gt;
@@ -561,6 +570,10 @@
                                     </textarea>
                                 </li>
                                 <li>
+                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
+                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
                                     <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
                                     <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
@@ -573,8 +586,12 @@
                         <div id="SignMessageSafeTouch" class="group">
                             <ul>
                                 <li>
-                                    <label for="sign-message">Сообщение</label>
+                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
                                     <textarea id="sign-message" class="text-input" rows="7">AQACNTUCAAEBgQAJMDQwNDA0MDQwggAKNzcwMTAwMTAwMYMADVNhZmVUZWNoIEx0ZC6EABQ0MDgxNzgxMDg5NzYyMDAwMDAwMIUACjk5OTk5OTk5OTmGAANSVUL/AA0wMDAwMDAwMDAwMDAw</textarea>
+                                </li>
+                                <li>
+                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
+                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br/>

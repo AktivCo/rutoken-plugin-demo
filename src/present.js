@@ -1156,14 +1156,12 @@ var TestSuite = new(function () {
             ui.setContent(this.container, "");
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.computeHash = ui.checkboxState(this.container, "compute-hash") == "on" ? true : false;
-            options.invisible = ui.checkboxState(this.container, "invisible") == "on" ? true : false;
             options.hashAlgorithm = plugin[this.container.find(".hash-algorithm").val()];
 
             if (ui.useConsole) {
                 console.time("sign-hash");
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.computeHash);
-                console.log("invisible: ", options.invisible);
             }
             plugin.rawSign(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
                 if (ui.useConsole) {

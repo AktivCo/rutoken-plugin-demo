@@ -1187,13 +1187,11 @@ var TestSuite = new(function () {
             };
             ui.setContent(this.container, "");
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
-            options.invisible = ui.checkboxState(this.container, "invisible") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
 
             if (ui.useConsole) {
                 console.time("sign");
-                console.log("invisible: ", options.invisible);
                 console.log("detached: ", options.detached);
                 console.log("user cert included: ", options.addUserCertificate);
             }

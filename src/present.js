@@ -1397,7 +1397,6 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var options = {
                 base64: false,
-                useHardwareVerify: false
             };
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.verifyCertificate = ui.checkboxState(this.container, "verify-signer-cert") == "on" ? true : false;
@@ -1433,10 +1432,8 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             ui.setContent(this.container, "");
-            var hw = ui.checkboxState(this.container, "use-hw-encryption") == "on" ? true : false;
             var b64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
             var options = {
-                useHardwareEncryption: hw,
                 base64: b64
             };
 
@@ -1464,10 +1461,7 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             ui.setContent(this.container, "");
-            var hw = ui.checkboxState(this.container, "use-hw-decryption") == "on" ? true : false;
-            var options = {
-                useHardwareDecryption: hw
-            };
+            var options = {};
             plugin.cmsDecrypt(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("decrypt");

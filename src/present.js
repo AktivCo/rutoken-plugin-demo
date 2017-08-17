@@ -212,10 +212,10 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_IS_PIN_CACHED;
         case "logged":
             return plugin.TOKEN_INFO_IS_LOGGED_IN;
-	case "formats":
-	    return plugin.TOKEN_INFO_FORMATS;
-	case "features":
-	    return plugin.TOKEN_INFO_FEATURES;
+    case "formats":
+        return plugin.TOKEN_INFO_FORMATS;
+    case "features":
+        return plugin.TOKEN_INFO_FEATURES;
         }
     },
 
@@ -239,7 +239,7 @@ testUi.prototype = {
         }
     },
 
-	hashType: function () {
+    hashType: function () {
         var value = $(".radio-input:radio[name=hash-type]:checked").val();
         switch (value) {
         case "3411_94":
@@ -459,15 +459,32 @@ testUi.prototype = {
             callback($.base64.encode(event.target.result));
         };
     },
-    
-    newCmsEncryptRecipient: function() {
-        var ul = document.getElementById("EncryptMessageUl");
 
-        var libtn = document.getElementById("newRecipientButton");
-        var li = document.createElement("li");
-        li.innerHTML = '<label for="encrypt-certificate">Тело сертификата</label>\
+    newCmsEncryptRecipient: function() {
+        var table = document.getElementById("Recipients");
+
+        var row = table.insertRow(table.rows.length - 1);
+        var cell = row.insertCell(0);
+        cell.colSpan = 2;
+        cell.innerHTML = "<hr>";
+
+        row = table.insertRow(table.rows.length - 1);
+        cell = row.insertCell(0);
+        cell.innerHTML = '<label for="encrypt-certificate">Тело сертификата</label>\
             <textarea id="encrypt-certificate" class="recipient" rows="7"></textarea>'
-        ul.insertBefore(li, libtn);
+
+        cell = row.insertCell(1);
+        cell.innerHTML = "<img src=\"images/close.png\" alt=\"x\" width=24 height=24/>";
+        cell.onclick = this.deleteRecipient;
+    },
+
+    deleteRecipient: function() {
+        var table = document.getElementById("Recipients");
+        var row = $(this).closest("tr");
+        var rIndex = row[0].rowIndex;
+
+        for(var i = 0; i < 2; i++)
+            table.deleteRow(rIndex-1);
     },
 
     newCustomExtension: function() {
@@ -501,7 +518,7 @@ testUi.prototype = {
     deleteCustomExtension: function() {
         var table = document.getElementById("custom-extensions");
         var row = $(this).closest("tr");
-        rIndex = row[0].rowIndex;
+        var rIndex = row[0].rowIndex;
 
         for(var i = 0; i < 4; i++)
             table.deleteRow(rIndex-1);
@@ -835,22 +852,22 @@ var TestSuite = new(function () {
                         }
                     }
 
-		    if (info == plugin.TOKEN_INFO_FORMATS) {
-			var m = {};
-			m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
-			m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
-			m[plugin.DEVICE_DATA_FORMAT_PINPAD2] = "DEVICE_DATA_FORMAT_PINPAD2";
-			m[plugin.DEVICE_DATA_FORMAT_XML] = "DEVICE_DATA_FORMAT_XML";
-			m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
+            if (info == plugin.TOKEN_INFO_FORMATS) {
+            var m = {};
+            m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
+            m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
+            m[plugin.DEVICE_DATA_FORMAT_PINPAD2] = "DEVICE_DATA_FORMAT_PINPAD2";
+            m[plugin.DEVICE_DATA_FORMAT_XML] = "DEVICE_DATA_FORMAT_XML";
+            m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
 
-			message = "[" + result.map(function(value) {
-			    return m[value];
-			}).join(", ") + "]";
-		    }
+            message = "[" + result.map(function(value) {
+                return m[value];
+            }).join(", ") + "]";
+            }
 
-		    if (info == plugin.TOKEN_INFO_FEATURES) {
-			message = JSON.stringify(result);
-		    }
+            if (info == plugin.TOKEN_INFO_FEATURES) {
+            message = JSON.stringify(result);
+            }
 
                     message += " (" + info + ")";
                     ui.printResult(message);
@@ -1171,7 +1188,7 @@ var TestSuite = new(function () {
         }
     });
 
-	this.CalcHash = new(function () {
+    this.CalcHash = new(function () {
         Test.call(this);
         this.description = function () {
             return "Вычислить хеш";

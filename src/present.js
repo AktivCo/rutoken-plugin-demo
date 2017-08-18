@@ -214,6 +214,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_IS_LOGGED_IN;
     case "formats":
         return plugin.TOKEN_INFO_FORMATS;
+    case "algorithms":
+        return plugin.TOKEN_INFO_ALGORITHMS;
     case "features":
         return plugin.TOKEN_INFO_FEATURES;
         }
@@ -598,6 +600,8 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.FUNCTION_REJECTED] = "Операция отклонена пользователем";
     this.errorDescription[this.errorCodes.FUNCTION_FAILED] = "Невозможно выполнить операцию";
+    this.errorDescription[this.errorCodes.MECHANISM_INVALID] = "Указан неправильный механизм";
+    this.errorDescription[this.errorCodes.ATTRIBUTE_VALUE_INVALID] = "Передан неверный атрибут";
 
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_ISSUER_CERT] = "Невозможно получить сертификат подписанта";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_CRL] = "Невозможно получить CRL";
@@ -861,6 +865,18 @@ var TestSuite = new(function () {
             m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
 
             message = "[" + result.map(function(value) {
+                return m[value];
+            }).join(", ") + "]";
+            }
+
+            if (info == plugin.TOKEN_INFO_ALGORITHMS) {
+            var m = {};
+            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "KEY_ALGORITHM_GOST3410_2001";
+            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "KEY_ALGORITHM_GOST3410_2012_256";
+            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "KEY_ALGORITHM_GOST3410_2012_512";
+            m[plugin.PUBLIC_KEY_ALGORITHM_RSA] = "KEY_ALGORITHM_RSA";
+
+            message = "[" + result.map(function (value) {
                 return m[value];
             }).join(", ") + "]";
             }

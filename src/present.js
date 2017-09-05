@@ -354,7 +354,14 @@ testUi.prototype = {
             //console.log(code);
             console.debug(arguments);
         }
-        this.writeln("Ошибка: " + plugin.errorDescription[code] + "\n");
+        if(plugin.errorDescription[code] === undefined)
+        {
+            this.writeln("Внутренняя ошибка (Код: " + code + ") \n");
+        }
+        else
+        {
+            this.writeln("Ошибка: " + plugin.errorDescription[code] + "\n");
+        }
     },
 
     printResult: function (message) {
@@ -578,6 +585,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.PIN_INCORRECT] = "Некорректный PIN-код";
     this.errorDescription[this.errorCodes.PIN_LOCKED] = "PIN-код заблокирован";
     this.errorDescription[this.errorCodes.PIN_CHANGED] = "PIN-код был изменен";
+    this.errorDescription[this.errorCodes.PIN_INVALID] = "PIN-код содержит недопустимые символы";
+    this.errorDescription[this.errorCodes.USER_PIN_NOT_INITIALIZED] = "PIN-код пользователя не инициализирован";
+
     this.errorDescription[this.errorCodes.SESSION_INVALID] = "Состояние токена изменилось";
     this.errorDescription[this.errorCodes.USER_NOT_LOGGED_IN] = "Выполните вход на устройство";
     this.errorDescription[this.errorCodes.ALREADY_LOGGED_IN] = "Вход на устройство уже был выполнен";

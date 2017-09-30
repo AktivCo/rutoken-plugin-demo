@@ -1789,7 +1789,7 @@ window.onload = function () {
         var isChrome = !!window.chrome;
         var isFirefox = typeof InstallTrigger !== 'undefined';
         var isWindows = window.navigator.appVersion.indexOf('Win') != -1;
-        var verOffset, fullVersion, majorVerison;
+        var verOffset, fullVersion, majorVersion;
         var performCheck = true;
         if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {
             fullVersion = navigator.userAgent.substring(verOffset + 8);

@@ -212,12 +212,14 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_IS_PIN_CACHED;
         case "logged":
             return plugin.TOKEN_INFO_IS_LOGGED_IN;
-    case "formats":
-        return plugin.TOKEN_INFO_FORMATS;
-    case "algorithms":
-        return plugin.TOKEN_INFO_ALGORITHMS;
-    case "features":
-        return plugin.TOKEN_INFO_FEATURES;
+        case "formats":
+            return plugin.TOKEN_INFO_FORMATS;
+        case "algorithms":
+            return plugin.TOKEN_INFO_ALGORITHMS;
+        case "features":
+            return plugin.TOKEN_INFO_FEATURES;
+        case "pin retries left":
+            return plugin.TOKEN_INFO_PIN_RETRIES_LEFT;
         }
     },
 
@@ -844,62 +846,62 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var info = ui.infoType();
 
-                function successCallback(result) {
-                    var message = result;
+            function successCallback(result) {
+                var message = result;
 
-                    if (info === plugin.TOKEN_INFO_DEVICE_TYPE) {
-                        message = "Невозможно определить тип устройства";
-                        switch (result) {
-                        case plugin.TOKEN_TYPE_UNKNOWN:
-                            message = "Неизвестное устройство";
-                            break;
-                        case plugin.TOKEN_TYPE_RUTOKEN_ECP:
-                            message = "Рутокен ЭЦП";
-                            break;
-                        case plugin.TOKEN_TYPE_RUTOKEN_WEB:
-                            message = "Рутокен Web";
-                            break;
-                        case plugin.TOKEN_TYPE_RUTOKEN_PINPAD_2:
-                            message = "Рутокен PINPad 2";
-                            break;
-                        case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
-                            message = "Рутокен ЭЦП SC";
-                            break;
-                        }
+                if (info === plugin.TOKEN_INFO_DEVICE_TYPE) {
+                    message = "Невозможно определить тип устройства";
+                    switch (result) {
+                    case plugin.TOKEN_TYPE_UNKNOWN:
+                        message = "Неизвестное устройство";
+                        break;
+                    case plugin.TOKEN_TYPE_RUTOKEN_ECP:
+                        message = "Рутокен ЭЦП";
+                        break;
+                    case plugin.TOKEN_TYPE_RUTOKEN_WEB:
+                        message = "Рутокен Web";
+                        break;
+                    case plugin.TOKEN_TYPE_RUTOKEN_PINPAD_2:
+                        message = "Рутокен PINPad 2";
+                        break;
+                    case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
+                        message = "Рутокен ЭЦП SC";
+                        break;
                     }
-
-            if (info == plugin.TOKEN_INFO_FORMATS) {
-            var m = {};
-            m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
-            m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
-            m[plugin.DEVICE_DATA_FORMAT_PINPAD2] = "DEVICE_DATA_FORMAT_PINPAD2";
-            m[plugin.DEVICE_DATA_FORMAT_XML] = "DEVICE_DATA_FORMAT_XML";
-            m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
-
-            message = "[" + result.map(function(value) {
-                return m[value];
-            }).join(", ") + "]";
-            }
-
-            if (info == plugin.TOKEN_INFO_ALGORITHMS) {
-            var m = {};
-            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "KEY_ALGORITHM_GOST3410_2001";
-            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "KEY_ALGORITHM_GOST3410_2012_256";
-            m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "KEY_ALGORITHM_GOST3410_2012_512";
-            m[plugin.PUBLIC_KEY_ALGORITHM_RSA] = "KEY_ALGORITHM_RSA";
-
-            message = "[" + result.map(function (value) {
-                return m[value];
-            }).join(", ") + "]";
-            }
-
-            if (info == plugin.TOKEN_INFO_FEATURES) {
-            message = JSON.stringify(result);
-            }
-
-                    message += " (" + info + ")";
-                    ui.printResult(message);
                 }
+
+                if (info == plugin.TOKEN_INFO_FORMATS) {
+                    var m = {};
+                    m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
+                    m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
+                    m[plugin.DEVICE_DATA_FORMAT_PINPAD2] = "DEVICE_DATA_FORMAT_PINPAD2";
+                    m[plugin.DEVICE_DATA_FORMAT_XML] = "DEVICE_DATA_FORMAT_XML";
+                    m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
+
+                    message = "[" + result.map(function(value) {
+                        return m[value];
+                    }).join(", ") + "]";
+                }
+
+                if (info == plugin.TOKEN_INFO_ALGORITHMS) {
+                    var m = {};
+                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "KEY_ALGORITHM_GOST3410_2001";
+                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "KEY_ALGORITHM_GOST3410_2012_256";
+                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "KEY_ALGORITHM_GOST3410_2012_512";
+                    m[plugin.PUBLIC_KEY_ALGORITHM_RSA] = "KEY_ALGORITHM_RSA";
+
+                    message = "[" + result.map(function (value) {
+                        return m[value];
+                    }).join(", ") + "]";
+                }
+
+                if (info == plugin.TOKEN_INFO_FEATURES) {
+                    message = JSON.stringify(result);
+                }
+
+                message += " (" + info + ")";
+                ui.printResult(message);
+            }
             plugin.getDeviceInfo(ui.device(), ui.infoType(), successCallback, $.proxy(ui.printError, ui));
         };
     })();

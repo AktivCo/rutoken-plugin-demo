@@ -479,6 +479,19 @@
                                 </li>
                             </ul>
                         </div>
+                        <div id="DeriveKey" class="group">
+                            <ul>
+                                <li>
+                                    <label for="public-key">Открытый ключ (размер и значение должно согласовываться с закрытым ключом)</label>
+                                    <textarea id="public-key" class="text-input" rows="4">3d:3f:96:3e:31:98:34:ee:7a:1a:c4:f5:a2:78:a7:8c:30:00:b4:15:8b:12:64:77:00:95:5d:06:3b:47:a6:a9:d3:35:79:17:4f:22:7f:8a:4d:e6:1c:d6:79:45:93:8e:36:ee:0d:d5:0c:1a:da:1e:03:a1:ff:9c:d4:b4:78:4d</textarea>
+                                    <label for="ukm">Синхропосылка (8 байт)</label>
+                                    <textarea id="ukm" class="text-input" rows="1">01:02:03:04:05:06:07:08</textarea>
+                                </li>
+                                <li>
+                                    <textarea id="derive-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
                         <div id="SignMessagePinPad" class="group">
                             <ul>
                                 <li>

@@ -1276,6 +1276,31 @@ var TestSuite = new(function () {
         };
     });
 
+    this.DeriveKey = new (function () {
+        Test.call(this);
+        this.description = function () {
+            return "Выработка ключа обмена";
+        };
+
+        this.runTest = function () {
+            var options = {};
+            ui.setContent(this.container, "");
+
+            options.ukm = ui.getContent(this.container, 1);
+
+            if (ui.useConsole) {
+                console.time("derive-key");
+            }
+            plugin.derive(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
+                if (ui.useConsole) {
+                    console.timeEnd("derive-key");
+                }
+                ui.setContent(this.container, res);
+                $.proxy(ui.printResult, ui)(res);
+            }, this), $.proxy(ui.printError, ui));
+        };
+    });
+
     this.SignMessagePinPad = new(function () {
         Test.call(this);
         this.description = function () {

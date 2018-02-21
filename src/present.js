@@ -603,6 +603,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.LICENCE_READ_ONLY] = "Лицензия доступна только для чтения";
 
     this.errorDescription[this.errorCodes.DATA_INVALID] = "Неверные данные";
+    this.errorDescription[this.errorCodes.DATA_LEN_RANGE] = "Некорректный размер данных";
     this.errorDescription[this.errorCodes.UNSUPPORTED_BY_TOKEN] = "Операция не поддерживается токеном";
     this.errorDescription[this.errorCodes.KEY_FUNCTION_NOT_PERMITTED] = "Операция запрещена для данного типа ключа";
 
@@ -1191,25 +1192,24 @@ var TestSuite = new(function () {
         };
 
         this.runTest = function () {
-            var options = {
-                addSignTime: true,
-            };
+            var options = {};
+            
             ui.setContent(this.container, "");
+            options.addSignTime = ui.checkboxState(this.container, "add-sign-time") == "on" ? true : false;
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
 
-            var isBase64 = false
-            isBase64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
+            var dataFormat = plugin[this.container.find(".data-format").val()];
 
             if (ui.useConsole) {
                 console.time("sign");
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.detached);
-                console.log("base64: ", isBase64);
+                console.log("dataFormat: ", dataFormat);
             }
-            plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options, $.proxy(function (res) {
+            plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
                 }

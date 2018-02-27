@@ -39,6 +39,18 @@ function testUi(useConsole) {
             ui.console.empty();
         }
     });
+
+    document.getElementById("add-system-info").onclick = function() {
+        document.getElementById("add-sign-time").disabled = this.checked;
+        if(this.checked) {
+            document.getElementById("add-sign-time").checked = true;
+        }
+    }
+
+    var isWindows = navigator.userAgent.indexOf('Win') != -1;
+    if(!isWindows) {
+         document.getElementById("add-system-info").disabled = true;
+    }
 }
 
 function uiControls() {
@@ -1199,6 +1211,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.addSystemInfo = ui.checkboxState(this.container, "add-system-info") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
 
             var dataFormat = plugin[this.container.find(".data-format").val()];
@@ -1207,8 +1220,8 @@ var TestSuite = new(function () {
                 console.time("sign");
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.detached);
-                console.log("dataFormat: ", dataFormat);
-            }
+                console.log("system-info: ", options.addSystemInfo);
+                console.log("dataFormat: ", dataFormat);            }
             plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
@@ -1597,7 +1610,7 @@ window.onload = function () {
         initUi();
         var isChrome = !!window.chrome;
         var isFirefox = typeof InstallTrigger !== 'undefined';
-        var isWindows = window.navigator.appVersion.indexOf('Win') != -1;
+        var isWindows = navigator.userAgent.indexOf('Win') != -1;
         var verOffset, fullVersion, majorVerison;
         var performCheck = true;
         if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {

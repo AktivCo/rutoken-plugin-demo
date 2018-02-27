@@ -422,13 +422,14 @@
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
                                     <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
                                     <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label><br>
-                                    <label><input type="checkbox" name="add-sign-time" checked="checked"/>Добавить timestamp</label><br>
+                                    <label><input type="checkbox" name="add-sign-time" id="add-sign-time" checked="checked"/>Добавить timestamp</label><br>
                                     <label>Формат сообщения:</label>
                                     <select class="data-format">
                                         <option value="DATA_FORMAT_PLAIN">Строка</option>
                                         <option value="DATA_FORMAT_BASE64">Base64</option>
                                         <option value="DATA_FORMAT_HASH">Хеш сообщения (hex)</option>
-                                    </select>
+                                    </select><br>
+                                    <label><input type="checkbox" name="add-system-info" id="add-system-info"/>Включать информацию о месте подписи</label>
                                 </li>
                                 <li>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>

@@ -962,6 +962,18 @@ var TestSuite = new(function () {
         }
     })();
 
+    this.UnblockUserPin = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Разблокировка PIN-кода пользователя";
+        };
+        this.runTest = function () {
+            plugin.unblockUserPin(ui.device(), ui.getContent(this.container, 0), $.proxy(function () {
+                $.proxy(ui.printResult, ui)();
+            }, this), $.proxy(ui.printError, ui));
+        }
+    })();
+
     this.FormatToken = new(function () {
         Test.call(this);
         this.description = function () {

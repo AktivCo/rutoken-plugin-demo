@@ -30,6 +30,7 @@ function testUi(useConsole) {
 
     $("#add-custom-extension").click($.proxy(this.newCustomExtension, this));
     $("#add-new-recipient").click($.proxy(this.newCmsEncryptRecipient, this));
+    $("#verify-add-signer").click($.proxy(this.newVerifySigner, this));
 
     $(".button").button();
     SyntaxHighlighter.highlight();
@@ -469,6 +470,34 @@ testUi.prototype = {
         r.onloadend = function (event) {
             callback($.base64.encode(event.target.result));
         };
+    },
+
+    newVerifySigner: function() {
+        var table = document.getElementById("Certificates");
+
+        var row = table.insertRow(table.rows.length - 1);
+        var cell = row.insertCell(0);
+        cell.colSpan = 2;
+        cell.innerHTML = "<hr>";
+
+        row = table.insertRow(table.rows.length - 1);
+        cell = row.insertCell(0);
+        cell.innerHTML = '<label for="cert">Cертификат</label>\
+            <textarea id="cert" class="verify-signer"></textarea>'
+
+        cell = row.insertCell(1);
+        cell.innerHTML = '<img src="images/close.png" alt="x" width=24 height=24/>';
+        cell.onclick = this.deleteVerifySigner;
+    },
+
+    deleteVerifySigner: function() {
+        const numberOfRowsToDelete = 2;
+        var table = document.getElementById("Certificates");
+        var row = $(this).closest("tr");
+        var rIndex = row[0].rowIndex;
+
+        for(var i = 0; i < numberOfRowsToDelete; i++)
+            table.deleteRow(rIndex-1);
     },
 
     newCmsEncryptRecipient: function() {
@@ -1193,7 +1222,7 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             var options = {};
-            
+
             ui.setContent(this.container, "");
             options.addSignTime = ui.checkboxState(this.container, "add-sign-time") == "on" ? true : false;
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
@@ -1458,13 +1487,13 @@ var TestSuite = new(function () {
             options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
             options.data = ui.getContent(this.container, 1);
 
-            var cert = ui.getContent(this.container, 2);
-            if (cert != "") {
-                options.certificates = new Array();
-                options.certificates.push(cert);
-            }
+            var elements = this.container.find(".verify-signer");
+            options.certificates = [];
+            for (var i = 0; i < elements.length; i++)
+                if (elements[i].value != "")
+                    options.certificates.push(elements[i].value);
 
-            var caCert = ui.getContent(this.container, 3);
+            var caCert = ui.getContent(this.container, 2);
             if (caCert != "") {
                 options.CA = new Array();
                 options.CA.push(caCert);
@@ -1495,7 +1524,8 @@ var TestSuite = new(function () {
             var elements = this.container.find(".recipient");
             var recipients = [];
             for (var i = 0; i < elements.length; i++)
-                recipients.push(elements[i].value);
+                if (elements[i].value != "")
+                    recipients.push(elements[i].value);
 
             plugin.cmsEncrypt(ui.device(), "", recipients, ui.getContent(this.container, 0),
                 options, $.proxy(function (res) {

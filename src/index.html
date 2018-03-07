@@ -414,7 +414,6 @@
                                     <textarea id="sign-message" class="text-input" rows="7">Текст очень важного платежного документа</textarea>
                                 </li>
                                 <li>
-                                    
                                     <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
                                     <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
                                 </li>
@@ -651,8 +650,17 @@
                                     <textarea placeholder="Опционально - в случае если проверяется detached подпись" id="data" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
-                                    <label for="cert">Сертификат</label>
-                                    <textarea placeholder="Опционально - в случае если он не включен в cms" id="cert" class="text-input"></textarea>
+                                    <table id="Certificates" class="inlineblock">
+                                        <tr>
+                                            <td colspan="2">
+                                                <label for="cert">Сертификат</label>
+                                                <textarea placeholder="Опционально - в случае если он не включен в cms" id="cert" class="verify-signer"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button id="verify-add-signer" class="example">Добавить еще</button></td>
+                                        </tr>
+                                    </table>
                                 </li>
                                 <li>
                                     <label for="ca-cert">СА</label>

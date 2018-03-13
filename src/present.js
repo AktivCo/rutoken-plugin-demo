@@ -47,8 +47,7 @@ function testUi(useConsole) {
         }
     }
 
-    var isWindows = navigator.userAgent.indexOf('Win') != -1;
-    if(!isWindows) {
+    if(!(navigator.userAgent.indexOf('Win') != -1 || navigator.userAgent.indexOf('Macintosh') != -1)) {
          document.getElementById("add-system-info").disabled = true;
     }
 }

@@ -438,6 +438,13 @@
                                     <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
                                     <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label><br>
                                     <label><input type="checkbox" name="add-sign-time" checked="checked"/>Добавить timestamp</label><br>
+                                    <label><input type="checkbox" name="rsa-hash" id="cms-rsa-hash"/>Алгоритм хэширования для RSA ключей</label>
+                                    <select class="hash-alg" id="cms-hash-alg" disabled=true>
+                                        <option value="HASH_TYPE_MD5">MD5</option>
+                                        <option value="HASH_TYPE_SHA1">SHA1</option>
+                                        <option value="HASH_TYPE_SHA256">SHA256</option>
+                                        <option value="HASH_TYPE_SHA512">SHA512</option>
+                                    </select><br>
                                     <label>Формат сообщения:</label>
                                     <select class="data-format">
                                         <option value="DATA_FORMAT_PLAIN">Строка</option>

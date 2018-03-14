@@ -40,6 +40,10 @@ function testUi(useConsole) {
             ui.console.empty();
         }
     });
+    
+    document.getElementById("cms-rsa-hash").onclick = function() {
+        document.getElementById("cms-hash-alg").disabled = !this.checked;
+    }
 }
 
 function uiControls() {
@@ -1262,6 +1266,8 @@ var TestSuite = new(function () {
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
+            if (ui.checkboxState(this.container, "rsa-hash") == "on")
+                options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];
 
             var dataFormat = plugin[this.container.find(".data-format").val()];
 

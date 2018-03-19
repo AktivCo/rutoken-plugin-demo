@@ -404,15 +404,23 @@
                             </ul>
                         </div>
                         <div id="ParseCertificateFromString" class="group">
-                        <ul>
-                            <li>
-                            <label for="parse-cert-string-body">Cертификат в формате PEM:</label>
-                            <textarea id="parse-cert-string-body" class="text-input" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
-                            </li>
-                            <li><textarea id="parse-cert-string-result" class="text-output" rows="7"></textarea></li>
-                        </ul>
-                    </div>
+                            <ul>
+                                <li>
+                                <label for="parse-cert-string-body">Cертификат в формате PEM:</label>
+                                <textarea id="parse-cert-string-body" class="text-input" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIE9DCCBKOgAwIBAgIKGeFWzQACAAJYxzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3&#10;DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpD&#10;UllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEy&#10;MDgxNjEyNDgxMFoXDTE0MTAwNDA3MDk0MVowggGKMQswCQYDVQQGEwJSVTEPMA0G&#10;A1UECBMGbW9zY293MREwDwYDVQQHEwhsb2NhbGl0eTEPMA0GA1UECRMGc3RyZWV0&#10;MQ4wDAYDVQQKEwVBa3RpdjELMAkGA1UECxMCSVQxGzAZBgNVBAweEgQ0BD4EOwQ2&#10;BD0EPgRBBEIETDEZMBcGCCqFAwOBAwEBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QD&#10;EgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QBEgsxMjM0MjM1MzQ1MjEWMBQGBSqFA2QF&#10;EgsxMjM0MjM1MzQ1MjEvMC0GA1UEAx4mBCQEMAQ8BDgEOwQ4BE8AIAQYBDwETwAg&#10;BB4ERwQ1BEEEQgQyBD4xFzAVBgNVBBATDnBvc3RhbCBhZGRyZXNzMRQwEgYDVQRB&#10;Ewtwc2V1ZG9ueW11czEQMA4GA1UEBBMHc3VybmFtZTETMBEGA1UEKhMKZ2l2ZW4g&#10;bmFtZTEiMCAGCSqGSIb3DQEJARYTZXhhbXBsZUBleGFtcGxlLmNvbTBjMBwGBiqF&#10;AwICEzASBgcqhQMCAiMBBgcqhQMCAh4BA0MABEC8dyMzXuEbYHV9NwCWZQmoWmon&#10;xJAfFTMtoKfuWWwhNg3ZuL36UP/zjTd33HolBNkRIC0FgtxpfQ+ES3l3J7PVo4IC&#10;CjCCAgYwDAYDVR0PBAUDAwf3gDB1BgNVHSUBAf8EazBpBggrBgEFBQcDBAYIKwYB&#10;BQUHAwIGCCsGAQUFBwMBBggrBgEFBQcDAwYIKwYBBQUHAwgGCisGAQQBgjcCARUG&#10;CisGAQQBgjcCARYGCisGAQQBgjcKAwEGCCsGAQUFBwMJBgcqhQMCAiIGMEUGA1Ud&#10;IAQ+MDwwCAYGKoUDZHEBMAgGBiqFA2RxAjAIBgYqhQNkcQMwCAYGKoUDZHEEMAgG&#10;BiqFA2RxBTAIBgYqhQNkcQYwHQYDVR0OBBYEFB1Iacp18c1KccWyrbNYHhmTc0Ly&#10;MB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBI&#10;oEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENl&#10;bnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggr&#10;BgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3Jm&#10;MFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xs&#10;L3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYq&#10;hQMCAgMDQQAN/R7GwKALwybssbX1FnfHqZxvIxh13Pu2+iLgK/cRGQ9Ga9i8d6+0&#10;E4wUHty12HGB0ABPrQ43QmTGeNocDz/h&#10;-----END CERTIFICATE-----</textarea>
+                                </li>
+                                <li><textarea id="parse-cert-string-result" class="text-output" rows="7"></textarea></li>
+                            </ul>
+                        </div>
                         <div id="GetKeyByCertificate" class="group"></div>
+                        <div id="GetCertificateInfo" class="group">
+                            <ul>
+                                <li>
+                                    <label for="cert-info-radio">Тип информации:</label><br>
+                                    <label><input class="radio-input" type="radio" name="certificate-info" value="serial number" checked="checked"/>Серийный номер</label>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div id="section-4">
                         <div id="SignMessage" class="group">

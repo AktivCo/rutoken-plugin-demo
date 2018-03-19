@@ -244,6 +244,14 @@ testUi.prototype = {
         }
     },
 
+    certificateInfoType: function () {
+        var value = $(".radio-input:radio[name=certificate-info]:checked").val();
+        switch (value) {
+        case "serial number":
+            return plugin.CERT_INFO_SERIAL_NUMBER;
+        }
+    },
+
     hashType: function () {
         var value = $(".radio-input:radio[name=hash-type]:checked").val();
         switch (value) {
@@ -1222,6 +1230,19 @@ var TestSuite = new(function () {
         this.runTest = function () {
             plugin.getKeyByCertificate(ui.device(), ui.certificate(), $.proxy(function (keyId) {
                 $.proxy(ui.printResult, ui)(keyId);
+            }, this), $.proxy(ui.printError, ui));
+        };
+    })();
+
+    this.GetCertificateInfo = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение информации о сертификате";
+        };
+        this.runTest = function () {
+            var infoType = ui.certificateInfoType();
+            plugin.getCertificateInfo(ui.device(), ui.certificate(), infoType, $.proxy(function (result) {
+                $.proxy(ui.printResult, ui)(result);
             }, this), $.proxy(ui.printError, ui));
         };
     })();

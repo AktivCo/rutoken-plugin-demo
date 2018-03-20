@@ -43,6 +43,9 @@ function testUi(useConsole) {
     
     document.getElementById("cms-rsa-hash").onclick = function() {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
+
+    document.getElementById("cms-encrypt-cipher").onclick = function() {
+        document.getElementById("cms-encrypt-alg").disabled = !this.checked;
     }
 }
 
@@ -712,6 +715,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_CRL_PATH_VALIDATION_ERROR] = "Неправильный путь CRL";
     this.errorDescription[this.errorCodes.CMS_CERTIFICATE_ALREADY_PRESENT] = "Сертификат уже используется";
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
+    this.errorDescription[this.errorCodes.DECRYPT_UNSUCCESSFUL] = "Расшифрование не удалось"
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -1559,6 +1563,9 @@ var TestSuite = new(function () {
             var options = {
                 base64: b64
             };
+
+            if (ui.checkboxState(this.container, "cms-encrypt-cipher") == "on")
+                options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
 
             var elements = this.container.find(".recipient");
             var recipients = [];

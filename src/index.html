@@ -717,7 +717,15 @@
                                     <textarea id="encrypt-message" class="text-input" rows="7">Зашифруй меня полностью</textarea>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" name="in-base64"/>Данные в base64</label>
+                                    <label><input type="checkbox" name="in-base64"/>Данные в base64</label><br>
+                                    <label><input type="checkbox" name="cms-encrypt-cipher" id="cms-encrypt-cipher"/>Алгоритм шифрования для RSA ключей</label>
+                                    <select class="cms-encrypt-alg" id="cms-encrypt-alg" disabled=true>
+                                        <option value="CIPHER_ALGORITHM_DES">DES</option>
+                                        <option value="CIPHER_ALGORITHM_3DES">3DES</option>
+                                        <option value="CIPHER_ALGORITHM_AES128">AES128</option>
+                                        <option value="CIPHER_ALGORITHM_AES192">AES192</option>
+                                        <option value="CIPHER_ALGORITHM_AES256">AES256</option>
+                                    <select>
                                 </li>
                                 <li>
                                     <textarea id="encrypt-message-result" class="text-output" rows="7"></textarea>

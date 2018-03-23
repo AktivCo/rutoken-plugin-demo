@@ -120,9 +120,10 @@ testUi.prototype = {
         return this.controls.certificateList.val();
     },
 
-    addDevice: function (deviceId, label) {
+    addDevice: function (deviceId, label, selected = false) {
         ui.controls.deviceList.append($("<option>", {
-            'value': deviceId
+            'value': deviceId,
+            'selected': selected,
         }).text(label));
     },
 
@@ -277,7 +278,7 @@ testUi.prototype = {
     registerEvents: function () {
         this.controls.refreshDeviceListButton.click($.proxy(function () {
             try {
-                plugin.enumerateDevices();
+                plugin.enumerateDevices(false);
             } catch (error) {
                 this.writeln(error.toString());
                 this.clearDeviceList(error.toString());
@@ -720,7 +721,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
     this.errorDescription[this.errorCodes.DECRYPT_UNSUCCESSFUL] = "Расшифрование не удалось"
 
-    if (this.autoRefresh) this.enumerateDevices();
+    if (this.autoRefresh) this.enumerateDevices(false);
 }
 
 cryptoPlugin.prototype = {
@@ -737,9 +738,17 @@ cryptoPlugin.prototype = {
         }, 0);
     },
 
-    enumerateDevices: function () {
+    enumerateDevices: function (lazy) {
+        var selectedDevice;
+        try {
+            selectedDevice = ui.device().toString();
+        } catch (e) {}
+
         ui.clearDeviceList("Список устройств обновляется...");
-        this.pluginObject.enumerateDevices($.proxy(function (devices) {
+
+        var options = {"lazy": (lazy === undefined) ? false : lazy};
+
+        this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
             if (devices.length == 0) {
                 ui.clearDeviceList("Нет доступных устройств");
                 ui.clearCertificateList("Нет доступных устройств");
@@ -748,15 +757,15 @@ cryptoPlugin.prototype = {
             }
             //            ui.clearKeyList("Выполните вход на устройство");
             ui.clearDeviceList();
-            if (this.autoRefresh) this.enumerateKeys(devices[0]);
-            if (this.autoRefresh) this.enumerateCertificates(devices[0]);
+            if (this.autoRefresh) this.enumerateKeys(selectedDevice);
+            if (this.autoRefresh) this.enumerateCertificates(selectedDevice);
             else ui.clearCertificateList("Обновите список сертификатов");
 
             for (var d in devices) {
                 this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
                     return function (label) {
                         if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                        ui.addDevice(device, label);
+                        ui.addDevice(device, label, device == selectedDevice);
                     };
                 }(devices[d]), this), $.proxy(ui.printError, ui));
             }
@@ -1653,6 +1662,8 @@ function onPluginLoaded(pluginObject) {
 
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
+
+        window.setInterval(function() { plugin.enumerateDevices(true); }, 7000);
     } catch (error) {
         ui.writeln(error);
     }

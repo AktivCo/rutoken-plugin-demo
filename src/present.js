@@ -46,10 +46,6 @@ function testUi(useConsole) {
             document.getElementById("add-sign-time").checked = true;
         }
     }
-
-    if(!(navigator.userAgent.indexOf('Win') != -1 || navigator.userAgent.indexOf('Macintosh') != -1)) {
-         document.getElementById("add-system-info").disabled = true;
-    }
 }
 
 function uiControls() {

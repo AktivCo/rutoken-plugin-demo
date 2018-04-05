@@ -228,6 +228,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_FEATURES;
         case "pin retries left":
             return plugin.TOKEN_INFO_PIN_RETRIES_LEFT;
+        case "pin default":
+            return plugin.TOKEN_INFO_IS_PIN_DEFAULT;
         }
     },
 

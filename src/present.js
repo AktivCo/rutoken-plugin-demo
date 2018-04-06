@@ -118,11 +118,21 @@ testUi.prototype = {
         return this.controls.certificateList.val();
     },
 
-    addDevice: function (deviceId, label, selected = false) {
+    addDevice: function (deviceId, label, selected) {
+        selected = (selected === undefined) ? false : selected;
         ui.controls.deviceList.append($("<option>", {
             'value': deviceId,
             'selected': selected,
         }).text(label));
+    },
+
+    removeDevice: function (deviceId) {
+        this.controls.deviceList.find("option[value='" + deviceId + "']").remove();
+        if (!this.controls.deviceList.has('option').length) this.controls.deviceList.append($("<option>").text("Нет доступных устройств"));
+    },
+
+    removeInfoInDeviceList: function () {
+        this.controls.deviceList.find('option:not([value])').remove();
     },
 
     clearDeviceList: function (message) {
@@ -266,7 +276,7 @@ testUi.prototype = {
     registerEvents: function () {
         this.controls.refreshDeviceListButton.click($.proxy(function () {
             try {
-                plugin.enumerateDevices(false);
+                plugin.enumerateDevices();
             } catch (error) {
                 this.writeln(error.toString());
                 this.clearDeviceList(error.toString());
@@ -680,7 +690,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CMS_CERTIFICATE_ALREADY_PRESENT] = "Сертификат уже используется";
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
 
-    if (this.autoRefresh) this.enumerateDevices(false);
+    if (this.autoRefresh) this.enumerateDevices();
 }
 
 cryptoPlugin.prototype = {
@@ -697,38 +707,87 @@ cryptoPlugin.prototype = {
         }, 0);
     },
 
-    enumerateDevices: function (lazy) {
-        var selectedDevice;
-        try {
-            selectedDevice = ui.device().toString();
-        } catch (e) {}
+    enumerateDevices: function (update) {
+        if (update) {
+            var options = {"mode": this.ENUMERATE_DEVICES_EVENTS};
 
-        ui.clearDeviceList("Список устройств обновляется...");
+            this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
+                for (key in devices) {
+                    switch (key) {
+                        case "connected":
+                            for(var d in devices[key]) {
+                                var dev = devices[key][d];
+                                // To handle fast device reconnect first try to remove it.
+                                ui.removeDevice(dev);
 
-        var options = {"lazy": (lazy === undefined) ? false : lazy};
+                                this.pluginObject.getDeviceInfo(dev, plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
+                                    return function (label) {
+                                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                                        ui.removeInfoInDeviceList();
+                                        ui.addDevice(device, label, false);
 
-        this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
-            if (devices.length == 0) {
-                ui.clearDeviceList("Нет доступных устройств");
-                ui.clearCertificateList("Нет доступных устройств");
-                ui.clearKeyList("Нет доступных устройств");
-                return;
-            }
-            //            ui.clearKeyList("Выполните вход на устройство");
-            ui.clearDeviceList();
-            if (this.autoRefresh) this.enumerateKeys(selectedDevice);
-            if (this.autoRefresh) this.enumerateCertificates(selectedDevice);
-            else ui.clearCertificateList("Обновите список сертификатов");
+                                        if (ui.device() == device) {
+                                            if (this.autoRefresh) this.enumerateKeys(device);
+                                            if (this.autoRefresh) this.enumerateCertificates(device);
+                                            else ui.clearCertificateList("Обновите список сертификатов");
+                                        }
+                                    };
+                                }(dev), this), $.proxy(ui.printError, ui));
+                            }
+                            break;
+                        case "disconnected":
+                            for (var d in devices[key]) {
+                                var selectedDevice = ui.device(),
+                                    device = devices[key][d];
 
-            for (var d in devices) {
-                this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
-                    return function (label) {
-                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                        ui.addDevice(device, label, device == selectedDevice);
-                    };
-                }(devices[d]), this), $.proxy(ui.printError, ui));
-            }
-        }, this), $.proxy(ui.printError, ui));
+                                ui.removeDevice(device);
+
+                                if (device == selectedDevice) {
+                                    try {
+                                        var dev = ui.device();
+
+                                        if (this.autoRefresh) this.enumerateKeys(ui.device());
+                                        if (this.autoRefresh) this.enumerateCertificates(ui.device());
+                                        else ui.clearCertificateList("Обновите список сертификатов");
+                                    } catch (e) {
+                                        ui.clearDeviceList("Нет доступных устройств");
+                                        ui.clearCertificateList("Нет доступных устройств");
+                                        ui.clearKeyList("Нет доступных устройств");
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+            }, this), $.proxy(ui.printError, ui));
+        } else {
+            ui.clearDeviceList("Список устройств обновляется...");
+
+            var options = {"mode": this.ENUMERATE_DEVICES_LIST};
+
+            this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
+                if (Object.keys(devices).length == 0) {
+                    ui.clearDeviceList("Нет доступных устройств");
+                    ui.clearCertificateList("Нет доступных устройств");
+                    ui.clearKeyList("Нет доступных устройств");
+                    return;
+                }
+                //            ui.clearKeyList("Выполните вход на устройство");
+                ui.clearDeviceList();
+                if (this.autoRefresh) this.enumerateKeys(devices[0]);
+                if (this.autoRefresh) this.enumerateCertificates(devices[0]);
+                else ui.clearCertificateList("Обновите список сертификатов");
+
+                for (var d in devices) {
+                    this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
+                        return function (label) {
+                            if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                            ui.addDevice(device, label, false);
+                        };
+                    }(devices[d]), this), $.proxy(ui.printError, ui));
+                }
+            }, this), $.proxy(ui.printError, ui));
+        }
     },
 
     enumerateKeys: function (deviceId, marker) {
@@ -789,6 +848,11 @@ cryptoPlugin.prototype = {
                         this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_UNSPEC, $.proxy(function (certificates) {
                             $.proxy(addCertificates, this)(certificates, this.CERT_CATEGORY_UNSPEC);
 
+                            try {
+                                var certificate = ui.certificate();
+                            } catch (e) {
+                                ui.clearCertificateList("На устройстве отсутствуют сертификаты");
+                            }
                         }, this), onError);
                     }, this), onError);
                 }, this), onError);
@@ -1592,7 +1656,7 @@ function onPluginLoaded(pluginObject) {
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
 
-        window.setInterval(function() { plugin.enumerateDevices(true); }, 7000);
+        window.setInterval(function() { plugin.enumerateDevices(true); }, 500);
     } catch (error) {
         ui.writeln(error);
     }

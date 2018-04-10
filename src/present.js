@@ -43,6 +43,7 @@ function testUi(useConsole) {
     
     document.getElementById("cms-rsa-hash").onclick = function() {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
+    }
 
     document.getElementById("cms-encrypt-cipher").onclick = function() {
         document.getElementById("cms-encrypt-alg").disabled = !this.checked;

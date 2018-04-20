@@ -242,6 +242,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_PIN_RETRIES_LEFT;
         case "pin default":
             return plugin.TOKEN_INFO_IS_PIN_DEFAULT;
+        case "admin pin default":
+            return plugin.TOKEN_INFO_IS_ADMIN_PIN_DEFAULT;
         }
     },
 

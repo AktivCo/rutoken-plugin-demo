@@ -228,8 +228,6 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_DEVICE_TYPE;
         case "serial":
             return plugin.TOKEN_INFO_SERIAL;
-        case "pin cache":
-            return plugin.TOKEN_INFO_IS_PIN_CACHED;
         case "logged":
             return plugin.TOKEN_INFO_IS_LOGGED_IN;
         case "formats":
@@ -238,12 +236,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_ALGORITHMS;
         case "features":
             return plugin.TOKEN_INFO_FEATURES;
-        case "pin retries left":
-            return plugin.TOKEN_INFO_PIN_RETRIES_LEFT;
-        case "pin default":
-            return plugin.TOKEN_INFO_IS_PIN_DEFAULT;
-        case "admin pin default":
-            return plugin.TOKEN_INFO_IS_ADMIN_PIN_DEFAULT;
+        case "pins":
+            return plugin.TOKEN_INFO_PINS_INFO;
         }
     },
 
@@ -1020,6 +1014,10 @@ var TestSuite = new(function () {
                 }
 
                 if (info == plugin.TOKEN_INFO_FEATURES) {
+                    message = JSON.stringify(result);
+                }
+
+                if (info == plugin.TOKEN_INFO_PINS_INFO) {
                     message = JSON.stringify(result);
                 }
 

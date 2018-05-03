@@ -1031,11 +1031,12 @@ var TestSuite = new(function () {
     this.ChangePin = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Смена ПИНа пользователя";
+            return "Смена PIN-кода пользователя";
         };
         this.runTest = function () {
             var options = {};
-            plugin.changePin(ui.device(), ui.getContent(this.container, 0),  ui.getContent(this.container, 1), options, $.proxy(function () {
+            if (ui.checkboxState(this.container, "use-admin-pin") == "on") options.useAdminPin = true;
+            plugin.changePin(ui.device(), ui.getContent(this.container, 1),  ui.getContent(this.container, 2), options, $.proxy(function () {
                 $.proxy(ui.printResult, ui)();
             }, this), $.proxy(ui.printError, ui));
         }
@@ -1044,7 +1045,7 @@ var TestSuite = new(function () {
     this.ChangePin2 = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Смена ПИН2";
+            return "Смена PIN2";
         };
         this.runTest = function () {
             var options = {};

@@ -232,10 +232,10 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_IS_LOGGED_IN;
         case "formats":
             return plugin.TOKEN_INFO_FORMATS;
-        case "algorithms":
-            return plugin.TOKEN_INFO_ALGORITHMS;
         case "features":
             return plugin.TOKEN_INFO_FEATURES;
+        case "mechanisms":
+            return plugin.TOKEN_INFO_SUPPORTED_MECHANISMS;
         case "pins":
             return plugin.TOKEN_INFO_PINS_INFO;
         }
@@ -1001,24 +1001,55 @@ var TestSuite = new(function () {
                     }).join(", ") + "]";
                 }
 
-                if (info == plugin.TOKEN_INFO_ALGORITHMS) {
-                    var m = {};
-                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "KEY_ALGORITHM_GOST3410_2001";
-                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "KEY_ALGORITHM_GOST3410_2012_256";
-                    m[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "KEY_ALGORITHM_GOST3410_2012_512";
-                    m[plugin.PUBLIC_KEY_ALGORITHM_RSA] = "KEY_ALGORITHM_RSA";
-
-                    message = "[" + result.map(function (value) {
-                        return m[value];
-                    }).join(", ") + "]";
-                }
-
                 if (info == plugin.TOKEN_INFO_FEATURES) {
                     message = JSON.stringify(result);
                 }
 
                 if (info == plugin.TOKEN_INFO_PINS_INFO) {
                     message = JSON.stringify(result);
+                }
+
+                if (info == plugin.TOKEN_INFO_SUPPORTED_MECHANISMS) {
+                    var hashes = {};
+                    hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
+                    hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
+                    hashes[plugin.HASH_TYPE_GOST3411_12_512] = "HASH_TYPE_GOST3411_12_512";
+                    hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
+                    hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
+                    hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
+                    hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
+
+                    var signs = {};
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_GOST3410_2001";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_256";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_512";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_512] = "PUBLIC_KEY_ALGORITHM_RSA_512";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_768] = "PUBLIC_KEY_ALGORITHM_RSA_768";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1024] = "PUBLIC_KEY_ALGORITHM_RSA_1024";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1280] = "PUBLIC_KEY_ALGORITHM_RSA_1280";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
+
+                    var ciphers = {};
+                    ciphers[plugin.CIPHER_ALGORITHM_DES] = "CIPHER_ALGORITHM_DES";
+                    ciphers[plugin.CIPHER_ALGORITHM_3DES] = "CIPHER_ALGORITHM_3DES";
+                    ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
+                    ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
+                    ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
+                    ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
+
+                    message = "hashes:\n";
+                    message += "&middot hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+                    message += "&middot software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+
+                    message += "signs:\n";
+                    message += "&middot hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+                    message += "&middot software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+
+                    message += "ciphers:\n";
+                    message += "&middot hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                    message += "&middot software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
                 }
 
                 message += " (" + info + ")";

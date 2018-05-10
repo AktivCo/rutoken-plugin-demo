@@ -236,6 +236,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_FEATURES;
         case "mechanisms":
             return plugin.TOKEN_INFO_SUPPORTED_MECHANISMS;
+        case "speed":
+            return plugin.TOKEN_INFO_SPEED;
         case "pins":
             return plugin.TOKEN_INFO_PINS_INFO;
         }

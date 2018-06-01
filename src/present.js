@@ -1761,7 +1761,10 @@ function onPluginLoaded(pluginObject) {
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
 
-        window.setInterval(function() { plugin.enumerateDevices(true); }, 500);
+        window.setInterval(function() {
+            if (document.visibilityState == "visible") {
+                plugin.enumerateDevices(true);
+            }}, 500);
     } catch (error) {
         ui.writeln(error);
     }

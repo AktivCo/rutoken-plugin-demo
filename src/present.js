@@ -1794,13 +1794,11 @@ window.onload = function () {
         if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {
             fullVersion = navigator.userAgent.substring(verOffset + 8);
             majorVersion = parseInt(''+fullVersion,10);
-            console.log(majorVersion);
-            if (!isWindows && majorVersion >= 53)
-                throw "Firefox 53+ не поддерживается плагином на mac/linux";
+
             if (majorVersion < 50)
                 performCheck = false;
         }
-        if (performCheck && (isChrome || isFirefox) && isWindows) {//for firefox 50+ only
+        if (performCheck && (isChrome || isFirefox)) { //for firefox 50+ only
             return rutoken.isExtensionInstalled();
         } else {
             return Promise.resolve(true);

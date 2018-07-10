@@ -1789,16 +1789,24 @@ window.onload = function () {
         var isChrome = !!window.chrome;
         var isFirefox = typeof InstallTrigger !== 'undefined';
         var isWindows = window.navigator.appVersion.indexOf('Win') != -1;
+        var isMacOS = navigator.platform.indexOf('Mac') != -1;
         var verOffset, fullVersion, majorVersion;
         var performCheck = true;
         if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {
             fullVersion = navigator.userAgent.substring(verOffset + 8);
             majorVersion = parseInt(''+fullVersion,10);
 
-            if (majorVersion < 50)
-                performCheck = false;
+            if (isWindows || isMacOS) {
+                performCheck = true;
+            } else {
+                if (majorVersion < 53) { // Don't check on ESR and older ones
+                    performCheck = false;
+                } else {
+                    throw "Firefox 53+ пока не поддерживается на linux";
+                }
+            }
         }
-        if (performCheck && (isChrome || isFirefox)) { //for firefox 50+ only
+        if (performCheck && (isChrome || isFirefox) && (isWindows || isMacOS)) {
             return rutoken.isExtensionInstalled();
         } else {
             return Promise.resolve(true);

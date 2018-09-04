@@ -424,6 +424,25 @@
                                 </li>
                             </ul>
                         </div>
+
+                        <div class="common">
+                            <dl>
+                                <dt><label for="system-store-cert-list">Сертификаты в хранилище: </label></dt>
+                                <dd>
+                                    <select id="system-store-cert-list">
+                                        <option>Обновите список сертификатов</option>
+                                    </select>
+                                    <button id="refresh-system-store-certs">↓↑</button>
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <div id="GetStoreCertificate" class="group">
+                            <ul>
+                                <li><textarea id="get-store-cert-result" class="text-output" rows="7"></textarea></li>
+                            </ul>
+                        </div>
+
                     </div>
                     <div id="section-4">
                         <div id="SignMessage" class="group">

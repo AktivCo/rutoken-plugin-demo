@@ -40,7 +40,7 @@ function testUi(useConsole) {
             ui.console.empty();
         }
     });
-    
+
     document.getElementById("cms-rsa-hash").onclick = function() {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
     }
@@ -54,10 +54,12 @@ function uiControls() {
     this.deviceList = $("#device-list");
     this.keyList = $("#key-list");
     this.certificateList = $("#cert-list");
+    this.systemStoreCertificateList = $("#system-store-cert-list");
 
     this.refreshDeviceListButton = $("#refresh-dev");
     this.refreshKeyListButton = $("#refresh-keys");
     this.refreshCertificateListButton = $("#refresh-certs");
+    this.refreshSystemStoreCertificateListButton = $("#refresh-system-store-certs");
 
     this.loginButton = $("#login");
     this.logoutButton = $("#logout");
@@ -72,10 +74,12 @@ uiControls.prototype = {
     deviceList: null,
     keyList: null,
     certificateList: null,
+    systemStoreCertificateList: null,
 
     refreshDeviceListButton: null,
     refreshKeyListButton: null,
     refreshCertificateListButton: null,
+    refreshSystemStoreCertificateListButton: null,
     loginButton: null,
     logoutButton: null,
     savePinButton: null,
@@ -118,6 +122,11 @@ testUi.prototype = {
     certificate: function () {
         if (this.controls.certificateList.val() == null) throw "Сертификат не выбран";
         return this.controls.certificateList.val();
+    },
+
+    systemStoreCertificate: function () {
+        if (this.controls.systemStoreCertificateList.val() == null) throw "Сертификат не выбран";
+        return this.controls.systemStoreCertificateList.val();
     },
 
     addDevice: function (deviceId, label, selected) {
@@ -199,9 +208,20 @@ testUi.prototype = {
         }).text(noSubject ? certificate.serialNumber : description));
     },
 
+    addSystemStoreCertificate: function (certificate) {
+        this.controls.systemStoreCertificateList.append($("<option>", {
+            'value': certificate,
+            'title': "Store certificate"}).text(certificate));
+    },
+
     clearCertificateList: function (message) {
         this.controls.certificateList.empty();
         if (message) this.controls.certificateList.append($("<option>").text(message));
+    },
+
+    clearSystemStoreCertificateList: function (message) {
+        this.controls.systemStoreCertificateList.empty();
+        if (message) this.controls.systemStoreCertificateList.append($("<option>").text(message));
     },
 
     getContent: function (container, index) {
@@ -308,6 +328,15 @@ testUi.prototype = {
             } catch (error) {
                 this.writeln(error.toString());
                 this.clearCertificateList(error.toString());
+            }
+        }, this));
+
+        this.controls.refreshSystemStoreCertificateListButton.click($.proxy(function () {
+            try {
+                plugin.enumerateStoreCertificates();
+            } catch (error) {
+                this.writeln(error.toString());
+                this.clearSystemStoreCertificateList(error.toString());
             }
         }, this));
 
@@ -898,6 +927,36 @@ cryptoPlugin.prototype = {
             }, this), onError);
         } catch (e) {
             // ui now throws an exception if there is no devices avalable
+            console.log(e);
+        }
+    },
+
+    enumerateStoreCertificates: function () {
+        function onError(errorCode) {
+            $.proxy(ui.printError, ui)(errorCode);
+              ui.clearSystemStoreCertificateList("Произошла ошибка");
+        }
+
+        function addSystemStoreCertificates(certificates) {
+            for (var c in certificates) {
+                ui.addSystemStoreCertificate(certificates[c]);
+            }
+        }
+
+        ui.clearSystemStoreCertificateList("Список сертификатов обновляется...");
+        try {
+            var options = {};
+            this.pluginObject.enumerateStoreCertificates(options, $.proxy(function (certificates) {
+                ui.clearSystemStoreCertificateList();
+                $.proxy(addSystemStoreCertificates, this)(certificates);
+
+                try {
+                    var systemStoreCertificate = ui.systemStoreCertificate();
+                } catch (e) {
+                    ui.clearSystemStoreCertificateList("В хранилище отсутствуют сертификаты");
+                }
+            }, this), onError);
+        } catch (e) {
             console.log(e);
         }
     },
@@ -1733,6 +1792,21 @@ var TestSuite = new(function () {
         }
         this.runTest = function () {
             plugin.getCertificate(ui.device(), ui.certificate(), $.proxy(function (res) {
+                ui.setContent(this.container, res);
+                $.proxy(ui.printResult, ui)(res);
+            }, this), $.proxy(ui.printError, ui))
+        }
+    })();
+
+    this.GetStoreCertificate = new (function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение тела выбранного сертификата из системного хранилища в PEM";
+        }
+        this.runTest = function () {
+            var options = {};
+
+            plugin.getStoreCertificate(ui.systemStoreCertificate(), options, $.proxy(function (res) {
                 ui.setContent(this.container, res);
                 $.proxy(ui.printResult, ui)(res);
             }, this), $.proxy(ui.printError, ui))

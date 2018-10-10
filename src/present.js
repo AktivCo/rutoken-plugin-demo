@@ -48,6 +48,13 @@ function testUi(useConsole) {
     document.getElementById("cms-encrypt-cipher").onclick = function() {
         document.getElementById("cms-encrypt-alg").disabled = !this.checked;
     }
+
+    $(document).on('change', '.public-key-algorithm', function(e) {
+        if (this.options[e.target.selectedIndex].text != "RSA")
+            document.getElementById("rsa-keygen-size").disabled = true;
+        else
+            document.getElementById("rsa-keygen-size").disabled = false;
+    });
 }
 
 function uiControls() {
@@ -1205,7 +1212,8 @@ var TestSuite = new(function () {
                 options.paramset = "A";
                 options.signatureSize = 1024;
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
-                options.signatureSize = 2048;
+                let rsaSize = parseInt(this.container.find(".rsa-keygen-size").val(), 10);
+                options.signatureSize = rsaSize;
             }
 
             plugin.generateKeyPair(ui.device(), undefined, marker, options, $.proxy(function () {

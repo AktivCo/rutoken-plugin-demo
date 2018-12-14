@@ -55,6 +55,13 @@ function testUi(useConsole) {
         else
             document.getElementById("rsa-keygen-size").disabled = false;
     });
+
+    document.getElementById("add-system-info").onclick = function() {
+        document.getElementById("add-sign-time").disabled = this.checked;
+        if(this.checked) {
+            document.getElementById("add-sign-time").checked = true;
+        }
+    }
 }
 
 function uiControls() {
@@ -1446,6 +1453,7 @@ var TestSuite = new(function () {
             options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
+            options.addSystemInfo = ui.checkboxState(this.container, "add-system-info") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];
@@ -1456,8 +1464,8 @@ var TestSuite = new(function () {
                 console.time("sign");
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.detached);
-                console.log("dataFormat: ", dataFormat);
-            }
+                console.log("system-info: ", options.addSystemInfo);
+                console.log("dataFormat: ", dataFormat);            }
             plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");

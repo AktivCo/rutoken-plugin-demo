@@ -1465,7 +1465,8 @@ var TestSuite = new(function () {
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.detached);
                 console.log("system-info: ", options.addSystemInfo);
-                console.log("dataFormat: ", dataFormat);            }
+                console.log("dataFormat: ", dataFormat);
+            }
             plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options, $.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");

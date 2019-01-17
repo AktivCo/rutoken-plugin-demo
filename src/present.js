@@ -1077,7 +1077,31 @@ var TestSuite = new(function () {
                 }
 
                 if (info == plugin.TOKEN_INFO_FEATURES) {
-                    message = JSON.stringify(result);
+                    var m = result;
+                    var bio = {};
+                    bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
+                    bio[plugin.BIO_TYPE_NOT_SPECIFIED] = "BIO_TYPE_NOT_SPECIFIED";
+
+                    var interfaces = {};
+                    interfaces[plugin.INTERFACE_TYPE_USB] = "INTERFACE_TYPE_USB";
+                    interfaces[plugin.INTERFACE_TYPE_BT] = "INTERFACE_TYPE_BT";
+                    interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
+                    interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
+                    interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
+                    interfaces[plugin.INTERFACE_TYPE_NFC] = "INTERFACE_TYPE_NFC";
+
+                    var smType = {};
+                    smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";
+                    smType[plugin.SECURE_MESSAGING_ON] = "SECURE_MESSAGING_ON";
+                    smType[plugin.SECURE_MESSAGING_ENHANCED] = "SECURE_MESSAGING_ENHANCED";
+                    smType[plugin.SECURE_MESSAGING_UNSUPPORTED] = "SECURE_MESSAGING_UNSUPPORTED";
+                    smType[plugin.SECURE_MESSAGING_NOT_SPECIFIED] = "SECURE_MESSAGING_NOT_SPECIFIED";
+
+                    m["interfaces"] = result["interfaces"].map(function (value) { return interfaces[value]; });
+                    m["bio"] = bio[result["bio"]];
+                    m["smType"] = smType[result["smType"]];
+
+                    message = JSON.stringify(m);
                 }
 
                 if (info == plugin.TOKEN_INFO_PINS_INFO) {

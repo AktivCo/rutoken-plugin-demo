@@ -274,6 +274,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_SPEED;
         case "pins":
             return plugin.TOKEN_INFO_PINS_INFO;
+        case "fkn":
+            return plugin.TOKEN_INFO_FKN_SUPPORTED;
         }
     },
 
@@ -1149,6 +1151,10 @@ var TestSuite = new(function () {
                     message += "ciphers:\n";
                     message += "&middot hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
                     message += "&middot software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                }
+
+                if (info == plugin.TOKEN_INFO_FKN_SUPPORTED) {
+                    message = JSON.stringify(result);
                 }
 
                 message += " (" + info + ")";

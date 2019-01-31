@@ -423,19 +423,19 @@ testUi.prototype = {
     // disableCertificateRefresh: function(message) {
     //     this.controls.refreshCertificateListButton.attr('disabled', true);
     // },
-    printError: function (code) {
+    printError: function (error) {
         if (this.useConsole) {
             console.trace();
-            //console.log(code);
             console.debug(arguments);
         }
-        if(plugin.errorDescription[code] === undefined)
+        let errorCode = getErrorCode(error);
+        if (plugin.errorDescription[errorCode] === undefined)
         {
-            this.writeln("Внутренняя ошибка (Код: " + code + ") \n");
+            this.writeln("Внутренняя ошибка (Код: " + errorCode + ") \n");
         }
         else
         {
-            this.writeln("Ошибка: " + plugin.errorDescription[code] + "\n");
+            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + "\n");
         }
     },
 
@@ -795,7 +795,7 @@ cryptoPlugin.prototype = {
         if (update) {
             var options = {"mode": this.ENUMERATE_DEVICES_EVENTS};
 
-            this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
+            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
                 for (key in devices) {
                     switch (key) {
                         case "connected":
@@ -804,7 +804,7 @@ cryptoPlugin.prototype = {
                                 // To handle fast device reconnect first try to remove it.
                                 ui.removeDevice(dev);
 
-                                this.pluginObject.getDeviceInfo(dev, plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
+                                this.pluginObject.getDeviceInfo(dev, plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
                                     return function (label) {
                                         if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
                                         ui.removeInfoInDeviceList();
@@ -849,7 +849,7 @@ cryptoPlugin.prototype = {
 
             var options = {"mode": this.ENUMERATE_DEVICES_LIST};
 
-            this.pluginObject.enumerateDevices(options, $.proxy(function (devices) {
+            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
                 if (Object.keys(devices).length == 0) {
                     ui.clearDeviceList("Нет доступных устройств");
                     ui.clearCertificateList("Нет доступных устройств");
@@ -863,8 +863,8 @@ cryptoPlugin.prototype = {
                 else ui.clearCertificateList("Обновите список сертификатов");
 
                 for (var d in devices) {
-                    this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL, $.proxy(function (device) {
-                        return function (label) {
+                    this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
+                        return function(label) {
                             if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
                             ui.addDevice(device, label, false);
                         };
@@ -878,7 +878,7 @@ cryptoPlugin.prototype = {
         ui.clearKeyList("Список ключевых пар обновляется...");
         marker = (marker === undefined) ? "" : marker;
         deviceId = (deviceId === undefined) ? ui.device() : deviceId;
-        this.pluginObject.enumerateKeys(deviceId, marker, $.proxy(function (keys) {
+        this.pluginObject.enumerateKeys(deviceId, marker).then($.proxy(function (keys) {
             if (keys.length == 0) {
                 ui.clearKeyList("На устройстве отсутствуют ключевые пары");
                 return;
@@ -886,61 +886,65 @@ cryptoPlugin.prototype = {
 
             ui.clearKeyList();
             for (var k in keys) {
-                this.pluginObject.getKeyLabel(deviceId, keys[k], function (key) {
+                this.pluginObject.getKeyLabel(deviceId, keys[k]).then(function (key) {
                     return function (label) {
                         if (label == "") label = "key: " + key.toString();
                         ui.addKey(key, label);
                     };
                 }(keys[k]), $.proxy(ui.printError, ui));
             }
-        }, this), function (errorCode) {
+        }, this), function (error) {
+            let errorCode = getErrorCode(error);
             if (errorCode == plugin.errorCodes.USER_NOT_LOGGED_IN) ui.clearKeyList(plugin.errorDescription[errorCode]);
-            else $.proxy(ui.printError, ui)(errorCode);
+            else ui.printError(error);
         });
     },
 
     enumerateCertificates: function (deviceId) {
-        function onError(errorCode) {
-            $.proxy(ui.printError, ui)(errorCode);
-            ui.clearCertificateList("Произошла ошибка");
-        }
-
-        function addCertificates(certificates, category) {
-            for (var c in certificates) {
-                this.pluginObject.parseCertificate(device, certificates[c], function (handle) {
-                    return function (cert) {
-                        ui.addCertificate(handle, cert, category);
-                    }
-                }(certificates[c]), $.proxy(ui.printError, ui));
-            }
-
-        }
-
         ui.clearCertificateList("Список сертификатов обновляется...");
         var device = (deviceId === undefined) ? ui.device() : deviceId;
         try {
-            this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_USER, $.proxy(function (certificates) {
+            var certs = [];
+            this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_USER).then($.proxy(function (certificates) {
                 ui.clearCertificateList();
-                $.proxy(addCertificates, this)(certificates, this.CERT_CATEGORY_USER);
+                for (var c in certificates)
+                    certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_USER});
 
-                this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_CA, $.proxy(function (certificates) {
-                    $.proxy(addCertificates, this)(certificates, this.CERT_CATEGORY_CA);
+                return this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_CA);
+            }, this)).then($.proxy(function (certificates) {
+                for (var c in certificates)
+                    certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_CA});
 
-                    this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_OTHER, $.proxy(function (certificates) {
-                        $.proxy(addCertificates, this)(certificates, this.CERT_CATEGORY_OTHER);
+                return this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_OTHER);
+            }, this)).then($.proxy(function (certificates) {
+                for (var c in certificates)
+                    certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_OTHER});
 
-                        this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_UNSPEC, $.proxy(function (certificates) {
-                            $.proxy(addCertificates, this)(certificates, this.CERT_CATEGORY_UNSPEC);
+                this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_UNSPEC);
+            }, this)).then($.proxy(function (certificates) {
+                for (var c in certificates)
+                    certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_UNSPEC});
 
-                            try {
-                                var certificate = ui.certificate();
-                            } catch (e) {
-                                ui.clearCertificateList("На устройстве отсутствуют сертификаты");
-                            }
-                        }, this), onError);
-                    }, this), onError);
-                }, this), onError);
-            }, this), onError);
+                var parsedCerts = [];
+                for (var c in certs) {
+                    parsedCerts.push(this.pluginObject.parseCertificate(device, certs[c].certificate).then(function (handle, category) {
+                        return function (parsedCert) {
+                            ui.addCertificate(handle, parsedCert, category);
+                        };
+                    }(certs[c].certificate, certs[c].category), $.proxy(ui.printError, ui)));
+                }
+
+                Promise.all(parsedCerts).then(function () {
+                    try {
+                        ui.certificate();
+                    } catch (e) {
+                        ui.clearCertificateList("На устройстве отсутствуют сертификаты");
+                    }
+                });
+            }, this), function (error) {
+                ui.printError(error);
+                ui.clearCertificateList("Произошла ошибка");
+            });
         } catch (e) {
             // ui now throws an exception if there is no devices avalable
             console.log(e);
@@ -948,11 +952,6 @@ cryptoPlugin.prototype = {
     },
 
     enumerateStoreCertificates: function () {
-        function onError(errorCode) {
-            $.proxy(ui.printError, ui)(errorCode);
-              ui.clearSystemStoreCertificateList("Произошла ошибка");
-        }
-
         function addSystemStoreCertificates(certificates) {
             for (var c in certificates) {
                 ui.addSystemStoreCertificate(certificates[c]);
@@ -962,7 +961,7 @@ cryptoPlugin.prototype = {
         ui.clearSystemStoreCertificateList("Список сертификатов обновляется...");
         try {
             var options = {};
-            this.pluginObject.enumerateStoreCertificates(options, $.proxy(function (certificates) {
+            this.pluginObject.enumerateStoreCertificates(options).then($.proxy(function (certificates) {
                 ui.clearSystemStoreCertificateList();
                 $.proxy(addSystemStoreCertificates, this)(certificates);
 
@@ -971,51 +970,43 @@ cryptoPlugin.prototype = {
                 } catch (e) {
                     ui.clearSystemStoreCertificateList("В хранилище отсутствуют сертификаты");
                 }
-            }, this), onError);
+            }, this), function (error) {
+                ui.printError(error);
+                ui.clearSystemStoreCertificateList("Произошла ошибка");
+            });
         } catch (e) {
             console.log(e);
         }
     },
 
     login: function () {
-        loginSucceeded = function () {
+        this.pluginObject.login(ui.device(), ui.pin()).then($.proxy(function () {
             ui.writeln("Вход выполнен\n");
             if (this.autoRefresh) this.enumerateKeys();
             else ui.clearKeyList("Обновите список ключевых пар");
-        }
-
-        this.pluginObject.login(ui.device(), ui.pin(), $.proxy(loginSucceeded, this), $.proxy(ui.printError, ui));
+        }, this), $.proxy(ui.printError, ui));
     },
 
     logout: function () {
-        isLoggedIn = function (result) {
-            if (!result) ui.clearKeyList("Выполните вход на устройство");
-        }
-
-        logoutSucceeded = function () {
+        this.pluginObject.logout(ui.device()).then($.proxy(function () {
             ui.writeln("Выход выполнен\n");
-            plugin.pluginObject.getDeviceInfo(ui.device(), plugin.TOKEN_INFO_IS_LOGGED_IN,
-                isLoggedIn, $.proxy(ui.printError, ui));
-        }
-
-        this.pluginObject.logout(ui.device(), $.proxy(logoutSucceeded, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getDeviceInfo(ui.device(), plugin.TOKEN_INFO_IS_LOGGED_IN).then(function (result) {
+                if (!result) ui.clearKeyList("Выполните вход на устройство");
+            }, $.proxy(ui.printError, ui));
+        }, this), $.proxy(ui.printError, ui));
     },
 
     savePin: function () {
-        savePinSucceeded = function () {
+        this.pluginObject.savePin(ui.device()).then($.proxy(function () {
             ui.writeln("PIN сохранен в кэше\n");
-        }
-
-        this.pluginObject.savePin(ui.device(), $.proxy(savePinSucceeded, this), $.proxy(ui.printError, ui));
+        }, this), $.proxy(ui.printError, ui));
     },
 
     removePin: function () {
-        removePinSucceeded = function () {
+        this.pluginObject.removePin(ui.device()).then($.proxy(function () {
             ui.writeln("PIN удален из кэша\n");
             ui.clearKeyList("Выполните вход на устройство");
-        }
-
-        this.pluginObject.removePin(ui.device(), $.proxy(removePinSucceeded, this), $.proxy(ui.printError, ui));
+        }, this), $.proxy(ui.printError, ui));
     }
 }
 
@@ -1041,7 +1032,7 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var info = ui.infoType();
 
-            function successCallback(result) {
+            plugin.pluginObject.getDeviceInfo(ui.device(), ui.infoType()).then(function (result) {
                 var message = result;
 
                 if (info === plugin.TOKEN_INFO_DEVICE_TYPE) {
@@ -1065,7 +1056,7 @@ var TestSuite = new(function () {
                     }
                 }
 
-                if (info == plugin.TOKEN_INFO_FORMATS) {
+                if (info === plugin.TOKEN_INFO_FORMATS) {
                     var m = {};
                     m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
                     m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
@@ -1078,7 +1069,7 @@ var TestSuite = new(function () {
                     }).join(", ") + "]";
                 }
 
-                if (info == plugin.TOKEN_INFO_FEATURES) {
+                if (info === plugin.TOKEN_INFO_FEATURES) {
                     var m = result;
                     var bio = {};
                     bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
@@ -1106,11 +1097,11 @@ var TestSuite = new(function () {
                     message = JSON.stringify(m);
                 }
 
-                if (info == plugin.TOKEN_INFO_PINS_INFO) {
+                if (info === plugin.TOKEN_INFO_PINS_INFO) {
                     message = JSON.stringify(result);
                 }
 
-                if (info == plugin.TOKEN_INFO_SUPPORTED_MECHANISMS) {
+                if (info === plugin.TOKEN_INFO_SUPPORTED_MECHANISMS) {
                     var hashes = {};
                     hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
                     hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
@@ -1159,9 +1150,8 @@ var TestSuite = new(function () {
 
                 message += " (" + info + ")";
                 ui.printResult(message);
-            }
-            plugin.getDeviceInfo(ui.device(), ui.infoType(), successCallback, $.proxy(ui.printError, ui));
-        };
+            }, $.proxy(ui.printError, ui));
+        }
     })();
 
     this.ChangePin = new(function () {
@@ -1172,9 +1162,10 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var options = {};
             if (ui.checkboxState(this.container, "use-admin-pin") == "on") options.useAdminPin = true;
-            plugin.changePin(ui.device(), ui.getContent(this.container, 1),  ui.getContent(this.container, 2), options, $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.changePin(ui.device(), ui.getContent(this.container, 1),
+                ui.getContent(this.container, 2), options).then(function () {
+                ui.printResult();
+            }, $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1185,9 +1176,9 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var options = {};
-            plugin.pluginObject.changePin(ui.device(), null,  null, options, $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.changePin(ui.device(), null,  null, options).then(function () {
+                ui.printResult();
+            }, $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1197,9 +1188,9 @@ var TestSuite = new(function () {
             return "Разблокировка PIN-кода пользователя";
         };
         this.runTest = function () {
-            plugin.unblockUserPin(ui.device(), ui.getContent(this.container, 0), $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.unblockUserPin(ui.device(), ui.getContent(this.container, 0)).then(function () {
+                ui.printResult();
+            }, $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1218,8 +1209,8 @@ var TestSuite = new(function () {
             var label = ui.getContent(this.container, 2);
             if (label) options.label = label;
 
-            plugin.formatToken(ui.device(), options, $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.formatToken(ui.device(), options).then($.proxy(function () {
+                ui.printResult();
             }, this), $.proxy(ui.printError, ui));
         }
     })();
@@ -1253,8 +1244,8 @@ var TestSuite = new(function () {
                 options.signatureSize = rsaSize;
             }
 
-            plugin.generateKeyPair(ui.device(), undefined, marker, options, $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.generateKeyPair(ui.device(), undefined, marker, options).then($.proxy(function () {
+                ui.printResult();
                 if (plugin.autoRefresh) plugin.enumerateKeys();
                 else ui.clearKeyList("Обновите список ключевых пар");
             }, this), $.proxy(ui.printError, ui));
@@ -1267,10 +1258,9 @@ var TestSuite = new(function () {
             return "Получение списка ключевых пар на устройстве по маркеру";
         };
         this.runTest = function () {
-            $.proxy(ui.writeln, ui)("Маркер: " + ui.getContent(this.container));
-            plugin.enumerateKeys(ui.device(), ui.getContent(this.container), $.proxy(function (keys) {
-                $.proxy(ui.printResult, ui)(keys);
-            }, this), $.proxy(ui.printError, ui));
+            ui.writeln("Маркер: " + ui.getContent(this.container));
+            plugin.pluginObject.enumerateKeys(ui.device(), ui.getContent(this.container)).then($.proxy(ui.printResult, ui),
+                $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1280,8 +1270,8 @@ var TestSuite = new(function () {
             return "Установка метки ключевой пары";
         };
         this.runTest = function () {
-            plugin.setKeyLabel(ui.device(), ui.key(), ui.getContent(this.container), $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.setKeyLabel(ui.device(), ui.key(), ui.getContent(this.container)).then($.proxy(function () {
+                ui.printResult();
                 if (plugin.autoRefresh) plugin.enumerateKeys();
                 else ui.clearKeyList("Обновите список ключевых пар");
             }, this), $.proxy(ui.printError, ui));
@@ -1294,7 +1284,7 @@ var TestSuite = new(function () {
             return "Получение метки ключевой пары";
         };
         this.runTest = function () {
-            plugin.getKeyLabel(ui.device(), ui.key(), $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getKeyLabel(ui.device(), ui.key()).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1305,7 +1295,7 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var info = ui.keyInfoType();
-            function successCallback(result) {
+            plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), info).then(function (result) {
                 var message = result;
                 switch(info) {
                 case plugin.KEY_INFO_ALGORITHM:
@@ -1329,8 +1319,7 @@ var TestSuite = new(function () {
                     break;
                 }
                 ui.printResult(message);
-            };
-            plugin.getKeyInfo(ui.device(), ui.key(), info, successCallback, $.proxy(ui.printError, ui));
+            }, $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1341,7 +1330,7 @@ var TestSuite = new(function () {
         };
         var options = {};
         this.runTest = function () {
-            plugin.getPublicKeyValue(ui.device(), ui.key(), options, $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getPublicKeyValue(ui.device(), ui.key(), options).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
         }
     })();
 
@@ -1351,8 +1340,8 @@ var TestSuite = new(function () {
             return "Удаление ключевой пары с устройства";
         };
         this.runTest = function () {
-            plugin.deleteKeyPair(ui.device(), ui.key(), $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.deleteKeyPair(ui.device(), ui.key()).then($.proxy(function () {
+                ui.printResult();
                 if (plugin.autoRefresh) plugin.enumerateKeys();
                 else ui.clearKeyList("Обновите список ключевых пар");
             }, this), $.proxy(ui.printError, ui));
@@ -1365,10 +1354,10 @@ var TestSuite = new(function () {
             return "Получение журнала операций на токене";
         };
         this.runTest = function () {
-            plugin.getJournal(ui.device(), ui.key(), {}, $.proxy(function (j) {
-                if(j === null) $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.getJournal(ui.device(), ui.key(), {}).then($.proxy(function (j) {
+                if (j === null) ui.printResult();
                 else {
-                    $.proxy(ui.printResult, ui)(j);
+                    ui.printResult(j);
                     ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
                 }
             }, this), $.proxy(ui.printError, ui));
@@ -1381,9 +1370,9 @@ var TestSuite = new(function () {
             return "Запись лицензии на токен";
         };
         this.runTest = function () {
-            plugin.setLicence(ui.device(), this.container.find(".licence-id").val(), ui.getContent(this.container, 0),$.proxy(function () {
-                $.proxy(ui.printResult, ui)();
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.setLicence(ui.device(), this.container.find(".licence-id").val(), ui.getContent(this.container, 0)).then(function () {
+                ui.printResult();
+            }, $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1393,7 +1382,7 @@ var TestSuite = new(function () {
             return "Получение лицензии с токена";
         };
         this.runTest = function () {
-            plugin.getLicence(ui.device(), this.container.find(".licence-id").val(), $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getLicence(ui.device(), this.container.find(".licence-id").val()).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1408,11 +1397,10 @@ var TestSuite = new(function () {
                 "hashAlgorithm": plugin[this.container.find(".hash-algorithm").val()],
                 "customExtensions": ui.getCustomExtensions()
             };
-            plugin.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options,
-                $.proxy(function (res) {
-                    ui.setContent(this.container, res);
-                    $.proxy(ui.printResult, ui)(res);
-                }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options).then($.proxy(function (res) {
+                ui.setContent(this.container, res);
+                ui.printResult(res);
+            }, this), $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1422,10 +1410,10 @@ var TestSuite = new(function () {
             return "Импорт сертификата на устройство";
         };
         this.runTest = function () {
-            plugin.importCertificate(ui.device(), ui.getContent(this.container), ui.certificateType(), $.proxy(function (certificateHandle) {
+            plugin.pluginObject.importCertificate(ui.device(), ui.getContent(this.container), ui.certificateType()).then($.proxy(function (certificateHandle) {
                 if (plugin.autoRefresh) plugin.enumerateCertificates();
                 else ui.clearCertificateList("Обновите список сертификатов");
-                $.proxy(ui.printResult, ui)(certificateHandle);
+                ui.printResult(certificateHandle);
             }, this), $.proxy(ui.printError, ui));
         };
     })();
@@ -1436,8 +1424,8 @@ var TestSuite = new(function () {
             return "Удаление сертификата";
         };
         this.runTest = function () {
-            plugin.deleteCertificate(ui.device(), ui.certificate(), $.proxy(function () {
-                $.proxy(ui.printResult, ui)();
+            plugin.pluginObject.deleteCertificate(ui.device(), ui.certificate()).then($.proxy(function () {
+                ui.printResult();
                 if (plugin.autoRefresh) plugin.enumerateCertificates();
                 else ui.clearCertificateList("Обновите список сертификатов");
             }, this), $.proxy(ui.printError, ui));
@@ -1450,9 +1438,8 @@ var TestSuite = new(function () {
             return "Получение ID ключевой пары по сертификату";
         };
         this.runTest = function () {
-            plugin.getKeyByCertificate(ui.device(), ui.certificate(), $.proxy(function (keyId) {
-                $.proxy(ui.printResult, ui)(keyId);
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getKeyByCertificate(ui.device(), ui.certificate()).then($.proxy(ui.printResult, ui),
+                $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1463,9 +1450,8 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var infoType = ui.certificateInfoType();
-            plugin.getCertificateInfo(ui.device(), ui.certificate(), infoType, $.proxy(function (result) {
-                $.proxy(ui.printResult, ui)(result);
-            }, this), $.proxy(ui.printError, ui));
+            plugin.pluginObject.getCertificateInfo(ui.device(), ui.certificate(), infoType).then($.proxy(ui.printResult, ui),
+                $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1497,12 +1483,12 @@ var TestSuite = new(function () {
                 console.log("system-info: ", options.addSystemInfo);
                 console.log("dataFormat: ", dataFormat);
             }
-            plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options, $.proxy(function (res) {
+            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1526,12 +1512,12 @@ var TestSuite = new(function () {
                 console.log("HW", options.useHardwareHash);
                 console.log("base64", options.base64);
             }
-            plugin.digest(ui.device(), hashType, ui.getContent(this.container, 0), options, $.proxy(function (res) {
+            plugin.pluginObject.digest(ui.device(), hashType, ui.getContent(this.container, 0), options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("calc-hash");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1554,12 +1540,12 @@ var TestSuite = new(function () {
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.computeHash);
             }
-            plugin.rawSign(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
+            plugin.pluginObject.rawSign(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign-hash");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         };
     });
@@ -1579,12 +1565,12 @@ var TestSuite = new(function () {
             if (ui.useConsole) {
                 console.time("derive-key");
             }
-            plugin.derive(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
+            plugin.pluginObject.derive(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("derive-key");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         };
     });
@@ -1612,12 +1598,12 @@ var TestSuite = new(function () {
                 console.log("detached: ", options.detached);
                 console.log("user cert included: ", options.addUserCertificate);
             }
-            plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options, $.proxy(function (res) {
+            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1645,12 +1631,12 @@ var TestSuite = new(function () {
                 console.log("detached: ", options.detached);
                 console.log("user cert included: ", options.addUserCertificate);
             }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options, $.proxy(function (res) {
+            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1679,12 +1665,12 @@ var TestSuite = new(function () {
                 console.time("sign");
                 console.log("detached: ", options.detached);
             }
-            plugin.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options, $.proxy(function (res) {
+            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("sign");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1700,12 +1686,12 @@ var TestSuite = new(function () {
             if (ui.useConsole) {
                 console.time("authenticate");
             }
-            plugin.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container), $.proxy(function (res) {
+            plugin.pluginObject.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container)).the($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("authenticate");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         }
     });
@@ -1723,9 +1709,9 @@ var TestSuite = new(function () {
             }
             ui.readFile(this.container, $.proxy(function (data) {
                 ui.setContent(this.container, "");
-                plugin.sign(ui.device(), ui.certificate(), data, false, options, $.proxy(function (res) {
+                plugin.pluginObject.sign(ui.device(), ui.certificate(), data, false, options).then($.proxy(function (res) {
                     ui.setContent(this.container, res);
-                    $.proxy(ui.printResult, ui)(res);
+                    ui.printResult(res);
                 }, this), $.proxy(ui.printError, ui))
             }, this))
         }
@@ -1763,7 +1749,7 @@ var TestSuite = new(function () {
                 console.log("data: ", options.data);
                 console.log("certificates: ", options.certificates);
             }
-            plugin.verify(ui.device(), ui.getContent(this.container, 0), options, $.proxy(ui.printResult, ui), $.proxy(ui.printError, ui))
+            plugin.pluginObject.verify(ui.device(), ui.getContent(this.container, 0), options).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui))
         }
     });
 
@@ -1789,13 +1775,13 @@ var TestSuite = new(function () {
                 if (elements[i].value != "")
                     recipients.push(elements[i].value);
 
-            plugin.cmsEncrypt(ui.device(), "", recipients, ui.getContent(this.container, 0),
-                options, $.proxy(function (res) {
+            plugin.pluginObject.cmsEncrypt(ui.device(), "", recipients, ui.getContent(this.container, 0),
+                options).then($.proxy(function (res) {
                     if (ui.useConsole) {
                         console.timeEnd("encrypt");
                     }
                     ui.setContent(this.container, res);
-                    $.proxy(ui.printResult, ui)(res);
+                    ui.printResult(res);
                 }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1809,12 +1795,12 @@ var TestSuite = new(function () {
         this.runTest = function () {
             ui.setContent(this.container, "");
             var options = {};
-            plugin.cmsDecrypt(ui.device(), ui.key(), ui.getContent(this.container, 0), options, $.proxy(function (res) {
+            plugin.pluginObject.cmsDecrypt(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("decrypt");
                 }
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -1825,9 +1811,9 @@ var TestSuite = new(function () {
             return "Получение информации о выбранном сертификате";
         }
         this.runTest = function () {
-            plugin.parseCertificate(ui.device(), ui.certificate(), $.proxy(function (res) {
+            plugin.pluginObject.parseCertificate(ui.device(), ui.certificate()).then($.proxy(function (res) {
                 ui.setContent(this.container, res.text);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         }
     })();
@@ -1838,9 +1824,9 @@ var TestSuite = new(function () {
             return "Получение тела выбранного сертификата в base64";
         }
         this.runTest = function () {
-            plugin.getCertificate(ui.device(), ui.certificate(), $.proxy(function (res) {
+            plugin.pluginObject.getCertificate(ui.device(), ui.certificate()).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         }
     })();
@@ -1853,9 +1839,9 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var options = {};
 
-            plugin.getStoreCertificate(ui.systemStoreCertificate(), options, $.proxy(function (res) {
+            plugin.pluginObject.getStoreCertificate(ui.systemStoreCertificate(), options).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         }
     })();
@@ -1867,9 +1853,9 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             ui.setContent(this.container, "");
-            plugin.parseCertificateFromString(ui.getContent(this.container), $.proxy(function (res) {
+            plugin.pluginObject.parseCertificateFromString(ui.getContent(this.container)).then($.proxy(function (res) {
                 ui.setContent(this.container, res.text);
-                $.proxy(ui.printResult, ui)(res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         };
     })();
@@ -1896,6 +1882,15 @@ function initUi() {
     ui = new testUi(useConsole);
 }
 
+function getErrorCode(error) {
+    let errorCode = 0;
+    if (isNmPlugin)
+        errorCode = parseInt(error.message);
+    else
+        errorCode = error;
+    return errorCode;
+}
+
 function showError(reason) {
     $("#content").css("display", "none");
     $("#console-container").css("border", "none");
@@ -1918,9 +1913,12 @@ window.onload = function () {
                 performCheck = false;
             }
         }
+
+        isNmPlugin = true;
         if (performCheck && (isChrome || isFirefox)) {
             return rutoken.isExtensionInstalled();
         } else {
+            isNmPlugin = false;
             return Promise.resolve(true);
         }
     }).then(function (result) {
@@ -1936,9 +1934,7 @@ window.onload = function () {
             throw "Рутокен Плагин не установлен";
         }
     }).then(function (plugin) {
-        return plugin.wrapWithOldInterface();
-    }).then(function (wrappedPlugin) {
-        onPluginLoaded(wrappedPlugin);
+        onPluginLoaded(plugin);
     }).then(undefined, function (reason) {
         showError(reason);
     });

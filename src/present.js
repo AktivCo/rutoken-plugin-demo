@@ -998,13 +998,13 @@ cryptoPlugin.prototype = {
 
     savePin: function () {
         this.pluginObject.savePin(ui.device()).then($.proxy(function () {
-            ui.writeln("PIN сохранен в кэше\n");
+            ui.writeln("PIN-код сохранен в кэше\n");
         }, this), $.proxy(ui.printError, ui));
     },
 
     removePin: function () {
         this.pluginObject.removePin(ui.device()).then($.proxy(function () {
-            ui.writeln("PIN удален из кэша\n");
+            ui.writeln("PIN-код удален из кэша\n");
             ui.clearKeyList("Выполните вход на устройство");
         }, this), $.proxy(ui.printError, ui));
     }
@@ -1172,7 +1172,7 @@ var TestSuite = new(function () {
     this.ChangePin2 = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Смена PIN2";
+            return "Смена PIN-кода \"PIN2\"";
         };
         this.runTest = function () {
             var options = {};

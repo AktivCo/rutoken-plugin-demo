@@ -920,7 +920,7 @@ cryptoPlugin.prototype = {
                 for (var c in certificates)
                     certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_OTHER});
 
-                this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_UNSPEC);
+                return this.pluginObject.enumerateCertificates(device, this.CERT_CATEGORY_UNSPEC);
             }, this)).then($.proxy(function (certificates) {
                 for (var c in certificates)
                     certs.push({certificate: certificates[c], category: this.CERT_CATEGORY_UNSPEC});

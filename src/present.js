@@ -1794,7 +1794,10 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             ui.setContent(this.container, "");
-            var options = {};
+            var b64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
+            var options = {
+                base64: b64
+            };
             plugin.pluginObject.cmsDecrypt(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("decrypt");

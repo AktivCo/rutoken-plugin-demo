@@ -116,8 +116,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="ChangePin2" class="group">
-                        </div>
                         <div id="UnblockUserPin" class="group">
                             <ul>
                                 <li>
@@ -154,8 +152,6 @@
                                     <input type="text" id="generate-key-marker" value="BusinessTests" class="input"/>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" name="need-pin" class="input" />Требовать ввод PIN-кода на каждую операцию с ключевой парой в PINPad 2</label><br>
-                                    <label><input type="checkbox" name="need-confirm" class="input" />Требовать подтверждения на каждую операцию с ключевой парой в PINPad 2</label><br>
                                     <label><input type="checkbox" name="journal" class="input" />Создать журнальную ключевую пару</label>
                                 </li>
                                 <li>
@@ -558,112 +554,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <div id="SignMessagePinPad" class="group">
-                            <ul>
-                                <li>
-                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
-                                    <textarea id="sign-message" class="text-input" rows="7"><!PINPADFILE UTF8><N>ФИО:<V>Петров Петр Петрович<N>Адрес:<V>Москва, Пионерская ул, д. 3, кв. 72<N>Перевод со счета:<V>42301810001000075212<N>Сумма:<V>150000<N>Валюта:<V>RUR<N>Наименование получателя:<V>Иванова Елена Ивановна<N>Номер счета получателя:<V>40817810338295201618<N>БИК банка получателя:<V>044525225<N>Наименование банка получателя:<V>ОАО 'СБЕРБАНК РОССИИ' Г. МОСКВА<N>Номер счета банка получателя:<V>30101810400000000225<N>Назначение платежа:<V>перевод личных средств</textarea>
-                                </li>
-                                <li>
-                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
-                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
-                                </li>
-                                <li>
-                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
-                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
-                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
-                                </li>
-                                <li>
-                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
-                                </li>
-                            </ul>
-                        </div>
-                        <div id="SignXmlPinPad" class="group">
-                            <ul>
-                                <li>
-                                    <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
-                                    <textarea id="sign-message" class="text-input" rows="7">
-&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;ФайлПФР&gt;
-&lt;ИмяФайла&gt;PFR-700-Y-2014-ORG-087-201-001370-DCK-00000-DPT-000001-DCK-38852.XML&lt;/ИмяФайла&gt;
-&lt;ЗаголовокФайла&gt;
-&lt;ВерсияФормата&gt;07.00&lt;/ВерсияФормата&gt;
-&lt;ТипФайла&gt;ВНЕШНИЙ&lt;/ТипФайла&gt;
-&lt;ПрограммаПодготовкиДанных&gt;
-&lt;НазваниеПрограммы&gt;ЛК ИИТ НПФ&lt;/НазваниеПрограммы&gt;
-&lt;Версия&gt;1.0.135&lt;/Версия&gt;
-&lt;/ПрограммаПодготовкиДанных&gt;
-&lt;ИсточникДанных&gt;ОПФР-ПРОЧЕЕ&lt;/ИсточникДанных&gt;
-&lt;/ЗаголовокФайла&gt;
-&lt;ПачкаВходящихДокументов Окружение="В составе файла" Стадия="До обработки"&gt;
-&lt;ВХОДЯЩАЯ_ОПИСЬ&gt;
-&lt;НомерВпачке&gt;1&lt;/НомерВпачке&gt;
-&lt;ТипВходящейОписи&gt;ОПИСЬ ПАЧКИ&lt;/ТипВходящейОписи&gt;
-&lt;СоставительПачки&gt;
-&lt;НалоговыйНомер&gt;
-&lt;ИНН&gt;7743020560&lt;/ИНН&gt;
-&lt;КПП&gt;771401001&lt;/КПП&gt;
-&lt;/НалоговыйНомер&gt;
-&lt;Форма&gt;ОАО&lt;/Форма&gt;
-&lt;НаименованиеОрганизации&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеОрганизации&gt;
-&lt;НаименованиеКраткое&gt;ОАО "ИИТ"&lt;/НаименованиеКраткое&gt;
-&lt;РегистрационныйНомер&gt;087-201-001370&lt;/РегистрационныйНомер&gt;
-&lt;Подразделение&gt;
-&lt;НаименованиеПодразделения&gt;ОАО "ИНФОТЕКС ИНТЕРНЕТ ТРАСТ"&lt;/НаименованиеПодразделения&gt;
-&lt;НомерПодразделения&gt;1&lt;/НомерПодразделения&gt;
-&lt;/Подразделение&gt;
-&lt;/СоставительПачки&gt;
-&lt;НомерПачки&gt;
-&lt;ПоПодразделению&gt;38852&lt;/ПоПодразделению&gt;
-&lt;/НомерПачки&gt;
-&lt;СоставДокументов&gt;
-&lt;Количество&gt;1&lt;/Количество&gt;
-&lt;НаличиеДокументов&gt;
-&lt;ТипДокумента&gt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&lt;/ТипДокумента&gt;
-&lt;Количество&gt;1&lt;/Количество&gt;
-&lt;/НаличиеДокументов&gt;
-&lt;/СоставДокументов&gt;
-&lt;ДатаСоставления&gt;04.12.2014&lt;/ДатаСоставления&gt;
-&lt;/ВХОДЯЩАЯ_ОПИСЬ&gt;
-&lt;ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
-&lt;НомерВпачке&gt;2&lt;/НомерВпачке&gt;
-&lt;СтраховойНомер&gt;133-209-578 38&lt;/СтраховойНомер&gt;
-&lt;ФИО&gt;
-&lt;Фамилия&gt;МУСХАДЖИЕВА&lt;/Фамилия&gt;
-&lt;Имя&gt;МАРИНА&lt;/Имя&gt;
-&lt;Отчество&gt;КИРОВНА&lt;/Отчество&gt;
-&lt;/ФИО&gt;
-&lt;Пол&gt;Ж&lt;/Пол&gt;
-&lt;ДатаРождения&gt;02.10.1965&lt;/ДатаРождения&gt;
-&lt;ДатаЗаполнения&gt;04.12.2014&lt;/ДатаЗаполнения&gt;
-&lt;НПФ&gt;
-&lt;НалоговыйНомер&gt;
-&lt;ИНН&gt;7730001909&lt;/ИНН&gt;
-&lt;КПП&gt;&lt;/КПП&gt;
-&lt;/НалоговыйНомер&gt;
-&lt;НаименованиеОрганизации&gt;РГС НПФ&lt;/НаименованиеОрганизации&gt;
-&lt;/НПФ&gt;
-&lt;НомерПоЖурналу&gt;003-022-0000000&lt;/НомерПоЖурналу&gt;
-&lt;ДатаРегистрацииДокумента&gt;04.12.2014&lt;/ДатаРегистрацииДокумента&gt;
-&lt;/ЗАЯВЛЕНИЕ_О_ВЫБОРЕ_НПФ&gt;
-&lt;/ПачкаВходящихДокументов&gt;
-&lt;/ФайлПФР&gt;
-                                    </textarea>
-                                </li>
-                                <li>
-                                    <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
-                                    <textarea id="sign-message-cms" class="text-input" rows="7"></textarea>
-                                </li>
-                                <li>
-                                    <label><input type="checkbox" name="use-hw-hash" />Вычислять хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
-                                    <label><input type="checkbox" name="detached-sign" />Создавать отсоединенную подпись</label><br>
-                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включать сертификат пользователя</label>
-                                </li>
-                                <li>
-                                    <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
-                                </li>
-                            </ul>
-                        </div>
                         <div id="SignMessageSafeTouch" class="group">
                             <ul>
                                 <li>
@@ -688,7 +578,7 @@
                             <ul>
                                 <li>
                                     <label for="authenticate">Собщение от сервера</label>
-                                    <textarea id="authenticate" class="text-input" rows="7"><!PINPADFILE UTF8><T>Выполнить аутентификацию?<T>Случайные данные от сервера:<T></textarea>
+                                    <textarea id="authenticate" class="text-input" rows="7">Выполнить аутентификацию? Случайные данные от сервера: </textarea>
                                 </li>
                                 <li>
                                     <textarea id="authenticate-result" class="text-output" rows="7"></textarea>

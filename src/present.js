@@ -1049,9 +1049,6 @@ var TestSuite = new(function () {
                     case plugin.TOKEN_TYPE_RUTOKEN_WEB:
                         message = "Рутокен Web";
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_PINPAD_2:
-                        message = "Рутокен PINPad 2";
-                        break;
                     case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
                         message = "Рутокен ЭЦП SC";
                         break;
@@ -1061,9 +1058,6 @@ var TestSuite = new(function () {
                 if (info === plugin.TOKEN_INFO_FORMATS) {
                     var m = {};
                     m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
-                    m[plugin.DEVICE_DATA_FORMAT_RAW] = "DEVICE_DATA_FORMAT_RAW";
-                    m[plugin.DEVICE_DATA_FORMAT_PINPAD2] = "DEVICE_DATA_FORMAT_PINPAD2";
-                    m[plugin.DEVICE_DATA_FORMAT_XML] = "DEVICE_DATA_FORMAT_XML";
                     m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
 
                     message = "[" + result.map(function(value) {
@@ -1166,19 +1160,6 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "use-admin-pin") == "on") options.useAdminPin = true;
             plugin.pluginObject.changePin(ui.device(), ui.getContent(this.container, 1),
                 ui.getContent(this.container, 2), options).then(function () {
-                ui.printResult();
-            }, $.proxy(ui.printError, ui));
-        }
-    })();
-
-    this.ChangePin2 = new(function () {
-        Test.call(this);
-        this.description = function () {
-            return "Смена PIN-кода \"PIN2\"";
-        };
-        this.runTest = function () {
-            var options = {};
-            plugin.pluginObject.changePin(ui.device(), null,  null, options).then(function () {
                 ui.printResult();
             }, $.proxy(ui.printError, ui));
         }
@@ -1575,72 +1556,6 @@ var TestSuite = new(function () {
                 ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
         };
-    });
-
-    this.SignMessagePinPad = new(function () {
-        Test.call(this);
-        this.description = function () {
-            return "Подпись сообщения на PINPad";
-        };
-
-        this.runTest = function () {
-            var options = {
-                detached: false,
-                addUserCertificate: true,
-                addSignTime: false
-            };
-            ui.setContent(this.container, "");
-            options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
-            options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
-            options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
-            options.CMS = ui.getContent(this.container, 1);
-
-            if (ui.useConsole) {
-                console.time("sign");
-                console.log("detached: ", options.detached);
-                console.log("user cert included: ", options.addUserCertificate);
-            }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
-                }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
-            }, this), $.proxy(ui.printError, ui));
-        }
-    });
-
-    this.SignXmlPinPad = new(function () {
-        Test.call(this);
-        this.description = function () {
-            return "Подпись XML сообщения на PINPad";
-        };
-
-        this.runTest = function () {
-            var options = {
-                detached: false,
-                addUserCertificate: true,
-                addSignTime: false
-            };
-            ui.setContent(this.container, "");
-            options.useHardwareHash = ui.checkboxState(this.container, "use-hw-hash") == "on" ? true : false;
-            options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
-            options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
-            options.CMS = ui.getContent(this.container, 1);
-
-            if (ui.useConsole) {
-                console.time("sign");
-                console.log("detached: ", options.detached);
-                console.log("user cert included: ", options.addUserCertificate);
-            }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), false, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
-                }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
-            }, this), $.proxy(ui.printError, ui));
-        }
     });
 
     this.SignMessageSafeTouch = new(function () {

@@ -273,7 +273,7 @@ testUi.prototype = {
         case "speed":
             return plugin.TOKEN_INFO_SPEED;
         case "free memory":
-            return plugin.TOKEN_INFO_FREE_MEMORY + " B";
+            return plugin.TOKEN_INFO_FREE_MEMORY;
         case "pins":
             return plugin.TOKEN_INFO_PINS_INFO;
         case "fkn":
@@ -1143,6 +1143,9 @@ var TestSuite = new(function () {
                 if (info == plugin.TOKEN_INFO_FKN_SUPPORTED) {
                     message = JSON.stringify(result);
                 }
+
+                if (info == plugin.TOKEN_INFO_FREE_MEMORY)
+                    message += " byte(s)";
 
                 message += " (" + info + ")";
                 ui.printResult(message);

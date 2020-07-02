@@ -62,6 +62,13 @@ function testUi(useConsole) {
             document.getElementById("add-sign-time").checked = true;
         }
     }
+
+    document.getElementById("add-security-products-info").onclick = function() {
+        document.getElementById("add-sign-time").disabled = this.checked;
+        if (this.checked) {
+            document.getElementById("add-sign-time").checked = true;
+        }
+    }
 }
 
 function uiControls() {
@@ -1456,6 +1463,7 @@ var TestSuite = new(function () {
             options.detached = ui.checkboxState(this.container, "detached-sign") == "on" ? true : false;
             options.addUserCertificate = ui.checkboxState(this.container, "add-user-cert") == "on" ? true : false;
             options.addSystemInfo = ui.checkboxState(this.container, "add-system-info") == "on" ? true : false;
+            options.addSecurityProductsInfo = ui.checkboxState(this.container, "add-security-products-info") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];

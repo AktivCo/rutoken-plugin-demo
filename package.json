@@ -13,15 +13,16 @@
   "dependencies": {
     "console-polyfill": "^0.2.2",
     "es6-promise": "^3.0.2",
-    "rutoken": "^1.0.8"
+    "rutoken": "^1.0.8",
+    "asn1js": "2.0.26"
   },
   "devDependencies": {
     "browserify": "^11.2.0",
     "del": "^2.0.2",
-    "gulp": "^3.9.0",
-    "gulp-uglify": "^1.4.2",
+    "gulp": "^4.0.2",
+    "gulp-uglify-es": "2.0.0",
     "vinyl-buffer": "^1.0.0",
-    "vinyl-source-stream": "^1.1.0"
+    "vinyl-source-stream": "^2.0.0"
   },
   "author": "CJSC Aktiv-Soft",
   "contributors": [

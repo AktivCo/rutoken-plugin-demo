@@ -3,7 +3,7 @@ var browserify = require('browserify'),
     del = require('del'),
     gulp = require('gulp'),
     source = require('vinyl-source-stream'),
-    uglify = require('gulp-uglify');
+    uglify = require('gulp-uglify-es').default;
 
 gulp.task('clean', function () {
 	return del(['build']);
@@ -19,19 +19,20 @@ gulp.task('libs', function () {
 		.pipe(gulp.dest('build/libs'));
 });
 
-gulp.task('deps', ['libs'], function () {
+gulp.task('deps', gulp.series('libs', function () {
 	return browserify('src/dependencies.js')
 		.bundle()
 		.pipe(source('dependencies.js'))
 		.pipe(buffer())
 		.pipe(uglify())
+        .on('error', console.error)
 		.pipe(gulp.dest('build/'));
-});
+}));
 
-gulp.task('scripts', ['deps'], function () {
+gulp.task('scripts', gulp.series('deps', function () {
 	return gulp.src('src/present.js')
 		.pipe(gulp.dest('build/'));
-});
+}));
 
 gulp.task('styles', function () {
 	return gulp.src('src/*.css')
@@ -43,6 +44,7 @@ gulp.task('images', function () {
 		.pipe(gulp.dest('build/images'));
 });
 
-gulp.task('default', ['clean'], function () {
-	gulp.start('pages', 'scripts', 'styles', 'images');
-});
+gulp.task('default', gulp.series('clean', 'pages', 'scripts', 'styles', 'images', function (done) {
+    done();
+}));
+

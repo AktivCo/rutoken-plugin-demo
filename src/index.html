@@ -16,6 +16,7 @@
 
         <script type="text/javascript" src="present.js"></script>
         <script type="text/javascript" src="dependencies.js"></script>
+        <script type="text/javascript" src="cmc.js"></script>
 
         <title>SDK Рутокен Плагин</title>
 
@@ -489,6 +490,31 @@
                                 </li>
                                 <li>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="CmcRequest" class="group">
+                            <ul>
+                                <li>
+                                    <label for="pkcs10-for-cmc">PKCS #10 запрос на ГОСТ ключах</label>
+                                    <textarea id="pkcs10-for-cmc" class="text-input" rows="7">-----BEGIN CERTIFICATE REQUEST-----
+MIICRzCCAfICAQAwggECMQswCQYDVQQGEwJSVTEPMA0GA1UECAwGTW9zY293MQww
+CgYDVQQHDANtc2sxDzANBgNVBAkMBnN0cmVldDEOMAwGA1UECgwFQWt0aXYxCzAJ
+BgNVBAsMAklUMRcwFQYDVQQQDA5wb3N0YWwgYWRkcmVzczEbMBkGA1UEDAwS0LTQ
+vtC70LbQvdC+0YHRgtGMMREwDwYDVQQDDAhJbmZvdGVjczESMBAGA1UEQQwJcHNl
+dWRvbnltMRAwDgYDVQQEDAdzdXJuYW1lMRMwEQYDVQQqDApnaXZlbiBuYW1lMSIw
+IAYJKoZIhvcNAQkBFhNleGFtcGxlQGV4YW1wbGUuY29tMGYwHwYIKoUDBwEBAQEw
+EwYHKoUDAgIjAQYIKoUDBwEBAgIDQwAEQOlyPFiRCUVmaBEEnj6899r4vrsop5UI
+4ZqzZhKJP6AIWG5KQiKOXBs7ctlw0feKLDEZn4Mn7y3tc/yQ4mg1y6qgfzB9Bgkq
+hkiG9w0BCQ4xcDBuMAsGA1UdDwQEAwIGwDAdBgNVHSUEFjAUBggrBgEFBQcDBAYI
+KwYBBQUHAwgwEwYDVR0gBAwwCjAIBgYqhQNkcQEwKwYFKoUDZG8EIgwg0KHQmtCX
+0JggItCg0KPQotCe0JrQldCdINCt0KbQnyIwDAYIKoUDBwEBAwIFAANBAB1/Hrjo
+TlQJZpgJL+Id9X0r5JodS/0jD+zk5qllNg3IlKIUKWmA38KRucnEne6OgZMwoso0
+IPx1wd5hBhGV714=
+-----END CERTIFICATE REQUEST-----</textarea>
+                                </li>
+                                <li>
+                                    <textarea id="cmc-request-result" placeholder="Подписанный на текущем сертификате CMC запрос" class="text-output" rows="7"></textarea>
                                 </li>
                             </ul>
                         </div>

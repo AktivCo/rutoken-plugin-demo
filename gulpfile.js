@@ -30,7 +30,7 @@ gulp.task('deps', gulp.series('libs', function () {
 }));
 
 gulp.task('scripts', gulp.series('deps', function () {
-	return gulp.src('src/present.js')
+	return gulp.src(['src/present.js', 'src/cmc.js'])
 		.pipe(gulp.dest('build/'));
 }));
 

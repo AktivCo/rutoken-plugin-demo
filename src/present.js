@@ -1487,6 +1487,30 @@ var TestSuite = new(function () {
         }
     });
 
+    this.CmcRequest = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Запрос в формате CMC";
+        };
+
+        this.runTest = function () {
+            ui.setContent(this.container, "");
+
+            var data = cmc.getPkiData(ui.getContent(this.container));
+
+            var options = {};
+            options.addSignTime = true;
+            options.eContentType = "1.3.6.1.5.5.7.12.2"; // id-cct-PKIData
+
+            var dataFormat = plugin["DATA_FORMAT_BASE64"];
+
+            plugin.pluginObject.sign(ui.device(), ui.certificate(), data, dataFormat, options).then($.proxy(function (res) {
+                ui.setContent(this.container, res);
+                ui.printResult(res);
+            }, this), $.proxy(ui.printError, ui));
+        }
+    });
+
     this.CalcHash = new(function () {
         Test.call(this);
         this.description = function () {

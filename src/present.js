@@ -69,6 +69,13 @@ function testUi(useConsole) {
             document.getElementById("add-sign-time").checked = true;
         }
     }
+
+    document.getElementById("set-content-type").onclick = function() {
+        document.getElementById("add-sign-time").disabled = this.checked;
+        if(this.checked) {
+            document.getElementById("add-sign-time").checked = true;
+        }
+    }
 }
 
 function uiControls() {
@@ -1467,6 +1474,8 @@ var TestSuite = new(function () {
             options.CMS = ui.getContent(this.container, 1);
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];
+            if (ui.checkboxState(this.container, "set-content-type") == "on")
+                options.eContentType = this.container.find(".set-content-type").val();
 
             var dataFormat = plugin[this.container.find(".data-format").val()];
 

@@ -1,4 +1,5 @@
 var browserify = require('browserify'),
+    babelify = require('babelify'),
     buffer = require('vinyl-buffer'),
     del = require('del'),
     gulp = require('gulp'),
@@ -21,6 +22,8 @@ gulp.task('libs', function () {
 
 gulp.task('deps', gulp.series('libs', function () {
     return browserify('src/dependencies.js')
+        .add(require.resolve('babel-polyfill'))
+        .transform('babelify', {presets: ["@babel/preset-env"], plugins:['@babel/plugin-transform-classes']})
         .bundle()
         .pipe(source('dependencies.js'))
         .pipe(buffer())

@@ -1132,6 +1132,7 @@ var TestSuite = new(function () {
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
 
                     var ciphers = {};
                     ciphers[plugin.CIPHER_ALGORITHM_DES] = "CIPHER_ALGORITHM_DES";

@@ -14,7 +14,8 @@
     "console-polyfill": "^0.2.2",
     "es6-promise": "^3.0.2",
     "rutoken": "^1.0.8",
-    "asn1js": "2.0.26"
+    "asn1js": "^2.0.26",
+    "pkijs": "^2.1.91"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",

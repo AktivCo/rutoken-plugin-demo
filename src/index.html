@@ -17,7 +17,7 @@
         <link rel="stylesheet" type="text/css" href="style.css">
 
         <script type="text/javascript" src="present.js"></script>
-        <script type="text/javascript" src="cmc.js"></script>
+        <script type="text/javascript" src="asn1Utils.js"></script>
 
         <title>SDK Рутокен Плагин</title>
 
@@ -518,6 +518,41 @@ IPx1wd5hBhGV714=
                                 </li>
                                 <li>
                                     <textarea id="cmc-request-result" placeholder="Подписанный на текущем сертификате CMC запрос" class="text-output" rows="7"></textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="TsRequest" class="group">
+                            <ul>
+                                <li>
+                                    <label for="cms-for-tsp">Подписанный CMS</label>
+                                    <textarea placeholder="Введите CMS" id="cms-for-tsp" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <label for="hash-type">Алгоритм хеширования подписи:</label>
+                                    <select class="hash-algorithm">
+                                        <option value="HASH_TYPE_GOST3411_12_256">ГОСТ Р 34.11-12 256</option>
+                                        <option value="HASH_TYPE_GOST3411_12_512">ГОСТ Р 34.11-12 512</option>
+                                        <option value="HASH_TYPE_SHA1">SHA1</option>
+                                        <option value="HASH_TYPE_SHA256">SHA256</option>
+                                        <option value="HASH_TYPE_SHA512">SHA512</option>
+                                    </select><br>
+                                    <label><input type="checkbox" name="cert-req" />Сервер включит сертификат в ответ</label><br>
+                                    <label><input type="checkbox" name="nonce" checked="checked"/>Включить псевдо-случайное 64 битное число в запрос (nonce)</label><br>
+                                    <label>Задать политику:</label>
+                                    <input type="text" class="set-policy"/>
+                                </li>
+                                <li>
+                                    <label>Расширение(опционально):</label><br>
+                                    <label>OID</label>
+                                    <input type="text" class="ext-oid"></td>
+                                    <label>value</label></td>
+                                    <input type="text" class="ext-value"></td>
+                                    <label><input class="checkbox" type="checkbox" name="ext-crit">Critical</label></td>
+                                    <label style="color: grey;">value должен быть в base64</label>
+                                </li>
+
+                                <li>
+                                    <textarea id="tsp-request-result" placeholder="Ts запрос для первого найденного подписанта" class="text-output" rows="3"></textarea>
                                 </li>
                             </ul>
                         </div>

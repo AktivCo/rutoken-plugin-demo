@@ -12,9 +12,10 @@ function uint8BufferToBase64(buf) {
     return btoa(String.fromCharCode.apply(null, buf));
 }
 
-var cmc = new Object();
-cmc.getPkiData = function(pkcs10req) {
-    pkcs10req = pkcs10req.replace(/(\-+BEGIN CERTIFICATE REQUEST\-+(\r\n?|\n))|((\r\n?|\n)\-+END CERTIFICATE REQUEST\-+)/g, '');
+var asn1Utils = new Object();
+asn1Utils.getCmcPkiData = function(pkcs10req) {
+    pkcs10req = pkcs10req.replace(/.*-----BEGIN[^-]*(-[^-]+)*-----/g, '');
+    pkcs10req = pkcs10req.replace(/-----END[^-]*(-[^-]+)*-----.*/g, '');
     var der = base64ToUint8Buffer(pkcs10req);
 
     var bodyPartId = 1;
@@ -50,4 +51,18 @@ cmc.getPkiData = function(pkcs10req) {
     return uint8BufferToBase64(new Uint8Array(pkiData.toBER()));
 }
 
-window.cmc = cmc;
+asn1Utils.getSignatureFromSignedCms = function(signedCms) {
+    signedCms = signedCms.replace(/.*-----BEGIN[^-]*(-[^-]+)*-----/g, '');
+    signedCms = signedCms.replace(/-----END[^-]*(-[^-]+)*-----.*/g, '');
+    const der = base64ToUint8Buffer(signedCms);
+    const asn1 = asn1js.fromBER(der.buffer);
+    const cmsContent = new pkijs.ContentInfo({ schema: asn1.result });
+    const cmsSigned = new pkijs.SignedData({ schema: cmsContent.content });
+    if (cmsSigned.signerInfos.length === 0)
+        throw 'No signatures found';
+
+    const signature = cmsSigned.signerInfos[0].signature.valueBlock.valueHex;
+    return uint8BufferToBase64(new Uint8Array(signature));
+}
+
+window.asn1Utils = asn1Utils;

@@ -1509,7 +1509,9 @@ var TestSuite = new(function () {
         this.runTest = function () {
             ui.setContent(this.container, "");
 
-            var data = cmc.getPkiData(ui.getContent(this.container));
+            if (!ui.getContent(this.container).length)
+                throw 'Ошибка: Укажите PKCS #10 запрос';
+            var data = asn1Utils.getCmcPkiData(ui.getContent(this.container));
 
             var options = {};
             options.addSignTime = true;
@@ -1520,6 +1522,44 @@ var TestSuite = new(function () {
             plugin.pluginObject.sign(ui.device(), ui.certificate(), data, dataFormat, options).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
                 ui.printResult(res);
+            }, this), $.proxy(ui.printError, ui));
+        }
+    });
+
+    this.TsRequest = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "TS запрос";
+        };
+
+        this.runTest = function () {
+            ui.setContent(this.container, "");
+
+            if (!ui.getContent(this.container).length)
+                throw 'Ошибка: Укажите подписанный CMS';
+            const signature = asn1Utils.getSignatureFromSignedCms(ui.getContent(this.container));
+            const hashType = plugin[this.container.find(".hash-algorithm").val()];
+            var options = {};
+            options.cert = ui.checkboxState(this.container, "cert-req") === "on" ? true : false;
+            options.nonce = ui.checkboxState(this.container, "nonce") === "on" ? true : false;
+            const policy = this.container.find(".set-policy").val();
+            if (policy.length)
+                options.policy = policy;
+
+            const extOid = this.container.find(".ext-oid").val();
+            const extValue = this.container.find(".ext-value").val();
+            const extCrit = ui.checkboxState(this.container, "ext-crit") === "on" ? true : false;
+            if (extOid.length) {
+                options.extensions = [{
+                    "oid": extOid,
+                    "value": extValue,
+                    "criticality": extCrit
+                }];
+            }
+
+            plugin.pluginObject.createTsRequest(signature, plugin["DATA_FORMAT_BASE64"], hashType, options).then($.proxy(function (req) {
+                ui.setContent(this.container, req);
+                ui.printResult(req);
             }, this), $.proxy(ui.printError, ui));
         }
     });

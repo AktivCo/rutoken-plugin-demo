@@ -33,7 +33,7 @@ gulp.task('deps', gulp.series('libs', function () {
 }));
 
 gulp.task('scripts', gulp.series('deps', function () {
-    return gulp.src(['src/present.js', 'src/cmc.js'])
+    return gulp.src(['src/present.js', 'src/asn1Utils.js'])
         .pipe(gulp.dest('build/'));
 }));
 

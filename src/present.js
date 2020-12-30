@@ -706,6 +706,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.PIN_CHANGED] = "PIN-код был изменен";
     this.errorDescription[this.errorCodes.PIN_INVALID] = "PIN-код содержит недопустимые символы";
     this.errorDescription[this.errorCodes.USER_PIN_NOT_INITIALIZED] = "PIN-код пользователя не инициализирован";
+    this.errorDescription[this.errorCodes.PIN_EXPIRED] = "Действие PIN-кода истекло";
+    this.errorDescription[this.errorCodes.INAPPROPRIATE_PIN] = "Устанавливаемый PIN-код не удовлетворяет политикам смены PIN-кодов";
+    this.errorDescription[this.errorCodes.PIN_IN_HISTORY] = "Устанавливаемый PIN-код содержится в истории PIN-кодов";
 
     this.errorDescription[this.errorCodes.SESSION_INVALID] = "Состояние токена изменилось";
     this.errorDescription[this.errorCodes.USER_NOT_LOGGED_IN] = "Выполните вход на устройство";

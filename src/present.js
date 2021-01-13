@@ -736,7 +736,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.MECHANISM_INVALID] = "Указан неправильный механизм";
     this.errorDescription[this.errorCodes.ATTRIBUTE_VALUE_INVALID] = "Передан неверный атрибут";
 
-    this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_ISSUER_CERT] = "Невозможно получить сертификат подписанта";
+    this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_ISSUER_CERT] = "Невозможно получить сертификат эмитента";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_CRL] = "Невозможно получить CRL";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_DECRYPT_CERT_SIGNATURE] = "Невозможно расшифровать подпись сертификата";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_DECRYPT_CRL_SIGNATURE] = "Невозможно расшифровать подпись CRL";
@@ -754,7 +754,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_OUT_OF_MEM] = "Нехватает памяти";
     this.errorDescription[this.errorCodes.X509_DEPTH_ZERO_SELF_SIGNED_CERT] = "Недоверенный самоподписанный сертификат";
     this.errorDescription[this.errorCodes.X509_SELF_SIGNED_CERT_IN_CHAIN] = "В цепочке обнаружен недоверенный самоподписанный сертификат";
-    this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_ISSUER_CERT_LOCALLY] = "Невозможно получить локальный сертификат подписанта";
+    this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_ISSUER_CERT_LOCALLY] = "Невозможно получить локальный сертификат эмитента";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_VERIFY_LEAF_SIGNATURE] = "Невозможно проверить первый сертификат";
     this.errorDescription[this.errorCodes.X509_CERT_CHAIN_TOO_LONG] = "Слишком длинная цепочка сертификатов";
     this.errorDescription[this.errorCodes.X509_CERT_REVOKED] = "Сертификат отозван";
@@ -791,7 +791,17 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_CRL_PATH_VALIDATION_ERROR] = "Неправильный путь CRL";
     this.errorDescription[this.errorCodes.CMS_CERTIFICATE_ALREADY_PRESENT] = "Сертификат уже используется";
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
-    this.errorDescription[this.errorCodes.DECRYPT_UNSUCCESSFUL] = "Расшифрование не удалось"
+    this.errorDescription[this.errorCodes.DECRYPT_UNSUCCESSFUL] = "Расшифрование не удалось";
+
+    this.errorDescription[this.errorCodes.TS_TOKEN_MISSED] = "Ответ службы меток доверенного времени не содержит саму метку";
+    this.errorDescription[this.errorCodes.TS_WRONG_CONTENT_TYPE] = "Метка доверенного времени имеет неверный тип содержимого";
+    this.errorDescription[this.errorCodes.TS_MUST_BE_ONE_SIGNER] = "Метка доверенного времени должна иметь одного подписанта";
+    this.errorDescription[this.errorCodes.TS_NO_CONTENT] = "Метка доверенного времени не содержит данные";
+    this.errorDescription[this.errorCodes.TS_ESS_SIGNING_CERT_ERROR] = "Метка доверенного времени не содержит ESSCertID сертификата TSA";
+    this.errorDescription[this.errorCodes.TS_UNSUPPORTED_VERSION] = "Версия метки доверенного времени не поддерживается";
+    this.errorDescription[this.errorCodes.TS_POLICY_MISMATCH] = "Политика в метке доверенного времени отличается от запрошенной";
+    this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
+    this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -1755,6 +1765,40 @@ var TestSuite = new(function () {
                 console.log("certificates: ", options.certificates);
             }
             plugin.pluginObject.verify(ui.device(), ui.getContent(this.container, 0), options).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui))
+        }
+    });
+
+    this.VerifyTsResponse = new(function () {
+        Test.call(this)
+        this.description = function () {
+            return "Проверка доверенной метки времени";
+        }
+
+        this.runTest = function () {
+            var options = {};
+
+            var response = ui.getContent(this.container, 0);
+            var request = ui.getContent(this.container, 1);
+
+            var cert = ui.getContent(this.container, 2);
+            if (cert != "") {
+                options.certificates = new Array();
+                options.certificates.push(cert);
+            }
+            var caCert = ui.getContent(this.container, 3);
+            if (caCert != "") {
+                options.CA = new Array();
+                options.CA.push(caCert);
+            }
+
+            if (ui.useConsole) {
+                console.log("response: ", response);
+                console.log("request: ", request);
+                console.log("certificates: ", options.certificates);
+                console.log("CA: ", options.CA);
+            }
+            plugin.pluginObject.verifyTsResponse(ui.device(), response, request, plugin["DATA_FORMAT_BASE64"], options)
+                               .then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui))
         }
     });
 

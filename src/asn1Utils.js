@@ -65,4 +65,44 @@ asn1Utils.getSignatureFromSignedCms = function(signedCms) {
     return uint8BufferToBase64(new Uint8Array(signature));
 }
 
+asn1Utils.addTstToSignedCms = function(signedCms, tsResp) {
+    const derTsResp = base64ToUint8Buffer(tsResp);
+    const tsRespContent = new pkijs.TimeStampResp({ schema: asn1js.fromBER(derTsResp.buffer).result });
+    const tstAttr = new pkijs.Attribute({
+        type: "1.2.840.113549.1.9.16.2.14",
+        values: [tsRespContent.timeStampToken.toSchema()]
+    });
+
+    const cmsHeaderMatch = signedCms.match(/.*-----BEGIN[^-]*(-[^-]+)*-----/g);
+    const cmsHeader = cmsHeaderMatch ? cmsHeaderMatch[0] : "";
+    signedCms = signedCms.replace(/.*-----BEGIN[^-]*(-[^-]+)*-----/g, '');
+    const cmsFooterMatch = signedCms.match(/-----END[^-]*(-[^-]+)*-----.*/g);
+    const cmsFooter = cmsFooterMatch ? cmsFooterMatch[0] : "";
+    signedCms = signedCms.replace(/-----END[^-]*(-[^-]+)*-----.*/g, '');
+
+    const derCms = base64ToUint8Buffer(signedCms);
+    const cmsContent = new pkijs.ContentInfo({ schema: asn1js.fromBER(derCms.buffer).result });
+
+    var cmsSigned = new pkijs.SignedData({ schema: cmsContent.content });
+    if (cmsSigned.signerInfos.length === 0)
+        throw 'No signatures found';
+
+    if (!cmsSigned.signerInfos[0].unsignedAttrs)
+        cmsSigned.signerInfos[0].unsignedAttrs = new pkijs.SignedAndUnsignedAttributes({
+            type: 1,
+            attributes: [tstAttr]
+        });
+    else
+        cmsSigned.signerInfos[0].unsignedAttrs.attributes.push(tstAttr);
+
+    const cmsContentWithTst = new pkijs.ContentInfo({
+        contentType: "1.2.840.113549.1.7.2",
+        content: cmsSigned.toSchema()
+    });
+
+    const cmsWithTst = uint8BufferToBase64(new Uint8Array(cmsContentWithTst.toSchema().toBER(false)));
+
+    return cmsHeader + cmsWithTst + cmsFooter;
+}
+
 window.asn1Utils = asn1Utils;

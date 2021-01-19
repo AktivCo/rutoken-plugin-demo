@@ -1768,24 +1768,30 @@ var TestSuite = new(function () {
         }
     });
 
-    this.VerifyTsResponse = new(function () {
+    this.AddTstToCms = new(function () {
         Test.call(this)
         this.description = function () {
-            return "Проверка доверенной метки времени";
+            return "Проверка доверенной метки времени и ее добавление в подписанную CMS";
         }
 
         this.runTest = function () {
+            ui.setContent(this.container, "");
+
             var options = {};
 
             var response = ui.getContent(this.container, 0);
             var request = ui.getContent(this.container, 1);
 
-            var cert = ui.getContent(this.container, 2);
+            var cms = ui.getContent(this.container, 2);
+            if (!cms.length)
+                throw 'Ошибка: Укажите подписанный CMS';
+
+            var cert = ui.getContent(this.container, 3);
             if (cert != "") {
                 options.certificates = new Array();
                 options.certificates.push(cert);
             }
-            var caCert = ui.getContent(this.container, 3);
+            var caCert = ui.getContent(this.container, 4);
             if (caCert != "") {
                 options.CA = new Array();
                 options.CA.push(caCert);
@@ -1798,7 +1804,15 @@ var TestSuite = new(function () {
                 console.log("CA: ", options.CA);
             }
             plugin.pluginObject.verifyTsResponse(ui.device(), response, request, plugin["DATA_FORMAT_BASE64"], options)
-                               .then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui))
+                .then($.proxy(function (res) {
+                    ui.printResult(res);
+                    if (res === true) {
+                        var cmsWithTst = asn1Utils.addTstToSignedCms(cms, response);
+                        ui.setContent(this.container, cmsWithTst);
+                    } else {
+                        ui.writeln("Подпись доверенной метки времени недействительна\n");
+                    }
+                }, this), $.proxy(ui.printError, ui));
         }
     });
 

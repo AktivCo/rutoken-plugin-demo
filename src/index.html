@@ -684,7 +684,7 @@ IPx1wd5hBhGV714=
                                 </li>
                             </ul>
                         </div>
-                        <div id="VerifyTsResponse" class="group">
+                        <div id="AddTstToCms" class="group">
                             <ul>
                                 <li>
                                     <label for="response">Ответ службы меток доверенного времени в формате TimeStamp Response</label>
@@ -695,12 +695,19 @@ IPx1wd5hBhGV714=
                                     <textarea placeholder="Введите TimeStamp Request в base64" id="data" class="text-input" rows="3"></textarea>
                                 </li>
                                 <li>
+                                    <label for="cms-for-tst-injection">Подписанный CMS</label>
+                                    <textarea placeholder="Введите CMS, в который необходимо добавить доверенную метку времени" id="cms-for-tst-injection" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
                                     <label for="cert">Сертификат</label>
                                     <textarea placeholder="Опционально - в случае если он не включен в доверенную метку времени" id="cert" class="text-input"></textarea>
                                 </li>
                                 <li>
                                     <label for="ca-cert">СА</label>
                                     <textarea placeholder="СА" id="ca-cert" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <textarea id="cms-with-tst" placeholder="CMS с успешно проверенной доверенной меткой времени для первого найденного подписанта" class="text-output" rows="3"></textarea>
                                 </li>
                             </ul>
                         </div>

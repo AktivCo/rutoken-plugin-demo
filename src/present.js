@@ -1965,19 +1965,25 @@ function showError(reason) {
     console.log(reason);
 }
 
+function getFFMajor() {
+    var verOffset, fullVersion;
+    if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {
+        fullVersion = navigator.userAgent.substring(verOffset + 8);
+        return parseInt(''+fullVersion,10);
+    } else {
+        return undefined;
+    }
+}
+
+var isChrome = !!window.chrome;
+var isFirefox = typeof InstallTrigger !== 'undefined';
+
 window.onload = function () {
     rutoken.ready.then(function () {
         initUi();
-        var isChrome = !!window.chrome;
-        var isFirefox = typeof InstallTrigger !== 'undefined';
-        var verOffset, fullVersion, majorVersion;
         var performCheck = true;
-        if ((verOffset = navigator.userAgent.indexOf('Firefox')) != -1) {
-            fullVersion = navigator.userAgent.substring(verOffset + 8);
-            majorVersion = parseInt(''+fullVersion,10);
-            if (majorVersion < 53) { // Don't check on ESR and older ones
-                performCheck = false;
-            }
+        if (isFirefox && getFFMajor() < 53) { // Don't check on ESR and older ones
+            performCheck = false;
         }
 
         isNmPlugin = true;
@@ -1991,7 +1997,12 @@ window.onload = function () {
         if (result) {
             return rutoken.isPluginInstalled();
         } else {
-            throw "Расширение \"Адаптер Рутокен Плагин\" не установлено";
+            var msg = "Расширение \"Адаптер Рутокен Плагин\" не установлено";
+            if (isFirefox && getFFMajor() >= 74)
+                msg += "<br><br>Для <strong>FireFox 74 и новее</strong> установите расширение из " +
+                       "<a href='https://addons.mozilla.org/ru/firefox/addon/adapter-rutoken-plugin/'>официального магазина расширений Mozilla</a>."
+
+            throw msg;
         }
     }).then(function (result) {
         if (result) {

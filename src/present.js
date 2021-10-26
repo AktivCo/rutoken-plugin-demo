@@ -77,6 +77,28 @@ function testUi(useConsole) {
         document.getElementById("content-type").disabled = true;
         document.getElementById("content-type").value = "1.3.6.1.5.5.7.12.2";
     }
+
+    document.getElementById("add-ts-token").onclick = function() {
+        addTst = this.checked;
+        optionsContainer = $(document).find("#tsp-options");
+
+        if (addTst)
+            optionsContainer.show("Blind");
+        else
+            optionsContainer.hide("Blind");
+
+        document.getElementById("tsa-url").value = ""
+        document.getElementById("ts-hash-alg").value = "HASH_TYPE_GOST3411_12_256"
+        document.getElementById("tsa-cert-req").checked = true
+        document.getElementById("ts-nonce").checked = true
+        document.getElementById("ts-set-policy").value = ""
+        document.getElementById("ts-ext-oid").value = ""
+        document.getElementById("ts-ext-value").value = ""
+        document.getElementById("ts-ext-crit").checked = false
+        document.getElementById("verify-ts-token").checked = true
+        document.getElementById("ts-cert").value = ""
+        document.getElementById("ts-ca-cert").value = ""
+    }
 }
 
 function uiControls() {
@@ -804,6 +826,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
     this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
 
+    this.errorDescription[this.errorCodes.HOST_NOT_FOUND] = "Не удалось найти сервер";
+    this.errorDescription[this.errorCodes.HTTP_ERROR] = "HTTP ответ с ошибкой";
+    this.errorDescription[this.errorCodes.TST_VERIFICATION_ERROR] = "Ошибка проверки timestamp токена";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 
@@ -1489,11 +1515,39 @@ var TestSuite = new(function () {
             options.addEssCert = ui.checkboxState(this.container, "add-ess-cert") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
-                options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];
+                options.rsaHashAlgorithm = plugin[this.container.find(".cms-hash-alg").val()];
             if (ui.checkboxState(this.container, "set-content-type") == "on")
                 options.eContentType = this.container.find("#content-type").val();
 
             var dataFormat = plugin[this.container.find(".data-format").val()];
+
+            if (ui.checkboxState(this.container, "add-ts-token") == "on") {
+                options.tspOptions = {};
+                options.tspOptions.url = this.container.find(".tsa-url").val();
+                options.tspOptions.digestAlg = plugin[this.container.find(".ts-hash-alg").val()];
+                options.tspOptions.cert = ui.checkboxState(this.container, "tsa-cert-req") === "on" ? true : false;
+                options.tspOptions.nonce = ui.checkboxState(this.container, "nonce") === "on" ? true : false;
+                const policy = this.container.find(".set-policy").val();
+                if (policy.length)
+                    options.tspOptions.policy = policy;
+    
+                options.tspOptions.extOid = this.container.find(".ext-oid").val();
+                options.tspOptions.extValue = this.container.find(".ext-value").val();
+                options.tspOptions.extCrit = ui.checkboxState(this.container, "ext-crit") === "on" ? true : false;
+
+                options.tspOptions.verifyTsToken = ui.checkboxState(this.container, "verify-ts-token") === "on" ? true : false;
+
+                var cert = this.container.find(".cert-input").val();
+                if (cert) {
+                    options.tspOptions.certificates = new Array();
+                    options.tspOptions.certificates.push(cert);
+                }
+                var caCert = this.container.find(".ca-input").val();
+                if (caCert) {
+                    options.tspOptions.CA = new Array();
+                    options.tspOptions.CA.push(caCert);
+                }
+            }
 
             if (ui.useConsole) {
                 console.time("sign");
@@ -1552,7 +1606,7 @@ var TestSuite = new(function () {
             const signature = asn1Utils.getSignatureFromSignedCms(ui.getContent(this.container));
             const hashType = plugin[this.container.find(".hash-algorithm").val()];
             var options = {};
-            options.cert = ui.checkboxState(this.container, "cert-req") === "on" ? true : false;
+            options.cert = ui.checkboxState(this.container, "tsa-cert-req") === "on" ? true : false;
             options.nonce = ui.checkboxState(this.container, "nonce") === "on" ? true : false;
             const policy = this.container.find(".set-policy").val();
             if (policy.length)

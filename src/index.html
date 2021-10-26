@@ -481,7 +481,7 @@
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислить хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
                                     <label><input type="checkbox" name="rsa-hash" id="cms-rsa-hash"/>Алгоритм хэширования для RSA ключей</label>
-                                    <select class="hash-alg" id="cms-hash-alg" disabled=true>
+                                    <select class="cms-hash-alg" id="cms-hash-alg" disabled=true>
                                         <option value="HASH_TYPE_MD5">MD5</option>
                                         <option value="HASH_TYPE_SHA1">SHA1</option>
                                         <option value="HASH_TYPE_SHA256">SHA256</option>
@@ -504,6 +504,37 @@
                                     </div>
                                 </li>
                                 <li>
+                                    <label><input type="checkbox" name="add-ts-token" id="add-ts-token" />Добавить к сообщению метку доверенного времени...</label><br>
+                                    <div id="tsp-options" style="display:none" class="subform">
+                                        <label for=url>Адрес TSA сервера:</label>
+                                        <input type="text" id="tsa-url" class="tsa-url"/>
+                                        <label for="ts-hash-alg">Алгоритм хеширования подписи:</label>
+                                        <select class="ts-hash-alg" id="ts-hash-alg">
+                                            <option value="HASH_TYPE_GOST3411_12_256">ГОСТ Р 34.11-12 256</option>
+                                            <option value="HASH_TYPE_GOST3411_12_512">ГОСТ Р 34.11-12 512</option>
+                                            <option value="HASH_TYPE_SHA1">SHA1</option>
+                                            <option value="HASH_TYPE_SHA256">SHA256</option>
+                                            <option value="HASH_TYPE_SHA512">SHA512</option>
+                                        </select><br>
+                                        <label><input type="checkbox" name="tsa-cert-req" id="tsa-cert-req"/>Запросить сертификат TSA сервера</label><br>
+                                        <label><input type="checkbox" name="nonce" id="ts-nonce"/>Включить псевдо-случайное число в запрос (nonce)</label><br>
+                                        <label>Задать политику:</label>
+                                        <input type="text" class="set-policy" id="ts-set-policy"/>
+                                        <label>Расширение(опционально):</label><br>
+                                        <label>OID</label>
+                                        <input type="text" class="ext-oid" id="ts-ext-oid">
+                                        <label>value</label>
+                                        <input type="text" class="ext-value" id="ts-ext-value">
+                                        <label><input class="checkbox" type="checkbox" name="ext-crit" id="ts-ext-crit">Critical</label><br>
+                                        <label><input type="checkbox" name="verify-ts-token" id="verify-ts-token"/>Проверить сертификат TSA</label><br>
+                                        <label for="cert">Сертификат сервера доверенного времени</label>
+                                        <textarea placeholder="Опционально - в случае если он не включен в доверенную метку времени" id="ts-cert" class="cert-input"></textarea>
+                                        <label for="ca-cert">Корневой сертификат сервера доверенного времени</label>
+                                        <textarea placeholder="Данные принимаются в формате base64" id="ts-ca-cert" class="ca-input" rows="7"></textarea>
+                                    </div>
+                                </li>
+                                <li>
+                                    <label for="sign-message-result">Результат</label>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
                                 </li>
                             </ul>
@@ -548,8 +579,8 @@ IPx1wd5hBhGV714=
                                         <option value="HASH_TYPE_SHA256">SHA256</option>
                                         <option value="HASH_TYPE_SHA512">SHA512</option>
                                     </select><br>
-                                    <label><input type="checkbox" name="cert-req" />Включить сертификат сервера в ответ</label><br>
-                                    <label><input type="checkbox" name="nonce" checked="checked"/>Включить псевдо-случайное 64 битное число в запрос (nonce)</label><br>
+                                    <label><input type="checkbox" name="tsa-cert-req" />Включить сертификат сервера в ответ</label><br>
+                                    <label><input type="checkbox" name="nonce" checked="checked"/>Включить псевдо-случайное число в запрос (nonce)</label><br>
                                     <label>Задать политику:</label>
                                     <input type="text" class="set-policy"/>
                                 </li>

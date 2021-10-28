@@ -6,21 +6,21 @@ var browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     uglify = require('gulp-uglify-es').default;
 
-gulp.task('clean', function () {
+function clean () {
     return del(['build']);
-});
+};
 
-gulp.task('pages', function () {
+function pages () {
     return gulp.src('src/*.html')
         .pipe(gulp.dest('build'));
-});
+};
 
-gulp.task('libs', function () {
+function libs () {
     return gulp.src('src/libs/**')
         .pipe(gulp.dest('build/libs'));
-});
+};
 
-gulp.task('deps', gulp.series('libs', function () {
+function deps () {
     return browserify('src/dependencies.js')
         .add(require.resolve('babel-polyfill'))
         .transform('babelify', {presets: ["@babel/preset-env"], plugins:['@babel/plugin-transform-classes']})
@@ -30,24 +30,22 @@ gulp.task('deps', gulp.series('libs', function () {
         .pipe(uglify())
         .on('error', console.error)
         .pipe(gulp.dest('build/'));
-}));
+};
 
-gulp.task('scripts', gulp.series('deps', function () {
+function scripts () {
     return gulp.src(['src/present.js', 'src/asn1Utils.js'])
         .pipe(gulp.dest('build/'));
-}));
+};
 
-gulp.task('styles', function () {
+function styles () {
     return gulp.src('src/*.css')
         .pipe(gulp.dest('build/'));
-});
+};
 
-gulp.task('images', function () {
+function images () {
     return gulp.src('src/images/*.png')
         .pipe(gulp.dest('build/images'));
-});
+};
 
-gulp.task('default', gulp.series('clean', 'pages', 'scripts', 'styles', 'images', function (done) {
-    done();
-}));
-
+buildScripts = gulp.series(libs, deps, scripts)
+exports.default = gulp.series(clean, gulp.parallel(pages, buildScripts, styles, images));

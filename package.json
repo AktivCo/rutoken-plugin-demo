@@ -11,23 +11,23 @@
     "url": "https://github.com/AktivCo/rutoken-plugin-demo"
   },
   "dependencies": {
-    "console-polyfill": "^0.2.2",
-    "es6-promise": "^3.0.2",
+    "console-polyfill": "^0.3.0",
+    "es6-promise": "^4.2.8",
     "rutoken": "^1.0.8",
-    "asn1js": "^2.0.26",
-    "pkijs": "^2.1.91"
+    "asn1js": "^2.1.1",
+    "pkijs": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.0",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/plugin-transform-classes": "^7.10.4",
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/plugin-transform-classes": "^7.15.4",
     "babelify": "^10.0.0",
     "babel-polyfill": "6.26.0",
-    "browserify": "^11.2.0",
-    "del": "^2.0.2",
+    "browserify": "^17.0.0",
+    "del": "^6.0.0",
     "gulp": "^4.0.2",
-    "gulp-uglify-es": "2.0.0",
-    "vinyl-buffer": "^1.0.0",
+    "gulp-uglify-es": "3.0.0",
+    "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
   "author": "CJSC Aktiv-Soft",

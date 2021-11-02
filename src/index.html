@@ -467,6 +467,12 @@
                                 <li>
                                     <label for="sign-message">Сообщение. Должно быть пусто при добавлении подписи в attached cms</label>
                                     <textarea id="sign-message" class="text-input" rows="7">Текст очень важного платежного документа</textarea>
+                                    <label>Формат сообщения:</label>
+                                    <select class="data-format">
+                                        <option value="DATA_FORMAT_PLAIN">Строка</option>
+                                        <option value="DATA_FORMAT_BASE64">Base64</option>
+                                        <option value="DATA_FORMAT_HASH">Хеш сообщения (hex)</option>
+                                    </select><br>
                                 </li>
                                 <li>
                                     <label for="sign-message-cms">Сформированный CMS (для добавления подписи). Должно быть пусто при формировании подписи данных</label>
@@ -474,10 +480,6 @@
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислить хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
-                                    <label><input type="checkbox" name="detached-sign" />Создать отсоединенную подпись</label><br>
-                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включить сертификат пользователя</label><br>
-                                    <label><input type="checkbox" name="add-ess-cert" id="add-ess-cert"/>Добавить ESS защиту сертификата</label><br>
-                                    <label><input type="checkbox" name="add-sign-time" id="add-sign-time" checked="checked"/>Добавить timestamp</label><br>
                                     <label><input type="checkbox" name="rsa-hash" id="cms-rsa-hash"/>Алгоритм хэширования для RSA ключей</label>
                                     <select class="hash-alg" id="cms-hash-alg" disabled=true>
                                         <option value="HASH_TYPE_MD5">MD5</option>
@@ -485,16 +487,21 @@
                                         <option value="HASH_TYPE_SHA256">SHA256</option>
                                         <option value="HASH_TYPE_SHA512">SHA512</option>
                                     </select><br>
-                                    <label>Формат сообщения:</label>
-                                    <select class="data-format">
-                                        <option value="DATA_FORMAT_PLAIN">Строка</option>
-                                        <option value="DATA_FORMAT_BASE64">Base64</option>
-                                        <option value="DATA_FORMAT_HASH">Хеш сообщения (hex)</option>
-                                    </select><br>
-                                    <label><input type="checkbox" name="set-content-type" id="set-content-type"/>Задать eContentType:</label>
-                                    <input type="text" class="set-content-type" value="1.3.6.1.5.5.7.12.2"/>
-                                    <label><input type="checkbox" name="add-system-info" id="add-system-info"/>Включить информацию о месте подписи</label>
-                                    <label><input type="checkbox" name="add-security-products-info" id="add-security-products-info"/>Включить информацию о продуктах безопасности</label>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="detached-sign" />Создать отсоединенную подпись</label><br>
+                                    <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включить сертификат пользователя</label><br>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" id="add-sign-attrs" name="add-sign-attrs" />Добавить подписанные атрибуты...</label><br>
+                                    <div id="sign-attrs" id="sign-attrs" name="sign-attrs" style="display: none" class="subform">
+                                        <label><input type="checkbox" name="add-sign-time" id="add-sign-time"/>Добавить timestamp</label><br>
+                                        <label><input type="checkbox" name="set-content-type" id="set-content-type"/>Задать eContentType:</label>
+                                        <input type="text" class="content-type" id="content-type"/>
+                                        <label><input type="checkbox" name="add-ess-cert" id="add-ess-cert"/>Добавить ESS защиту сертификата</label><br>
+                                        <label><input type="checkbox" name="add-system-info" id="add-system-info"/>Включить информацию о месте подписи</label><br>
+                                        <label><input type="checkbox" name="add-security-products-info" id="add-security-products-info"/>Включить информацию о продуктах безопасности</label><br>
+                                    </div>
                                 </li>
                                 <li>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>

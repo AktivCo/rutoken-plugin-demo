@@ -49,6 +49,10 @@ function testUi(useConsole) {
         document.getElementById("cms-encrypt-alg").disabled = !this.checked;
     }
 
+    document.getElementById("set-content-type").onclick = function() {
+        document.getElementById("content-type").disabled = !this.checked;
+    }
+
     $(document).on('change', '.public-key-algorithm', function(e) {
         if (this.options[e.target.selectedIndex].text != "RSA")
             document.getElementById("rsa-keygen-size").disabled = true;
@@ -56,32 +60,22 @@ function testUi(useConsole) {
             document.getElementById("rsa-keygen-size").disabled = false;
     });
 
-    document.getElementById("add-system-info").onclick = function() {
-        document.getElementById("add-sign-time").disabled = this.checked;
-        if(this.checked) {
-            document.getElementById("add-sign-time").checked = true;
-        }
-    }
+    document.getElementById("add-sign-attrs").onclick = function() {
+        addSignAttrs = this.checked;
 
-    document.getElementById("add-security-products-info").onclick = function() {
-        document.getElementById("add-sign-time").disabled = this.checked;
-        if (this.checked) {
-            document.getElementById("add-sign-time").checked = true;
-        }
-    }
+        if (addSignAttrs)
+            $(document).find("#sign-attrs").show("Blind");
+        else
+            $(document).find("#sign-attrs").hide("Blind");
 
-    document.getElementById("add-ess-cert").onclick = function() {
-        document.getElementById("add-sign-time").disabled = this.checked;
-        if (this.checked) {
-            document.getElementById("add-sign-time").checked = true;
-        }
-    }
-
-    document.getElementById("set-content-type").onclick = function() {
-        document.getElementById("add-sign-time").disabled = this.checked;
-        if(this.checked) {
-            document.getElementById("add-sign-time").checked = true;
-        }
+        document.getElementById("add-sign-time").disabled = true;
+        document.getElementById("add-sign-time").checked = addSignAttrs;
+        document.getElementById("add-system-info").checked = false;
+        document.getElementById("add-security-products-info").checked = false;
+        document.getElementById("add-ess-cert").checked = false;
+        document.getElementById("set-content-type").checked = false;
+        document.getElementById("content-type").disabled = true;
+        document.getElementById("content-type").value = "1.3.6.1.5.5.7.12.2";
     }
 }
 
@@ -1497,7 +1491,7 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".hash-alg").val()];
             if (ui.checkboxState(this.container, "set-content-type") == "on")
-                options.eContentType = this.container.find(".set-content-type").val();
+                options.eContentType = this.container.find("#content-type").val();
 
             var dataFormat = plugin[this.container.find(".data-format").val()];
 

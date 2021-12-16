@@ -527,10 +527,21 @@
                                         <input type="text" class="ext-value" id="ts-ext-value">
                                         <label><input class="checkbox" type="checkbox" name="ext-crit" id="ts-ext-crit">Critical</label><br>
                                         <label><input type="checkbox" name="verify-ts-token" id="verify-ts-token"/>Проверить сертификат TSA</label><br>
-                                        <label for="cert">Сертификат сервера доверенного времени</label>
-                                        <textarea placeholder="Опционально - в случае если он не включен в доверенную метку времени" id="ts-cert" class="cert-input"></textarea>
                                         <label for="ca-cert">Корневой сертификат сервера доверенного времени</label>
-                                        <textarea placeholder="Данные принимаются в формате base64" id="ts-ca-cert" class="ca-input" rows="7"></textarea>
+                                        <textarea placeholder="Данные принимаются в формате base64" id="ts-ca-cert" class="ca-input" rows="7"></textarea><br>
+                                        <label for="certs">Cертификаты для проверки подписи сервера доверенного времени</label><br>
+                                        <table class="Certificates">
+                                        <tr>
+                                            <td colspan="2">
+                                                <label for="cert">Сертификат</label>
+                                                <textarea placeholder="Опционально" id="cert" class="verify-ts-signer"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button class="verify-add-signer example">Добавить еще</button></td>
+                                        </tr>
+                                    </table>
+
                                     </div>
                                 </li>
                                 <li>
@@ -709,15 +720,15 @@ IPx1wd5hBhGV714=
                                     <textarea placeholder="Опционально - в случае если проверяется detached подпись" id="data" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
-                                    <table id="Certificates" class="inlineblock">
+                                    <table class="Certificates">
                                         <tr>
                                             <td colspan="2">
                                                 <label for="cert">Сертификат</label>
-                                                <textarea placeholder="Опционально - в случае если он не включен в cms" id="cert" class="verify-signer"></textarea>
+                                                <textarea placeholder="Опционально" id="cert" class="verify-signer"></textarea>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2"><button id="verify-add-signer" class="example">Добавить еще</button></td>
+                                            <td colspan="2"><button class="verify-add-signer example">Добавить еще</button></td>
                                         </tr>
                                     </table>
                                 </li>
@@ -742,12 +753,22 @@ IPx1wd5hBhGV714=
                                     <textarea placeholder="Введите CMS, в который необходимо добавить доверенную метку времени" id="cms-for-tst-injection" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
-                                    <label for="cert">Сертификат сервера доверенного времени</label>
-                                    <textarea placeholder="Опционально - в случае если он не включен в доверенную метку времени" id="cert" class="text-input"></textarea>
-                                </li>
-                                <li>
                                     <label for="ca-cert">Корневой сертификат сервера доверенного времени</label>
                                     <textarea placeholder="Данные принимаются в формате base64" id="ca-cert" class="text-input" rows="7"></textarea>
+                                </li>
+                                <li>
+                                    <label for="certs">Cертификаты для проверки подписи сервера доверенного времени</label><br>
+                                    <table class="Certificates">
+                                        <tr>
+                                            <td colspan="2">
+                                                <label for="cert">Сертификат</label>
+                                                <textarea placeholder="Опционально" id="cert" class="verify-ts-signer"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button class="verify-add-signer example">Добавить еще</button></td>
+                                        </tr>
+                                    </table>
                                 </li>
                                 <li>
                                     <textarea id="cms-with-tst" placeholder="CMS с успешно проверенной доверенной меткой времени для первого найденного подписанта" class="text-output" rows="3"></textarea>

@@ -30,7 +30,7 @@ function testUi(useConsole) {
 
     $("#add-custom-extension").click($.proxy(this.newCustomExtension, this));
     $("#add-new-recipient").click($.proxy(this.newCmsEncryptRecipient, this));
-    $("#verify-add-signer").click($.proxy(this.newVerifySigner, this));
+    $(".verify-add-signer").click($.proxy(this.newVerifySigner, this));
 
     $(".button").button();
     SyntaxHighlighter.highlight();
@@ -87,17 +87,17 @@ function testUi(useConsole) {
         else
             optionsContainer.hide("Blind");
 
-        document.getElementById("tsa-url").value = ""
-        document.getElementById("ts-hash-alg").value = "HASH_TYPE_GOST3411_12_256"
-        document.getElementById("tsa-cert-req").checked = true
-        document.getElementById("ts-nonce").checked = true
-        document.getElementById("ts-set-policy").value = ""
-        document.getElementById("ts-ext-oid").value = ""
-        document.getElementById("ts-ext-value").value = ""
-        document.getElementById("ts-ext-crit").checked = false
-        document.getElementById("verify-ts-token").checked = true
-        document.getElementById("ts-cert").value = ""
-        document.getElementById("ts-ca-cert").value = ""
+        optionsContainer.find("#tsa-url").val("");
+        optionsContainer.find("#ts-hash-alg").val("HASH_TYPE_GOST3411_12_256");
+        optionsContainer.find("#tsa-cert-req")[0].checked = true;
+        optionsContainer.find("#ts-nonce")[0].checked = true;
+        optionsContainer.find("#ts-set-policy").val("");
+        optionsContainer.find("#ts-ext-oid").val("");
+        optionsContainer.find("#ts-ext-value").val("");
+        optionsContainer.find("#ts-ext-crit")[0].checked = false;
+        optionsContainer.find("#verify-ts-token")[0].checked = true;
+        optionsContainer.find("#ts-ca-cert").val("");
+        ui.clearVerifySigners(optionsContainer.find(".Certificates")[0]);
     }
 }
 
@@ -280,6 +280,17 @@ testUi.prototype = {
             index = 0;
         var elements = container.find(".text-input, .input");
         return elements[index].value;
+    },
+
+    getArray: function (container, selector) {
+        var elements = container.find(selector);
+
+        var array = [];
+        for (var i = 0; i < elements.length; i++)
+            if (elements[i].value != "")
+                array.push(elements[i].value);
+
+        return array;
     },
 
     setContent: function (container, text) {
@@ -584,31 +595,37 @@ testUi.prototype = {
     },
 
     newVerifySigner: function() {
-        var table = document.getElementById("Certificates");
+        var table = event.currentTarget.closest(".Certificates");
 
-        var row = table.insertRow(table.rows.length - 1);
-        var cell = row.insertCell(0);
+        var splitter = table.insertRow(table.rows.length - 1);
+        var cell = splitter.insertCell(0);
         cell.colSpan = 2;
         cell.innerHTML = "<hr>";
 
-        row = table.insertRow(table.rows.length - 1);
-        cell = row.insertCell(0);
-        cell.innerHTML = '<label for="cert">Cертификат</label>\
-            <textarea id="cert" class="verify-signer"></textarea>'
+        var row = $(table.rows[0]).clone().insertAfter(splitter);
+        row.find("td").colSpan = 1;
+        row.find("textarea").val("");
 
-        cell = row.insertCell(1);
+        cell = row[0].insertCell(1);
         cell.innerHTML = '<img src="images/close.png" alt="x" width=24 height=24/>';
-        cell.onclick = this.deleteVerifySigner;
+        cell.onclick = $.proxy(this.deleteVerifySigner, this);
     },
 
     deleteVerifySigner: function() {
         const numberOfRowsToDelete = 2;
-        var table = document.getElementById("Certificates");
-        var row = $(this).closest("tr");
-        var rIndex = row[0].rowIndex;
+        var table = event.currentTarget.closest(".Certificates");
+        var row = event.currentTarget.closest("tr");
+        var rIndex = row.rowIndex;
 
         for(var i = 0; i < numberOfRowsToDelete; i++)
             table.deleteRow(rIndex-1);
+    },
+
+    clearVerifySigners: function(table) {
+        $(table.rows[0]).find("textarea").val("");
+
+        while(table.rows.length != 2)
+            table.deleteRow(1);
     },
 
     newCmsEncryptRecipient: function() {
@@ -1537,16 +1554,13 @@ var TestSuite = new(function () {
 
                 options.tspOptions.verifyTsToken = ui.checkboxState(this.container, "verify-ts-token") === "on" ? true : false;
 
-                var cert = this.container.find(".cert-input").val();
-                if (cert) {
-                    options.tspOptions.certificates = new Array();
-                    options.tspOptions.certificates.push(cert);
-                }
                 var caCert = this.container.find(".ca-input").val();
                 if (caCert) {
                     options.tspOptions.CA = new Array();
                     options.tspOptions.CA.push(caCert);
                 }
+
+                options.tspOptions.certificates = ui.getArray( this.container, ".verify-ts-signer");
             }
 
             if (ui.useConsole) {
@@ -1803,11 +1817,7 @@ var TestSuite = new(function () {
             options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
             options.data = ui.getContent(this.container, 1);
 
-            var elements = this.container.find(".verify-signer");
-            options.certificates = [];
-            for (var i = 0; i < elements.length; i++)
-                if (elements[i].value != "")
-                    options.certificates.push(elements[i].value);
+            options.certificates = ui.getArray(this.container, ".verify-signer");
 
             var caCert = ui.getContent(this.container, 2);
             if (caCert != "") {
@@ -1842,11 +1852,8 @@ var TestSuite = new(function () {
             if (!cms.length)
                 throw 'Ошибка: Укажите подписанный CMS';
 
-            var cert = ui.getContent(this.container, 3);
-            if (cert != "") {
-                options.certificates = new Array();
-                options.certificates.push(cert);
-            }
+            options.certificates = ui.getArray(this.container, ".verify-ts-signer");
+
             var caCert = ui.getContent(this.container, 4);
             if (caCert != "") {
                 options.CA = new Array();

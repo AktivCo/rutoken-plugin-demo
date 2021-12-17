@@ -493,20 +493,20 @@
                                     <label><input type="checkbox" name="add-user-cert" checked="checked"/>Включить сертификат пользователя</label><br>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" id="add-sign-attrs" name="add-sign-attrs" />Добавить подписанные атрибуты...</label><br>
+                                    <label><input type="checkbox" id="add-sign-attrs" name="add-sign-attrs" />Добавить подписанные атрибуты (необходимо для CAdES-BES, CAdES-T)...</label><br>
                                     <div id="sign-attrs" id="sign-attrs" name="sign-attrs" style="display: none" class="subform">
                                         <label><input type="checkbox" name="add-sign-time" id="add-sign-time"/>Добавить локальное время подписи</label><br>
                                         <label><input type="checkbox" name="set-content-type" id="set-content-type"/>Задать eContentType:</label>
                                         <input type="text" class="content-type" id="content-type"/>
-                                        <label><input type="checkbox" name="add-ess-cert" id="add-ess-cert"/>Добавить ESS защиту сертификата</label><br>
+                                        <label><input type="checkbox" name="add-ess-cert" id="add-ess-cert"/>Добавить идентификатор подписанта в формате ESS (необходимо для CAdES-BES, CAdES-T)</label><br>
                                         <label><input type="checkbox" name="add-system-info" id="add-system-info"/>Включить информацию о месте подписи</label><br>
                                         <label><input type="checkbox" name="add-security-products-info" id="add-security-products-info"/>Включить информацию о продуктах безопасности</label><br>
                                     </div>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" name="add-ts-token" id="add-ts-token" />Добавить к сообщению метку доверенного времени...</label><br>
+                                    <label><input type="checkbox" name="add-ts-token" id="add-ts-token" />Добавить к сообщению метку доверенного времени (необходимо для CAdES-T)...</label><br>
                                     <div id="tsp-options" style="display:none" class="subform">
-                                        <label for=url>Адрес TSA сервера:</label>
+                                        <label for=url>Адрес TSA сервера (учитываются системные настройки проксирования, только HTTP):</label>
                                         <input type="text" id="tsa-url" class="tsa-url"/>
                                         <label for="ts-hash-alg">Алгоритм хеширования подписи:</label>
                                         <select class="ts-hash-alg" id="ts-hash-alg">

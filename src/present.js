@@ -818,6 +818,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_UNHANDLED_CRITICAL_CRL_EXTENSION] = "Неподдерживаемое расширение CRL";
     this.errorDescription[this.errorCodes.X509_INVALID_EXTENSION] = "Неверное или некорректное расширение сертификата";
     this.errorDescription[this.errorCodes.X509_INVALID_POLICY_EXTENSION] = "Неверное или некорректное расширение политик сертификата";
+    this.errorDescription[this.errorCodes.X509_INVALID_OBJECT_IDENTIFIER] = "Неверный или некорректный идентификатор объекта";
     this.errorDescription[this.errorCodes.X509_NO_EXPLICIT_POLICY] = "Явные политики отсутствуют";
     this.errorDescription[this.errorCodes.X509_DIFFERENT_CRL_SCOPE] = "Другая область CRL";
     this.errorDescription[this.errorCodes.X509_UNSUPPORTED_EXTENSION_FEATURE] = "Неподдерживаемое расширение возможностей";
@@ -843,6 +844,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
     this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
 
+    this.errorDescription[this.errorCodes.UNKNOWN_OBJECT_NAME] = "Неизвестное имя объекта";
     this.errorDescription[this.errorCodes.HOST_NOT_FOUND] = "Не удалось найти сервер";
     this.errorDescription[this.errorCodes.HTTP_ERROR] = "HTTP ответ с ошибкой";
     this.errorDescription[this.errorCodes.TST_VERIFICATION_ERROR] = "Ошибка проверки timestamp токена";

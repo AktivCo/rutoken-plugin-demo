@@ -1108,6 +1108,9 @@ var TestSuite = new(function () {
             plugin.pluginObject.getDeviceInfo(ui.device(), ui.infoType()).then(function (result) {
                 var message = result;
 
+                if (info == plugin.TOKEN_INFO_LABEL)
+                    if (message == "Rutoken ECP <no label>") message = "&lt;no label&gt;";
+
                 if (info === plugin.TOKEN_INFO_DEVICE_TYPE) {
                     message = "Невозможно определить тип устройства";
                     switch (result) {

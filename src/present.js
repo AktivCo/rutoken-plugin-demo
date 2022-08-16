@@ -844,10 +844,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
     this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
 
-    this.errorDescription[this.errorCodes.UNKNOWN_OBJECT_NAME] = "Неизвестное имя объекта";
     this.errorDescription[this.errorCodes.HOST_NOT_FOUND] = "Не удалось найти сервер";
     this.errorDescription[this.errorCodes.HTTP_ERROR] = "HTTP ответ с ошибкой";
     this.errorDescription[this.errorCodes.TST_VERIFICATION_ERROR] = "Ошибка проверки timestamp токена";
+    this.errorDescription[this.errorCodes.UNKNOWN_OBJECT_NAME] = "Неизвестное имя объекта";
 
     if (this.autoRefresh) this.enumerateDevices();
 }

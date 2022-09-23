@@ -1773,7 +1773,7 @@ var TestSuite = new(function () {
             if (ui.useConsole) {
                 console.time("authenticate");
             }
-            plugin.pluginObject.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container)).the($.proxy(function (res) {
+            plugin.pluginObject.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container)).then($.proxy(function (res) {
                 if (ui.useConsole) {
                     console.timeEnd("authenticate");
                 }

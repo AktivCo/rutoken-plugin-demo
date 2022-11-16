@@ -1549,7 +1549,7 @@ var TestSuite = new(function () {
                 const policy = this.container.find(".set-policy").val();
                 if (policy.length)
                     options.tspOptions.policy = policy;
-    
+
                 options.tspOptions.extOid = this.container.find(".ext-oid").val();
                 options.tspOptions.extValue = this.container.find(".ext-value").val();
                 options.tspOptions.extCrit = ui.checkboxState(this.container, "ext-crit") === "on" ? true : false;
@@ -2041,7 +2041,7 @@ function getFFMajor() {
 }
 
 var isChrome = !!window.chrome;
-var isFirefox = typeof InstallTrigger !== 'undefined';
+var isFirefox = !!window.navigator.userAgent.match(/firefox/i) && !window.navigator.userAgent.match(/seamonkey/i);
 
 window.onload = function () {
     rutoken.ready.then(function () {

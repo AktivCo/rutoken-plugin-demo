@@ -1856,7 +1856,7 @@ var TestSuite = new(function () {
 
             options.certificates = ui.getArray(this.container, ".verify-ts-signer");
 
-            var caCert = ui.getContent(this.container, 4);
+            var caCert = ui.getContent(this.container, 3);
             if (caCert != "") {
                 options.CA = new Array();
                 options.CA.push(caCert);

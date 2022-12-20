@@ -13,7 +13,7 @@
   "dependencies": {
     "console-polyfill": "^0.3.0",
     "es6-promise": "^4.2.8",
-    "@aktivco/rutoken-plugin": "^1.0.9",
+    "@aktivco/rutoken-plugin": ">=1.0.9",
     "asn1js": "^2.1.1",
     "pkijs": "^2.2.1"
   },

@@ -3,6 +3,7 @@ var browserify = require('browserify'),
     buffer = require('vinyl-buffer'),
     del = require('del'),
     gulp = require('gulp'),
+    rename = require('gulp-rename'),
     source = require('vinyl-source-stream'),
     uglify = require('gulp-uglify-es').default;
 
@@ -32,6 +33,12 @@ function deps () {
         .pipe(gulp.dest('build/'));
 };
 
+function module () {
+    return gulp.src(['./node_modules/@aktivco/rutoken-plugin/rutoken-plugin.min.js'])
+        .pipe(rename('rutoken-plugin.js'))
+        .pipe(gulp.dest('build/'));
+};
+
 function scripts () {
     return gulp.src(['src/present.js', 'src/asn1Utils.js'])
         .pipe(gulp.dest('build/'));
@@ -47,5 +54,5 @@ function images () {
         .pipe(gulp.dest('build/images'));
 };
 
-buildScripts = gulp.series(libs, deps, scripts)
+buildScripts = gulp.series(libs, deps, module, scripts)
 exports.default = gulp.series(clean, gulp.parallel(pages, buildScripts, styles, images));

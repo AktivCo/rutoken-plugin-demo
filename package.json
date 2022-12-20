@@ -13,7 +13,7 @@
   "dependencies": {
     "console-polyfill": "^0.3.0",
     "es6-promise": "^4.2.8",
-    "@aktivco/rutoken-plugin": ">=1.0.9",
+    "@aktivco/rutoken-plugin": "^1.0.9",
     "asn1js": "^2.1.1",
     "pkijs": "^2.2.1"
   },
@@ -26,9 +26,13 @@
     "browserify": "^17.0.0",
     "del": "^6.0.0",
     "gulp": "^4.0.2",
+    "gulp-rename": "^2.0.0",
     "gulp-uglify-es": "3.0.0",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
+  },
+  "scripts": {
+    "gulp": "gulp"
   },
   "author": "Aktiv-Soft JSC",
   "contributors": [

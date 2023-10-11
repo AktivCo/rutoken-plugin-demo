@@ -1152,7 +1152,8 @@ var TestSuite = new(function () {
                     interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
                     interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
                     interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
-                    interfaces[plugin.INTERFACE_TYPE_NFC] = "INTERFACE_TYPE_NFC";
+                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_A] = "INTERFACE_TYPE_NFC";
+                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_B] = "INTERFACE_TYPE_NFC";
 
                     var smType = {};
                     smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";

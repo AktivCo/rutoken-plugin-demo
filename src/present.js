@@ -1178,6 +1178,7 @@ var TestSuite = new(function () {
                     hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
                     hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
                     hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
+                    hashes[plugin.HASH_TYPE_SHA384] = "HASH_TYPE_SHA384";
                     hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
 
                     var signs = {};

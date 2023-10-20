@@ -1372,6 +1372,30 @@ var TestSuite = new(function () {
                     case plugin.PUBLIC_KEY_ALGORITHM_RSA:
                         message = "RSA";
                         break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_512:
+                        message = "RSA 512";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_768:
+                        message = "RSA 768";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1024:
+                        message = "RSA 1024";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1280:
+                        message = "RSA 1280";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1536:
+                        message = "RSA 1536";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1792:
+                        message = "RSA 1792";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_2048:
+                        message = "RSA 2048";
+                        break;
+                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_4096:
+                        message = "RSA 4096";
+                        break;
                     default:
                         message = "Неизвестный тип алгоритма ключа: " + result;
                         break;

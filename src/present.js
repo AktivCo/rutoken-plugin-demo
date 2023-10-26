@@ -511,7 +511,9 @@ testUi.prototype = {
             this.writeln("<Пустая строка>" + "\n");
             return;
         }
-        this.writeln(message + "\n");
+        // Sometimes html takes the output message as an HTML tag, which leeds to incorrect output.
+        // To avoid this, we use $('div') to save the message content, and then call the html method that correctly outputs the message.
+        this.writeln($('<div>').text(message).html() + "\n");
     },
 
     getSubject: function () {

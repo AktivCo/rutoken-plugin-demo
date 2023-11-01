@@ -1530,6 +1530,30 @@ var TestSuite = new(function () {
         };
     })();
 
+    this.SetCertLabel = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Установка метки сертификата";
+        };
+        this.runTest = function () {
+            plugin.pluginObject.setCertLabel(ui.device(), ui.certificate(), ui.getContent(this.container)).then($.proxy(function () {
+                ui.printResult();
+                if (plugin.autoRefresh) plugin.enumerateCertificates();
+                else ui.clearCertificateList("Обновите список сертификатов");
+            }, this), $.proxy(ui.printError, ui));
+        }
+    })();
+
+    this.GetCertLabel = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение метки сертификата";
+        };
+        this.runTest = function () {
+            plugin.pluginObject.getCertLabel(ui.device(), ui.certificate()).then($.proxy(ui.printResult, ui), $.proxy(ui.printError, ui));
+        }
+    })();
+
     this.GetCertificateInfo = new(function () {
         Test.call(this);
         this.description = function () {

@@ -347,6 +347,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_PINS_INFO;
         case "fkn":
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
+        case "model name":
+            return plugin.TOKEN_INFO_MODEL_NAME;
         }
     },
 

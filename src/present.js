@@ -54,10 +54,31 @@ function testUi(useConsole) {
     }
 
     $(document).on('change', '.public-key-algorithm', function(e) {
-        if (this.options[e.target.selectedIndex].text != "RSA")
+        if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2001") {
+            document.getElementById("paramset-2001").style = "display: inline;";
+            document.getElementById("paramset-2012-256").style = "display: none;";
+            document.getElementById("paramset-2012-512").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = true;
-        else
+        }
+        else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 256") {
+            document.getElementById("paramset-2001").style = "display: none;";
+            document.getElementById("paramset-2012-256").disabled = false;
+            document.getElementById("paramset-2012-256").style = "display: inline;";
+            document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("rsa-keygen-size").disabled = true;
+        }
+        else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 512") {
+            document.getElementById("paramset-2001").style = "display: none;";
+            document.getElementById("paramset-2012-256").style = "display: none;";
+            document.getElementById("paramset-2012-512").style = "display: inline;";
+            document.getElementById("rsa-keygen-size").disabled = true;
+        } else {
+            document.getElementById("paramset-2001").style = "display: none;";
+            document.getElementById("paramset-2012-256").style = "display: inline;";
+            document.getElementById("paramset-2012-256").disabled = true;
+            document.getElementById("paramset-2012-512").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = false;
+        }
     });
 
     document.getElementById("add-sign-attrs").onclick = function() {
@@ -1295,13 +1316,13 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
 
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
-                options.paramset = "A";
+                options.paramset = this.container.find(".paramset-2001").val();
                 options.signatureSize = 512;
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256) {
-                options.paramset = "A";
+                options.paramset = this.container.find(".paramset-2012-256").val();
                 options.signatureSize = 512;
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512) {
-                options.paramset = "A";
+                options.paramset = this.container.find(".paramset-2012-512").val();
                 options.signatureSize = 1024;
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
                 let rsaSize = parseInt(this.container.find(".rsa-keygen-size").val(), 10);

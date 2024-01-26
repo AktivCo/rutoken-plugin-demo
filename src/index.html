@@ -82,6 +82,7 @@
                         <li><a href="#section-3"><span>Работа с сертификатами</span></a></li>
                         <li><a href="#section-4"><span>ЭЦП и аутентификация</span></a></li>
                         <li><a href="#section-5"><span>Шифрование</span></a></li>
+                        <li><a href="#section-6"><span>Работа с файлами</span></a></li>
                     </ul>
                     <div id="section-1">
                         <div id="DevInfo" class="group">
@@ -877,6 +878,39 @@ IPx1wd5hBhGV714=
                                 </li>
                             </ul>
                         </div>
+                    </div>
+                    <div id="section-6">
+                        <div class="common">
+                            <dl>
+                                <dt><label for="files-list">Файлы на устройстве: </label></dt>
+                                <dd>
+                                    <select id="files-list">
+                                        <option>Обновите список файлов</option>
+                                    </select>
+                                    <button id="refresh-files">↓↑</button>
+                                </dd>
+                            </dl>
+                        </div>
+                        <div id="CreateFile" class="group">
+                            <ul>
+                                <li>
+                                    <label>OBJECT_ID:</label>
+                                    <input type="text" class="file-id input" value='CKA_OBJECT_ID' />
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="is-private-file" />Приватный файл</label><br>
+                                </li>
+                                <li>
+                                    <textarea id="create-file-body" class="text-input" rows="7">CKA_VALUE</textarea>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="GetFile" class="group">
+                            <ul>
+                                <li><textarea id="get-file-result" class="text-output" rows="7"></textarea></li>
+                            </ul>
+                        </div>
+                        <div id="DeleteFile" class="group"></div>
                     </div>
                 </div>
             </div>

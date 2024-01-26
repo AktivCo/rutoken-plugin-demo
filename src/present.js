@@ -127,11 +127,13 @@ function uiControls() {
     this.keyList = $("#key-list");
     this.certificateList = $("#cert-list");
     this.systemStoreCertificateList = $("#system-store-cert-list");
+    this.filesList = $("#files-list");
 
     this.refreshDeviceListButton = $("#refresh-dev");
     this.refreshKeyListButton = $("#refresh-keys");
     this.refreshCertificateListButton = $("#refresh-certs");
     this.refreshSystemStoreCertificateListButton = $("#refresh-system-store-certs");
+    this.refreshFilesListButton = $("#refresh-files");
 
     this.loginButton = $("#login");
     this.logoutButton = $("#logout");
@@ -147,11 +149,13 @@ uiControls.prototype = {
     keyList: null,
     certificateList: null,
     systemStoreCertificateList: null,
+    filesList: null,
 
     refreshDeviceListButton: null,
     refreshKeyListButton: null,
     refreshCertificateListButton: null,
     refreshSystemStoreCertificateListButton: null,
+    refreshFilesListButton: null,
     loginButton: null,
     logoutButton: null,
     savePinButton: null,
@@ -199,6 +203,10 @@ testUi.prototype = {
     systemStoreCertificate: function () {
         if (this.controls.systemStoreCertificateList.val() == null) throw "Сертификат не выбран";
         return this.controls.systemStoreCertificateList.val();
+    },
+
+    file: function () {
+        return this.controls.filesList.val();
     },
 
     addDevice: function (deviceId, label, selected) {
@@ -294,6 +302,24 @@ testUi.prototype = {
     clearSystemStoreCertificateList: function (message) {
         this.controls.systemStoreCertificateList.empty();
         if (message) this.controls.systemStoreCertificateList.append($("<option>").text(message));
+    },
+
+    addFile: function (fileId) {
+        this.controls.filesList.append($("<option>", {
+            'value': fileId
+        }).text(fileId));
+    },
+
+    refreshFilesList: function (files) {
+        this.clearFilesList();
+        if (files.length > 0)
+            for (var d in files) this.addFile(files[d]);
+        else this.controls.filesList.append($("<option>").text("Файлы на устройстве отсутствуют"));
+    },
+
+    clearFilesList: function (message) {
+        this.controls.filesList.empty();
+        if (message) this.controls.filesList.append($("<option>").text(message));
     },
 
     getContent: function (container, index) {
@@ -429,6 +455,15 @@ testUi.prototype = {
             }
         }, this));
 
+        this.controls.refreshFilesListButton.click($.proxy(function () {
+            try {
+                plugin.enumerateBinaryFiles();
+            } catch (error) {
+                this.writeln(error.toString());
+                this.clearFilesList(error.toString());
+            }
+        }, this));
+
         this.controls.loginButton.click($.proxy(function () {
             try {
                 plugin.login();
@@ -465,9 +500,11 @@ testUi.prototype = {
             if (plugin.autoRefresh) {
                 plugin.enumerateKeys();
                 plugin.enumerateCertificates();
+                plugin.enumerateBinaryFiles();
             } else {
                 this.clearKeyList("Обновите список ключевых пар");
                 this.clearCertificateList("Обновите список сертификатов");
+                this.clearFilesList("Обновите список файлов");
             }
         }, this));
     },
@@ -933,10 +970,12 @@ cryptoPlugin.prototype = {
                                         if (this.autoRefresh) this.enumerateKeys(ui.device());
                                         if (this.autoRefresh) this.enumerateCertificates(ui.device());
                                         else ui.clearCertificateList("Обновите список сертификатов");
+                                        if (this.autoRefresh) this.enumerateBinaryFiles(ui.device());
                                     } catch (e) {
                                         ui.clearDeviceList("Нет доступных устройств");
                                         ui.clearCertificateList("Нет доступных устройств");
                                         ui.clearKeyList("Нет доступных устройств");
+                                        ui.clearFilesList("Нет доступных устройств");
                                     }
                                 }
                             }
@@ -954,6 +993,7 @@ cryptoPlugin.prototype = {
                     ui.clearDeviceList("Нет доступных устройств");
                     ui.clearCertificateList("Нет доступных устройств");
                     ui.clearKeyList("Нет доступных устройств");
+                    ui.clearFilesList("Нет доступных устройств");
                     return;
                 }
                 //            ui.clearKeyList("Выполните вход на устройство");
@@ -1079,11 +1119,31 @@ cryptoPlugin.prototype = {
         }
     },
 
+    enumerateBinaryFiles: function (deviceId) {
+        ui.clearFilesList("Список файлов обновляется...");
+        deviceId = (deviceId === undefined) ? ui.device() : deviceId;
+        this.pluginObject.enumerateBinaryObjects(deviceId).then($.proxy(function (files) {
+            if (files.length == 0) {
+                ui.clearFilesList("На устройстве отсутствуют файлы");
+                return;
+            }
+
+            ui.clearFilesList();
+            for (var f in files) {
+                ui.addFile(files[f]);
+            }
+        }, this), function (error) {
+            ui.printError(error);
+        });
+    },
+
     login: function () {
         this.pluginObject.login(ui.device(), ui.pin()).then($.proxy(function () {
             ui.writeln("Вход выполнен\n");
             if (this.autoRefresh) this.enumerateKeys();
             else ui.clearKeyList("Обновите список ключевых пар");
+            if (this.autoRefresh) this.enumerateBinaryFiles();
+            else ui.clearFilesList("Обновите список файлов");
         }, this), $.proxy(ui.printError, ui));
     },
 
@@ -1093,6 +1153,8 @@ cryptoPlugin.prototype = {
             plugin.pluginObject.getDeviceInfo(ui.device(), plugin.TOKEN_INFO_IS_LOGGED_IN).then(function (result) {
                 if (!result) ui.clearKeyList("Выполните вход на устройство");
             }, $.proxy(ui.printError, ui));
+            if (this.autoRefresh) this.enumerateBinaryFiles();
+            else ui.clearFilesList("Обновите список файлов");
         }, this), $.proxy(ui.printError, ui));
     },
 
@@ -2063,6 +2125,48 @@ var TestSuite = new(function () {
                 ui.setContent(this.container, res.text);
                 ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
+        };
+    })();
+
+    this.CreateFile = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Запись нового файла на устройство";
+        };
+        this.runTest = function () {
+            var isPrivate = ui.checkboxState(this.container, "is-private-file") == "on" ? true : false;
+            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), isPrivate).then($.proxy(function (res) {
+                if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
+                else ui.clearFilesList("Обновите список файлов");
+                ui.printResult(res);
+            }, this), $.proxy(ui.printError, ui));
+        };
+    })();
+
+    this.GetFile = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Чтение выбранного файла с устройства";
+        }
+        this.runTest = function () {
+            plugin.pluginObject.readBinaryObject(ui.device(), ui.file()).then($.proxy(function (res) {
+                ui.setContent(this.container, res);
+                ui.printResult(res);
+            }, this), $.proxy(ui.printError, ui))
+        }
+    })();
+
+    this.DeleteFile = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Удаление выбранного файла с устройства";
+        };
+        this.runTest = function () {
+            plugin.pluginObject.deleteBinaryObject(ui.device(), ui.file()).then($.proxy(function () {
+                ui.printResult();
+                if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
+                else ui.clearFilesList("Обновите список файлов");
+            }, this), $.proxy(ui.printError, ui));
         };
     })();
 })();

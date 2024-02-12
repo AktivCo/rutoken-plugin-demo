@@ -957,6 +957,7 @@ cryptoPlugin.prototype = {
                                             if (this.autoRefresh) this.enumerateKeys(device);
                                             if (this.autoRefresh) this.enumerateCertificates(device);
                                             else ui.clearCertificateList("Обновите список сертификатов");
+                                            if (this.autoRefresh) this.enumerateBinaryFiles(device);
                                         }
                                     };
                                 }(dev), this), $.proxy(ui.printError, ui));
@@ -1007,6 +1008,7 @@ cryptoPlugin.prototype = {
                 if (this.autoRefresh) this.enumerateKeys(devices[0]);
                 if (this.autoRefresh) this.enumerateCertificates(devices[0]);
                 else ui.clearCertificateList("Обновите список сертификатов");
+                if (this.autoRefresh) this.enumerateBinaryFiles(devices[0]);
 
                 for (var d in devices) {
                     this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {

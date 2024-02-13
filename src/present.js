@@ -1132,7 +1132,7 @@ cryptoPlugin.prototype = {
         deviceId = (deviceId === undefined) ? ui.device() : deviceId;
         this.pluginObject.enumerateBinaryObjects(deviceId).then($.proxy(function (files) {
             if (files.length == 0) {
-                ui.clearFilesList("На устройстве отсутствуют файлы");
+                ui.clearFilesList("Доступные бинарные файлы не найдены");
                 return;
             }
 
@@ -2139,14 +2139,14 @@ var TestSuite = new(function () {
     this.CreateFile = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Запись нового файла на устройство";
+            return "Запись нового бинарного файла на устройство";
         };
         this.runTest = function () {
             var isPrivate = ui.checkboxState(this.container, "is-private-file") == "on" ? true : false;
-            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), isPrivate).then($.proxy(function (res) {
+            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), $.base64.decode(ui.getContent(this.container, 1)), isPrivate).then($.proxy(function (res) {
                 if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
                 else ui.clearFilesList("Обновите список файлов");
-                ui.printResult(res);
+                ui.printResult("Бинарный файл " + res + " успешно создан");
             }, this), $.proxy(ui.printError, ui));
         };
     })();
@@ -2154,12 +2154,13 @@ var TestSuite = new(function () {
     this.GetFile = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Чтение выбранного файла с устройства";
+            return "Чтение выбранного бинарного файла с устройства";
         }
         this.runTest = function () {
             plugin.pluginObject.readBinaryObject(ui.device(), ui.file()).then($.proxy(function (res) {
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+                var base64 = $.base64.encode(res);
+                ui.setContent(this.container, base64);
+                ui.printResult(base64);
             }, this), $.proxy(ui.printError, ui))
         }
     })();
@@ -2167,11 +2168,12 @@ var TestSuite = new(function () {
     this.DeleteFile = new(function () {
         Test.call(this);
         this.description = function () {
-            return "Удаление выбранного файла с устройства";
+            return "Удаление выбранного бинарного файла с устройства";
         };
         this.runTest = function () {
-            plugin.pluginObject.deleteBinaryObject(ui.device(), ui.file()).then($.proxy(function () {
-                ui.printResult();
+            var fileName = ui.file()
+            plugin.pluginObject.deleteBinaryObject(ui.device(), fileName).then($.proxy(function () {
+                ui.printResult("Бинарный файл " + fileName + " успешно удален");
                 if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
                 else ui.clearFilesList("Обновите список файлов");
             }, this), $.proxy(ui.printError, ui));

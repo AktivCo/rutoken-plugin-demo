@@ -82,7 +82,7 @@
                         <li><a href="#section-3"><span>Работа с сертификатами</span></a></li>
                         <li><a href="#section-4"><span>ЭЦП и аутентификация</span></a></li>
                         <li><a href="#section-5"><span>Шифрование</span></a></li>
-                        <li><a href="#section-6"><span>Работа с файлами</span></a></li>
+                        <li><a href="#section-6"><span>Бинарные файлы</span></a></li>
                     </ul>
                     <div id="section-1">
                         <div id="DevInfo" class="group">
@@ -882,7 +882,7 @@ IPx1wd5hBhGV714=
                     <div id="section-6">
                         <div class="common">
                             <dl>
-                                <dt><label for="files-list">Файлы на устройстве: </label></dt>
+                                <dt><label for="files-list">Бинарные файлы на устройстве: </label></dt>
                                 <dd>
                                     <select id="files-list">
                                         <option>Обновите список файлов</option>
@@ -894,14 +894,15 @@ IPx1wd5hBhGV714=
                         <div id="CreateFile" class="group">
                             <ul>
                                 <li>
-                                    <label>OBJECT_LABEL:</label>
-                                    <input type="text" class="file-id input" value='CKA_LABEL' />
+                                    <label><input type="checkbox" name="is-private-file" />Защитить бинарный файл на PIN-код Пользователя</label><br>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" name="is-private-file" />Приватный файл</label><br>
+                                    <label>Задайте имя бинарного файла:</label>
+                                    <input type="text" class="file-id input" value='File_name' />
                                 </li>
                                 <li>
-                                    <textarea id="create-file-body" class="text-input" rows="7">CKA_VALUE</textarea>
+                                    <label>Задайте содержимое бинарного файла в формате Base64:</label>
+                                    <textarea id="create-file-body" class="text-input" rows="7">RmlsZV9uYW1l</textarea>
                                 </li>
                             </ul>
                         </div>

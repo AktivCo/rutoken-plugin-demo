@@ -905,6 +905,12 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TS_POLICY_MISMATCH] = "Политика в метке доверенного времени отличается от запрошенной";
     this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
     this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
+    this.errorDescription[this.errorCodes.TS_EMPTY_RESPONSE_BODY] = "Тело ответа от TSA пусто";
+    this.errorDescription[this.errorCodes.TS_DESERIALIZE_RESPONSE_BODY_ERROR] = "Ошибка десериализации тела ответа от TSA";
+    this.errorDescription[this.errorCodes.TS_CONNECTION_ERROR] = "Ошибка соединения с TSA";
+    this.errorDescription[this.errorCodes.TS_SEND_ERROR] = "Ошибка отправки данных на TSA";
+    this.errorDescription[this.errorCodes.TS_RECEIVE_ERROR] = "Ошибка получения данных от TSA";
+    this.errorDescription[this.errorCodes.TS_HOST_RESOLVING_ERROR] = "Ошибка распознавания хоста TSA";
 
     this.errorDescription[this.errorCodes.HOST_NOT_FOUND] = "Не удалось найти сервер";
     this.errorDescription[this.errorCodes.HTTP_ERROR] = "HTTP ответ с ошибкой";

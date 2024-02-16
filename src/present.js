@@ -2143,7 +2143,7 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var isPrivate = ui.checkboxState(this.container, "is-private-file") == "on" ? true : false;
-            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), $.base64.decode(ui.getContent(this.container, 1)), isPrivate).then($.proxy(function (res) {
+            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), isPrivate).then($.proxy(function (res) {
                 if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
                 else ui.clearFilesList("Обновите список файлов");
                 ui.printResult("Бинарный файл " + res + " успешно создан");
@@ -2158,9 +2158,8 @@ var TestSuite = new(function () {
         }
         this.runTest = function () {
             plugin.pluginObject.readBinaryObject(ui.device(), ui.file()).then($.proxy(function (res) {
-                var base64 = $.base64.encode(res);
-                ui.setContent(this.container, base64);
-                ui.printResult(base64);
+                ui.setContent(this.container, res);
+                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
         }
     })();

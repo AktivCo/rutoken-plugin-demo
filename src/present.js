@@ -1130,7 +1130,7 @@ cryptoPlugin.prototype = {
     enumerateBinaryFiles: function (deviceId) {
         ui.clearFilesList("Список файлов обновляется...");
         deviceId = (deviceId === undefined) ? ui.device() : deviceId;
-        this.pluginObject.enumerateBinaryObjects(deviceId).then($.proxy(function (files) {
+        this.pluginObject.enumerateBinaryFiles(deviceId).then($.proxy(function (files) {
             if (files.length == 0) {
                 ui.clearFilesList("Доступные бинарные файлы не найдены");
                 return;
@@ -2143,7 +2143,7 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var isPrivate = ui.checkboxState(this.container, "is-private-file") == "on" ? true : false;
-            plugin.pluginObject.createBinaryObject(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), isPrivate).then($.proxy(function (res) {
+            plugin.pluginObject.createBinaryFile(ui.device(), ui.getContent(this.container, 0), ui.getContent(this.container, 1), isPrivate).then($.proxy(function (res) {
                 if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
                 else ui.clearFilesList("Обновите список файлов");
                 ui.printResult("Бинарный файл " + res + " успешно создан");
@@ -2157,7 +2157,7 @@ var TestSuite = new(function () {
             return "Чтение выбранного бинарного файла с устройства";
         }
         this.runTest = function () {
-            plugin.pluginObject.readBinaryObject(ui.device(), ui.file()).then($.proxy(function (res) {
+            plugin.pluginObject.readBinaryFile(ui.device(), ui.file()).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
                 ui.printResult(res);
             }, this), $.proxy(ui.printError, ui))
@@ -2171,7 +2171,7 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var fileName = ui.file()
-            plugin.pluginObject.deleteBinaryObject(ui.device(), fileName).then($.proxy(function () {
+            plugin.pluginObject.deleteBinaryFile(ui.device(), fileName).then($.proxy(function () {
                 ui.printResult("Бинарный файл " + fileName + " успешно удален");
                 if (plugin.autoRefresh) plugin.enumerateBinaryFiles();
                 else ui.clearFilesList("Обновите список файлов");

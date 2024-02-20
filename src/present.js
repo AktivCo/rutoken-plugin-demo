@@ -911,11 +911,11 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TST_VERIFICATION_ERROR] = "Ошибка проверки timestamp токена";
     this.errorDescription[this.errorCodes.UNKNOWN_OBJECT_NAME] = "Неизвестное имя объекта";
 
-    this.errorDescription[this.errorCodes.BO_NOT_FOUND] = "Бинарный файл не найден на устройстве";
-    this.errorDescription[this.errorCodes.BO_CANNOT_REMOVE] = "Бинарный файл не удалось удалить с устройства";
-    this.errorDescription[this.errorCodes.BO_EMPTY_NAME] = "Имя бинарного файла должно быть задано";
-    this.errorDescription[this.errorCodes.BO_LARGER_THAN_ACCEPTABLE] = "Размер бинарного файла больше допустимого";
-    this.errorDescription[this.errorCodes.BO_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
+    this.errorDescription[this.errorCodes.BF_NOT_FOUND] = "Бинарный файл не найден на устройстве";
+    this.errorDescription[this.errorCodes.BF_CANNOT_REMOVE] = "Бинарный файл не удалось удалить с устройства";
+    this.errorDescription[this.errorCodes.BF_EMPTY_NAME] = "Имя бинарного файла должно быть задано";
+    this.errorDescription[this.errorCodes.BF_LARGER_THAN_ACCEPTABLE] = "Размер бинарного файла больше допустимого";
+    this.errorDescription[this.errorCodes.BF_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
 
     if (this.autoRefresh) this.enumerateDevices();
 }

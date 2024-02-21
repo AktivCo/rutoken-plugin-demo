@@ -916,6 +916,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BF_EMPTY_NAME] = "Имя бинарного файла должно быть задано";
     this.errorDescription[this.errorCodes.BF_LARGER_THAN_ACCEPTABLE] = "Размер бинарного файла больше допустимого";
     this.errorDescription[this.errorCodes.BF_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
+    this.errorDescription[this.errorCodes.BF_FAILED_TO_ENUMERATE] = "Не удалось загрузить бинарные файлы с устройства";
 
     if (this.autoRefresh) this.enumerateDevices();
 }

@@ -88,6 +88,33 @@ function testUi(useConsole) {
         }
     });
 
+
+    $(document).on('change', '.start-date', function(e) {
+        var dateCheckboxStart = document.querySelector('input[name="dateCheckboxStart"]');
+        if (dateCheckboxStart.checked) {
+            document.getElementById("startDate").disabled = false;
+            document.getElementById('startDate').valueAsDate = new Date();
+        }
+        else {
+            document.getElementById("startDate").disabled = true;
+            document.getElementById('startDate').value = '';
+        }
+    });
+
+    $(document).on('change', '.end-date', function(e) {
+        var dateCheckboxEnd = document.querySelector('input[name="dateCheckboxEnd"]');
+        if (dateCheckboxEnd.checked) {
+            let date = new Date();
+            date.setFullYear(date.getFullYear() + 3);
+            document.getElementById('endDate').valueAsDate = date;
+            document.getElementById("endDate").disabled = false;
+        }
+        else {
+            document.getElementById("endDate").disabled = true;
+            document.getElementById('endDate').value = '';
+        }
+    });
+
     document.getElementById("add-sign-attrs").onclick = function() {
         addSignAttrs = this.checked;
 
@@ -930,6 +957,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BF_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
     this.errorDescription[this.errorCodes.BF_FAILED_TO_ENUMERATE] = "Не удалось загрузить бинарные файлы с устройства";
 
+    this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 02.01.1970 до 31.12.9999 включительно)";
+    this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 
@@ -1437,6 +1467,28 @@ var TestSuite = new(function () {
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
                 let rsaSize = parseInt(this.container.find(".rsa-keygen-size").val(), 10);
                 options.signatureSize = rsaSize;
+            }
+
+            var startDate = new Date(this.container.find("#startDate").val());
+            var endDate = new Date(this.container.find("#endDate").val());
+
+            options.privateKeyUsagePeriodNotBefore = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
+            options.privateKeyUsagePeriodNotAfter  = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
+
+            var valueGenerateStart = $(".start-end-date[name=dateCheckboxStart]:checked").val();
+            var valueGenerateEnd = $(".start-end-date[name=dateCheckboxEnd]:checked").val();
+
+            if (valueGenerateStart == "dateSet") {
+                if (isNaN(startDate)) {
+                    ui.printResult("Ошибка: Дата начала действия введена не полностью");
+                    return;
+                }
+            }
+            if (valueGenerateEnd == "dateSet") {
+                if (isNaN(endDate)) {
+                    ui.printResult("Ошибка: Дата конца действия введена не полностью");
+                    return;
+                }
             }
 
             plugin.pluginObject.generateKeyPair(ui.device(), undefined, marker, options).then($.proxy(function () {

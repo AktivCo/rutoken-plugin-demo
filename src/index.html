@@ -208,6 +208,26 @@
                                         <option value="TC26-C">TC26-C</option>
                                     </select>
                                 </li>
+                                <li>
+                                    <label><input type="checkbox" name="dateCheckboxStart" class="start-date" value="dateSet"/>Начало действия закрытого ключа</label><br>
+                                </li>
+                                <li>
+                                    <label for="dateInput">Дата:</label>
+                                    <input type="date" id="startDate" disabled>
+                                    <label for="ltimeInput">Время UTC:</label>
+                                    <input type="time" id="timeInput" step="1" value="00:00:00" disabled style="color: gray;">
+                                    <label for="GMT">GMT</label>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="dateCheckboxEnd" class="end-date" value="dateSet"/>Конец действия закрытого ключа</label><br>
+                                </li>
+                                <li>
+                                    <label for="dateInput">Дата:</label>
+                                    <input type="date" id="endDate" disabled>
+                                    <label for="ltimeInput">Время UTC:</label>
+                                    <input type="time" id="timeInput2" step="1" value="00:00:00" disabled style="color: gray;">
+                                    <label for="GMT">GMT</label>
+                                </li>
                             </ul>
                         </div>
                         <div id="EnumerateKeys" class="group">

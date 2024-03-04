@@ -1292,8 +1292,6 @@ var TestSuite = new(function () {
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
 
                     var ciphers = {};
-                    ciphers[plugin.CIPHER_ALGORITHM_DES] = "CIPHER_ALGORITHM_DES";
-                    ciphers[plugin.CIPHER_ALGORITHM_3DES] = "CIPHER_ALGORITHM_3DES";
                     ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
                     ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
                     ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";

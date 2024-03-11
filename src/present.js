@@ -41,6 +41,13 @@ function testUi(useConsole) {
         }
     });
 
+    var filesSection = document.querySelectorAll('a[href="#section-6"]');
+    filesSection[0].addEventListener("click", enumerateFiles);
+
+    function enumerateFiles() {
+        plugin.enumerateBinaryFiles(deviceId);
+    }
+
     document.getElementById("cms-rsa-hash").onclick = function() {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
     }
@@ -500,7 +507,6 @@ testUi.prototype = {
             if (plugin.autoRefresh) {
                 plugin.enumerateKeys();
                 plugin.enumerateCertificates();
-                plugin.enumerateBinaryFiles();
             } else {
                 this.clearKeyList("Обновите список ключевых пар");
                 this.clearCertificateList("Обновите список сертификатов");
@@ -964,7 +970,7 @@ cryptoPlugin.prototype = {
                                             if (this.autoRefresh) this.enumerateKeys(device);
                                             if (this.autoRefresh) this.enumerateCertificates(device);
                                             else ui.clearCertificateList("Обновите список сертификатов");
-                                            if (this.autoRefresh) this.enumerateBinaryFiles(device);
+                                            ui.clearFilesList("Обновите список файлов");
                                         }
                                     };
                                 }(dev), this), $.proxy(ui.printError, ui));
@@ -984,7 +990,7 @@ cryptoPlugin.prototype = {
                                         if (this.autoRefresh) this.enumerateKeys(ui.device());
                                         if (this.autoRefresh) this.enumerateCertificates(ui.device());
                                         else ui.clearCertificateList("Обновите список сертификатов");
-                                        if (this.autoRefresh) this.enumerateBinaryFiles(ui.device());
+                                        ui.clearFilesList("Обновите список файлов");
                                     } catch (e) {
                                         ui.clearDeviceList("Нет доступных устройств");
                                         ui.clearCertificateList("Нет доступных устройств");
@@ -1015,7 +1021,6 @@ cryptoPlugin.prototype = {
                 if (this.autoRefresh) this.enumerateKeys(devices[0]);
                 if (this.autoRefresh) this.enumerateCertificates(devices[0]);
                 else ui.clearCertificateList("Обновите список сертификатов");
-                if (this.autoRefresh) this.enumerateBinaryFiles(devices[0]);
 
                 for (var d in devices) {
                     this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
@@ -1135,8 +1140,14 @@ cryptoPlugin.prototype = {
     },
 
     enumerateBinaryFiles: function (deviceId) {
+        try {
+            deviceId = (deviceId === undefined) ? ui.device() : deviceId;
+        } catch (e) {
+            ui.clearFilesList("Нет доступных устройств");
+            return;
+        }
+
         ui.clearFilesList("Список файлов обновляется...");
-        deviceId = (deviceId === undefined) ? ui.device() : deviceId;
         this.pluginObject.enumerateBinaryFiles(deviceId).then($.proxy(function (files) {
             if (files.length == 0) {
                 ui.clearFilesList("Доступные бинарные файлы не найдены");
@@ -1157,8 +1168,7 @@ cryptoPlugin.prototype = {
             ui.writeln("Вход выполнен\n");
             if (this.autoRefresh) this.enumerateKeys();
             else ui.clearKeyList("Обновите список ключевых пар");
-            if (this.autoRefresh) this.enumerateBinaryFiles();
-            else ui.clearFilesList("Обновите список файлов");
+            ui.clearFilesList("Обновите список файлов");
         }, this), $.proxy(ui.printError, ui));
     },
 
@@ -1168,8 +1178,7 @@ cryptoPlugin.prototype = {
             plugin.pluginObject.getDeviceInfo(ui.device(), plugin.TOKEN_INFO_IS_LOGGED_IN).then(function (result) {
                 if (!result) ui.clearKeyList("Выполните вход на устройство");
             }, $.proxy(ui.printError, ui));
-            if (this.autoRefresh) this.enumerateBinaryFiles();
-            else ui.clearFilesList("Обновите список файлов");
+            ui.clearFilesList("Обновите список файлов");
         }, this), $.proxy(ui.printError, ui));
     },
 

@@ -413,9 +413,8 @@ testUi.prototype = {
     },
 
     keyInfoType: function () {
-        var value = $(".radio-input:radio[name=key-info]:checked").val();
-        switch (value) {
-        case "algorithm":
+        var value = $(".checkbox-input[name=key-info]:checked").val();
+        if (value === "algorithm") {
             return plugin.KEY_INFO_ALGORITHM;
         }
     },
@@ -1541,56 +1540,79 @@ var TestSuite = new(function () {
             return "Получение информации о ключевой паре";
         };
         this.runTest = function () {
-            var info = ui.keyInfoType();
-            plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), info).then(function (result) {
-                var message = result;
-                switch(info) {
-                case plugin.KEY_INFO_ALGORITHM:
-                    switch(result) {
-                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001:
-                        message = "ГОСТ Р 34.10-2001";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256:
-                        message = "ГОСТ Р 34.10-2012 256";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512:
-                        message = "ГОСТ Р 34.10-2012 512";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA:
-                        message = "RSA";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_512:
-                        message = "RSA 512";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_768:
-                        message = "RSA 768";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1024:
-                        message = "RSA 1024";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1280:
-                        message = "RSA 1280";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1536:
-                        message = "RSA 1536";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_1792:
-                        message = "RSA 1792";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_2048:
-                        message = "RSA 2048";
-                        break;
-                    case plugin.PUBLIC_KEY_ALGORITHM_RSA_4096:
-                        message = "RSA 4096";
-                        break;
-                    default:
-                        message = "Неизвестный тип алгоритма ключа: " + result;
+            var value = $(".checkbox-input[name=key-info]:checked").val();
+            if (value === "algorithm") {
+                var info = ui.keyInfoType();
+                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(),  plugin.KEY_INFO_ALGORITHM).then(function (result) {
+                    var message = result;
+                    switch(info) {
+                    case plugin.KEY_INFO_ALGORITHM:
+                        switch(result) {
+                        case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001:
+                            message = "ГОСТ Р 34.10-2001";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256:
+                            message = "ГОСТ Р 34.10-2012 256";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512:
+                            message = "ГОСТ Р 34.10-2012 512";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA:
+                            message = "RSA";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_512:
+                            message = "RSA 512";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_768:
+                            message = "RSA 768";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_1024:
+                            message = "RSA 1024";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_1280:
+                            message = "RSA 1280";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_1536:
+                            message = "RSA 1536";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_1792:
+                            message = "RSA 1792";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_2048:
+                            message = "RSA 2048";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_RSA_4096:
+                            message = "RSA 4096";
+                            break;
+                        default:
+                            message = "Неизвестный тип алгоритма ключа: " + result;
+                            break;
+                        }
                         break;
                     }
-                    break;
-                }
-                ui.printResult(message);
-            }, $.proxy(ui.printError, ui));
+                    ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
+            var checkStart = $(".checkbox-input[name=date-info-start]:checked").val();
+            var checkEnd = $(".checkbox-input[name=date-info-end]:checked").val();
+
+            if (checkStart === "date-start") {
+                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
+                    var startDate = "[не задано]";
+                    if (result !== 0)
+                        startDate = new Date(result * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
+                     ui.printResult("Начало срока действия закрытого ключа:"  + "\n" + "c " + startDate);
+                }, $.proxy(ui.printError, ui));
+            }
+
+            if (checkEnd === "date-end") {
+                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (resultEnd) {
+                    var endDate = "[не задано]";
+                    if (resultEnd !== 0)
+                        endDate =  new Date(resultEnd * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
+                    ui.printResult("Конец срока действия закрытого ключа:" +"\n" + "по " + endDate);
+                }, $.proxy(ui.printError, ui));
+            }
         }
     })();
 

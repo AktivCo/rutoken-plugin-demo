@@ -1338,6 +1338,30 @@ var TestSuite = new(function () {
         }
     })();
 
+    this.FileInfo = new(function () {
+        Test.call(this);
+        this.description = function () {
+            return "Получение информации о бинарном файле";
+        };
+        this.runTest = function () {
+            var fileName = ui.file();
+            var anyDataRequested = false;
+
+            if (ui.checkboxState(this.container, "file-info-private") == "on") {
+                anyDataRequested = true;
+                plugin.pluginObject.getBinaryFileInfo(ui.device(), fileName, plugin.BINARY_FILE_INFO_PRIVATE).then(function (result) {
+                    var message = "Файл " + fileName;
+                    if (result === true) message += " является приватным.";
+                    else message += " является публичным.";
+                    return ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
+
+            if (anyDataRequested === false)
+                ui.printResult("Тип информации не выбран.");
+        }
+    })();
+
     this.ChangePin = new(function () {
         Test.call(this);
         this.description = function () {

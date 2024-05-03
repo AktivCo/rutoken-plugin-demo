@@ -60,6 +60,28 @@ function testUi(useConsole) {
         document.getElementById("content-type").disabled = !this.checked;
     }
 
+    $(document).on('change', '.listKeys', function() {
+        plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
+            if (result !== 0) {
+                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
+                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
+            } else {
+                document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
+                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = false;
+                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = false;
+            }
+        }, $.proxy(ui.printError, ui));
+
+        plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
+            if (result !== 0) {
+                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
+                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
+            }
+        }, $.proxy(ui.printError, ui));
+    });
+
     $(document).on('change', '.public-key-algorithm', function(e) {
         if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2001") {
             document.getElementById("paramset-2001").style = "display: inline;";
@@ -112,6 +134,37 @@ function testUi(useConsole) {
             document.getElementById("endDate").disabled = true;
             document.getElementById('endDate').value = '';
         }
+    });
+
+	$(document).on('change', '.startDateCsr', function() {
+        var dateCheckboxStart = document.querySelector('input[name="dateCheckboxStartCsr"]');
+        if (dateCheckboxStart.checked) {
+            document.getElementById("startDateReq").disabled = false;
+            document.getElementById("timeInputStart").disabled = false;
+            document.getElementById("startDateReq").valueAsDate = new Date();
+        }
+        else {
+            document.getElementById("startDateReq").disabled = true;
+            document.getElementById("timeInputStart").disabled = true;
+            document.getElementById("startDateReq").value = "";
+        }
+    });
+
+    $(document).on('change', '.endDateCsr', function() {
+        var dateCheckboxEnd = document.querySelector('input[name="dateCheckboxEndCsr"]');
+        if (dateCheckboxEnd.checked) {
+            document.getElementById("endDateReq").disabled = false;
+            document.getElementById("timeInputEnd").disabled = false;
+            let date = new Date();
+            date.setFullYear(date.getFullYear() + 3);
+            document.getElementById("endDateReq").valueAsDate = date;
+        }
+        else {
+            document.getElementById("endDateReq").disabled = true;
+            document.getElementById("timeInputEnd").disabled = true;
+            document.getElementById("endDateReq").value = "";
+        }
+
     });
 
     document.getElementById("add-sign-attrs").onclick = function() {
@@ -970,6 +1023,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 02.01.1970 до 31.12.9999 включительно)";
     this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";
+    this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:01 до 31.12.9999 23:59:59 включительно)";
+    this.errorDescription[this.errorCodes.END_EARLIER_THAN_START] = "Дата окончания срока действия не должна быть раньше даты начала";
+    this.errorDescription[this.errorCodes.KEY_START_OR_END_DATE_ALREADY_SET] = "Срок действия закрытого ключа уже задан";
 
     this.errorDescription[this.errorCodes.JOURNAL_PAIR_NOT_SUPPORT_EXCHANGE] = "Журнальные ключевые пары не поддерживают обмен";
     this.errorDescription[this.errorCodes.DEVICE_NOT_SUPPORT_VKO] = "Устройство не поддерживает выработку ключа обмена (ВКО)";
@@ -1097,6 +1153,26 @@ cryptoPlugin.prototype = {
                     };
                 }(keys[k]), $.proxy(ui.printError, ui));
             }
+
+            this.pluginObject.getKeyInfo(deviceId, keys[0], plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
+                if (result !== 0) {
+                    document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
+                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
+                } else {
+                    document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
+                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = false;
+                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = false;
+                }
+            }, $.proxy(ui.printError, ui));
+    
+            this.pluginObject.getKeyInfo(deviceId, keys[0], plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
+                if (result !== 0) {
+                    document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
+                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
+                }
+            }, $.proxy(ui.printError, ui));
         }, this), function (error) {
             let errorCode = getErrorCode(error);
             if (errorCode == plugin.errorCodes.USER_NOT_LOGGED_IN) ui.clearKeyList(plugin.errorDescription[errorCode]);
@@ -1709,6 +1785,31 @@ var TestSuite = new(function () {
                 "hashAlgorithm": plugin[this.container.find(".hash-algorithm").val()],
                 "customExtensions": ui.getCustomExtensions()
             };
+
+            var startDate = new Date(this.container.find("#startDateReq").val());
+            var startTime = document.getElementById("timeInputStart").valueAsNumber;
+            var endDate = new Date(this.container.find("#endDateReq").val());
+            var endTime = document.getElementById("timeInputEnd").valueAsNumber;
+
+            options.privateKeyUsagePeriodNotBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
+            options.privateKeyUsagePeriodNotAfter  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
+
+            var valueGenerateStart = $(".startDateCsr[name=dateCheckboxStartCsr]:checked").val();
+            var valueGenerateEnd = $(".endDateCsr[name=dateCheckboxEndCsr]:checked").val();
+
+            if (valueGenerateStart == "dateSet") {
+                if (isNaN(startDate)) {
+                    ui.printResult("Ошибка: Дата начала действия введена не полностью");
+                    return;
+                }
+            }
+            if (valueGenerateEnd == "dateSet") {
+                if (isNaN(endDate)) {
+                    ui.printResult("Ошибка: Дата конца действия введена не полностью");
+                    return;
+                }
+            }
+
             plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
                 ui.printResult(res);

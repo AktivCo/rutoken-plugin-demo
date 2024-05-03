@@ -60,7 +60,7 @@
                     </dl><dl>
                         <dt><label for="key-list">Ключи на устройстве: </label></dt>
                         <dd>
-                            <select id="key-list">
+                            <select id="key-list" class="listKeys">
                                 <option>Выполните вход на устройство</option>
                             </select>
                             <button id="refresh-keys">↓↑</button>
@@ -454,6 +454,29 @@
                                             <td colspan="2"><button id="add-custom-extension" class="example">Добавить новое расширение</button></td>
                                         </tr>
                                     </table>
+                                </li>
+                                <li>
+                                    <label id="KeyDateLabel">Срок действия закрытого ключа уже задан</label><br>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="dateCheckboxStartCsr" class="startDateCsr" value="dateSet" disabled/><strong>privateKeyUsagePeriod notBefore</strong></label><br>
+                                </li>
+                                <li>
+                                    <label for="dateInput">Date:</label>
+                                    <input type="date" id="startDateReq" disabled>
+                                    <label for="ltimeInput">Time:</label>
+                                    <input type="time" id="timeInputStart" step="1" value="00:00:00" disabled style="color: gray;">
+                                    <label for="GMT">GMT</label>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="dateCheckboxEndCsr" class="endDateCsr" value="dateSet" disabled/><strong>privateKeyUsagePeriod notAfter</strong></label><br>
+                                </li>
+                                <li>
+                                    <label for="dateInput">Date:</label>
+                                    <input type="date" id="endDateReq" disabled>
+                                    <label for="ltimeInput">Time:</label>
+                                    <input type="time" id="timeInputEnd" step="1" value="00:00:00" disabled style="color: gray;">
+                                    <label for="GMT">GMT</label>
                                 </li>
                                 <li>
                                     <textarea id="create-pkcs10-result" class="text-output" rows="7"></textarea>

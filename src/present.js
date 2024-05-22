@@ -955,6 +955,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BF_LARGER_THAN_ACCEPTABLE] = "Размер бинарного файла больше допустимого";
     this.errorDescription[this.errorCodes.BF_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
     this.errorDescription[this.errorCodes.BF_FAILED_TO_ENUMERATE] = "Не удалось загрузить бинарные файлы с устройства";
+    this.errorDescription[this.errorCodes.BF_TOO_MANY_FILES] = "Превышен предел количества бинарных файлов на устройстве";
 
     this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 02.01.1970 до 31.12.9999 включительно)";
     this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";

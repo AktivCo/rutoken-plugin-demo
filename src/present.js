@@ -408,6 +408,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
         case "vendor model name":
             return plugin.TOKEN_INFO_VENDOR_MODEL_NAME;
+        case "vko support":
+            return plugin.TOKEN_INFO_VKO_SUPPORTED;
         }
     },
 
@@ -1260,10 +1262,11 @@ var TestSuite = new(function () {
         this.runTest = function () {
             var info = ui.infoType();
 
-            plugin.pluginObject.getDeviceInfo(ui.device(), ui.infoType()).then(function (result) {
+            plugin.pluginObject.getDeviceInfo(ui.device(), info).then(function (result) {
                 var message = result;
 
-                if (info === plugin.TOKEN_INFO_DEVICE_TYPE) {
+                switch (info) {
+                case plugin.TOKEN_INFO_DEVICE_TYPE:
                     message = "Невозможно определить тип устройства";
                     switch (result) {
                     case plugin.TOKEN_TYPE_UNKNOWN:
@@ -1279,9 +1282,9 @@ var TestSuite = new(function () {
                         message = "Рутокен ЭЦП SC";
                         break;
                     }
-                }
+                    break;
 
-                if (info === plugin.TOKEN_INFO_FORMATS) {
+                case plugin.TOKEN_INFO_FORMATS:
                     var m = {};
                     m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
                     m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
@@ -1289,9 +1292,9 @@ var TestSuite = new(function () {
                     message = "[" + result.map(function(value) {
                         return m[value];
                     }).join(", ") + "]";
-                }
+                    break;
 
-                if (info === plugin.TOKEN_INFO_FEATURES) {
+                case plugin.TOKEN_INFO_FEATURES:
                     var m = result;
                     var bio = {};
                     bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
@@ -1318,13 +1321,9 @@ var TestSuite = new(function () {
                     m["smType"] = smType[result["smType"]];
 
                     message = JSON.stringify(m);
-                }
+                    break;
 
-                if (info === plugin.TOKEN_INFO_PINS_INFO) {
-                    message = JSON.stringify(result);
-                }
-
-                if (info === plugin.TOKEN_INFO_SUPPORTED_MECHANISMS) {
+                case plugin.TOKEN_INFO_SUPPORTED_MECHANISMS:
                     var hashes = {};
                     hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
                     hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
@@ -1365,14 +1364,18 @@ var TestSuite = new(function () {
                     message += "ciphers:\n";
                     message += "&middot hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
                     message += "&middot software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-                }
+                    break;
 
-                if (info == plugin.TOKEN_INFO_FKN_SUPPORTED) {
+                case plugin.TOKEN_INFO_FKN_SUPPORTED:
+                case plugin.TOKEN_INFO_VKO_SUPPORTED:
+                case plugin.TOKEN_INFO_PINS_INFO:
                     message = JSON.stringify(result);
-                }
+                    break;
 
-                if (info == plugin.TOKEN_INFO_FREE_MEMORY)
+                case plugin.TOKEN_INFO_FREE_MEMORY:
                     message += " byte(s)";
+                    break;
+                }
 
                 message += " (" + info + ")";
                 ui.printResult(message);

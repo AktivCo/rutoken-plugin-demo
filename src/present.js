@@ -1688,6 +1688,25 @@ var TestSuite = new(function () {
                 }, $.proxy(ui.printError, ui));
             }
 
+            var checkSpec = $(".checkbox-input[name=key-spec]:checked").val();
+
+            if (checkSpec === "key-spec") {
+                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_SPEC).then(function (keySpec) {
+                    switch (keySpec) {
+                        case plugin.KEY_SPEC_SIGN:
+                            msg = "подпись";
+                            break;
+                        case plugin.KEY_SPEC_SIGN_AND_EXCHANGE:
+                            msg = "подпись и обмен"
+                            break;
+                        default:
+                            msg = "неизвестный тип назначения"
+                            break;
+                    }
+                    ui.printResult("Назначение ключевой пары:\n" + msg);
+                }, $.proxy(ui.printError, ui));
+            }
+
             var checkStart = $(".checkbox-input[name=date-info-start]:checked").val();
             var checkEnd = $(".checkbox-input[name=date-info-end]:checked").val();
 
@@ -1696,7 +1715,7 @@ var TestSuite = new(function () {
                     var startDate = "[не задано]";
                     if (result !== 0)
                         startDate = new Date(result * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
-                     ui.printResult("Начало срока действия закрытого ключа:"  + "\n" + "c " + startDate);
+                    ui.printResult("Начало срока действия закрытого ключа:\n" + "c " + startDate);
                 }, $.proxy(ui.printError, ui));
             }
 
@@ -1705,7 +1724,7 @@ var TestSuite = new(function () {
                     var endDate = "[не задано]";
                     if (resultEnd !== 0)
                         endDate =  new Date(resultEnd * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
-                    ui.printResult("Конец срока действия закрытого ключа:" +"\n" + "по " + endDate);
+                    ui.printResult("Конец срока действия закрытого ключа:\n" + "по " + endDate);
                 }, $.proxy(ui.printError, ui));
             }
         }

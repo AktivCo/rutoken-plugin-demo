@@ -88,7 +88,6 @@ function testUi(useConsole) {
         }
     });
 
-
     $(document).on('change', '.start-date', function(e) {
         var dateCheckboxStart = document.querySelector('input[name="dateCheckboxStart"]');
         if (dateCheckboxStart.checked) {
@@ -416,6 +415,16 @@ testUi.prototype = {
         var value = $(".checkbox-input[name=key-info]:checked").val();
         if (value === "algorithm") {
             return plugin.KEY_INFO_ALGORITHM;
+        }
+    },
+
+    keySpecValue: function () {
+        var value = $(".radio-input:radio[name=key-spec]:checked").val();
+        switch (value) {
+        case "sign":
+            return plugin.KEY_SPEC_SIGN;
+        case "exchange":
+            return plugin.KEY_SPEC_SIGN_AND_EXCHANGE;
         }
     },
 
@@ -960,6 +969,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 02.01.1970 до 31.12.9999 включительно)";
     this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";
 
+    this.errorDescription[this.errorCodes.JOURNAL_PAIR_NOT_SUPPORT_EXCHANGE] = "Журнальные ключевые пары не поддерживают обмен";
+    this.errorDescription[this.errorCodes.DEVICE_NOT_SUPPORT_VKO] = "Устройство не поддерживает выработку ключа обмена (ВКО)";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 
@@ -1469,6 +1481,8 @@ var TestSuite = new(function () {
                 options.signatureSize = rsaSize;
             }
 
+            options.keySpec = ui.keySpecValue();
+
             var startDate = new Date(this.container.find("#startDate").val());
             var endDate = new Date(this.container.find("#endDate").val());
 
@@ -1594,6 +1608,7 @@ var TestSuite = new(function () {
                     ui.printResult(message);
                 }, $.proxy(ui.printError, ui));
             }
+
             var checkStart = $(".checkbox-input[name=date-info-start]:checked").val();
             var checkEnd = $(".checkbox-input[name=date-info-end]:checked").val();
 

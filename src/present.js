@@ -61,25 +61,7 @@ function testUi(useConsole) {
     }
 
     $(document).on('change', '.listKeys', function() {
-        plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
-            if (result !== 0) {
-                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
-                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
-            } else {
-                document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
-                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = false;
-                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = false;
-            }
-        }, $.proxy(ui.printError, ui));
-
-        plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
-            if (result !== 0) {
-                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
-                document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
-            }
-        }, $.proxy(ui.printError, ui));
+        ui.changeCsrStartEndDate(ui.key())
     });
 
     $(document).on('change', '.public-key-algorithm', function(e) {
@@ -137,7 +119,7 @@ function testUi(useConsole) {
     });
 
 	$(document).on('change', '.startDateCsr', function() {
-        var dateCheckboxStart = document.querySelector('input[name="dateCheckboxStartCsr"]');
+        var dateCheckboxStart = document.getElementById("dateCheckboxStartCsr");
         if (dateCheckboxStart.checked) {
             document.getElementById("startDateReq").disabled = false;
             document.getElementById("timeInputStart").disabled = false;
@@ -147,11 +129,12 @@ function testUi(useConsole) {
             document.getElementById("startDateReq").disabled = true;
             document.getElementById("timeInputStart").disabled = true;
             document.getElementById("startDateReq").value = "";
+            document.getElementById("timeInputStart").value = "00:00:00";
         }
     });
 
     $(document).on('change', '.endDateCsr', function() {
-        var dateCheckboxEnd = document.querySelector('input[name="dateCheckboxEndCsr"]');
+        var dateCheckboxEnd = document.getElementById("dateCheckboxEndCsr");
         if (dateCheckboxEnd.checked) {
             document.getElementById("endDateReq").disabled = false;
             document.getElementById("timeInputEnd").disabled = false;
@@ -163,6 +146,7 @@ function testUi(useConsole) {
             document.getElementById("endDateReq").disabled = true;
             document.getElementById("timeInputEnd").disabled = true;
             document.getElementById("endDateReq").value = "";
+            document.getElementById("timeInputEnd").value = "00:00:00";
         }
 
     });
@@ -279,6 +263,41 @@ testUi.prototype = {
 
     key: function () {
         return this.controls.keyList.val();
+    },
+
+    changeCsrStartEndDate: function (key) {
+        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
+            if (result !== 0) {
+                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                document.getElementById("dateCheckboxStartCsr").disabled = true;
+                document.getElementById("dateCheckboxEndCsr").disabled = true;
+            } else {
+                document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
+                document.getElementById("dateCheckboxStartCsr").disabled = false;
+                document.getElementById("dateCheckboxEndCsr").disabled = false;
+            }
+        }, $.proxy(this.printError, this));
+
+        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
+            if (result !== 0) {
+                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                document.getElementById("dateCheckboxStartCsr").disabled = true;
+                document.getElementById("dateCheckboxEndCsr").disabled = true;
+            }
+        }, $.proxy(this.printError, this));
+
+        document.getElementById("dateCheckboxStartCsr").checked = false;
+        document.getElementById("dateCheckboxEndCsr").checked = false;
+
+        document.getElementById("startDateReq").value = "";
+        document.getElementById("startDateReq").disabled = true;
+        document.getElementById("timeInputStart").value = "00:00:00";
+        document.getElementById("timeInputStart").disabled = true;
+
+        document.getElementById("endDateReq").value = "";
+        document.getElementById("endDateReq").disabled = true;
+        document.getElementById("timeInputEnd").value = "00:00:00";
+        document.getElementById("timeInputEnd").disabled = true;
     },
 
     certificate: function () {
@@ -737,6 +756,52 @@ testUi.prototype = {
         return customExtensions;
     },
 
+    getKeyStartEndDate: function (container) {
+        var startEndDate = [0, 0];
+        var startDate = new Date(container.find("#startDate").val());
+        var endDate = new Date(container.find("#endDate").val());
+
+        var valueGenerateStart = $(".start-date[name=dateCheckboxStart]:checked").val();
+        var valueGenerateEnd = $(".end-date[name=dateCheckboxEnd]:checked").val();
+
+        if (valueGenerateStart == "dateSet") {
+            if (isNaN(startDate))
+                throw "Дата начала действия введена не полностью";
+        }
+        if (valueGenerateEnd == "dateSet") {
+            if (isNaN(endDate))
+                throw "Дата конца действия введена не полностью";
+        }
+
+        startEndDate[0] = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
+        startEndDate[1] = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
+        return startEndDate;
+    },
+
+    getCsrStartEndDate: function (container) {
+        var startEndDate = [0, 0];
+        var startDate = new Date(container.find("#startDateReq").val());
+        var startTime = document.getElementById("timeInputStart").valueAsNumber;
+        var endDate = new Date(container.find("#endDateReq").val());
+        var endTime = document.getElementById("timeInputEnd").valueAsNumber;
+
+        var valueGenerateStart = $(".startDateCsr[id=dateCheckboxStartCsr]:checked").val();
+        var valueGenerateEnd = $(".endDateCsr[id=dateCheckboxEndCsr]:checked").val();
+
+        if (valueGenerateStart == "dateSet") {
+            if (isNaN(startDate))
+                throw "Дата начала действия введена не полностью";
+        }
+        if (valueGenerateEnd == "dateSet") {
+            if (isNaN(endDate))
+                throw "Дата конца действия введена не полностью";
+        }
+
+        startEndDate[0] = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
+        startEndDate[1]  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
+        return startEndDate;
+    },
+
     readFile: function (container, callback) {
         if (undefined === window.FileReader) {
             throw "Браузер не поддерживает объект FileReader";
@@ -1154,25 +1219,7 @@ cryptoPlugin.prototype = {
                 }(keys[k]), $.proxy(ui.printError, ui));
             }
 
-            this.pluginObject.getKeyInfo(deviceId, keys[0], plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
-                if (result !== 0) {
-                    document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
-                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
-                } else {
-                    document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
-                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = false;
-                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = false;
-                }
-            }, $.proxy(ui.printError, ui));
-    
-            this.pluginObject.getKeyInfo(deviceId, keys[0], plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
-                if (result !== 0) {
-                    document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                    document.getElementsByName("dateCheckboxStartCsr")[0].disabled = true;
-                    document.getElementsByName("dateCheckboxEndCsr")[0].disabled = true;
-                }
-            }, $.proxy(ui.printError, ui));
+            ui.changeCsrStartEndDate(keys[0]);
         }, this), function (error) {
             let errorCode = getErrorCode(error);
             if (errorCode == plugin.errorCodes.USER_NOT_LOGGED_IN) ui.clearKeyList(plugin.errorDescription[errorCode]);
@@ -1561,27 +1608,13 @@ var TestSuite = new(function () {
             }
 
             options.keySpec = ui.keySpecValue();
-
-            var startDate = new Date(this.container.find("#startDate").val());
-            var endDate = new Date(this.container.find("#endDate").val());
-
-            options.privateKeyUsagePeriodNotBefore = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
-            options.privateKeyUsagePeriodNotAfter  = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
-
-            var valueGenerateStart = $(".start-end-date[name=dateCheckboxStart]:checked").val();
-            var valueGenerateEnd = $(".start-end-date[name=dateCheckboxEnd]:checked").val();
-
-            if (valueGenerateStart == "dateSet") {
-                if (isNaN(startDate)) {
-                    ui.printResult("Ошибка: Дата начала действия введена не полностью");
-                    return;
-                }
-            }
-            if (valueGenerateEnd == "dateSet") {
-                if (isNaN(endDate)) {
-                    ui.printResult("Ошибка: Дата конца действия введена не полностью");
-                    return;
-                }
+            try {
+                var privateKeyUsagePeriod = ui.getKeyStartEndDate(this.container);
+                options.privateKeyUsagePeriodNotBefore = privateKeyUsagePeriod[0];
+                options.privateKeyUsagePeriodNotAfter  = privateKeyUsagePeriod[1];
+            } catch (error) {
+                ui.printResult("Ошибка: " + error.toString());
+                return;
             }
 
             plugin.pluginObject.generateKeyPair(ui.device(), undefined, marker, options).then($.proxy(function () {
@@ -1805,28 +1838,13 @@ var TestSuite = new(function () {
                 "customExtensions": ui.getCustomExtensions()
             };
 
-            var startDate = new Date(this.container.find("#startDateReq").val());
-            var startTime = document.getElementById("timeInputStart").valueAsNumber;
-            var endDate = new Date(this.container.find("#endDateReq").val());
-            var endTime = document.getElementById("timeInputEnd").valueAsNumber;
-
-            options.privateKeyUsagePeriodNotBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
-            options.privateKeyUsagePeriodNotAfter  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
-
-            var valueGenerateStart = $(".startDateCsr[name=dateCheckboxStartCsr]:checked").val();
-            var valueGenerateEnd = $(".endDateCsr[name=dateCheckboxEndCsr]:checked").val();
-
-            if (valueGenerateStart == "dateSet") {
-                if (isNaN(startDate)) {
-                    ui.printResult("Ошибка: Дата начала действия введена не полностью");
-                    return;
-                }
-            }
-            if (valueGenerateEnd == "dateSet") {
-                if (isNaN(endDate)) {
-                    ui.printResult("Ошибка: Дата конца действия введена не полностью");
-                    return;
-                }
+            try {
+                var privateKeyUsagePeriod = ui.getCsrStartEndDate(this.container);
+                options.privateKeyUsagePeriodNotBefore = privateKeyUsagePeriod[0];
+                options.privateKeyUsagePeriodNotAfter  = privateKeyUsagePeriod[1];
+            } catch (error) {
+                ui.printResult("Ошибка: " + error.toString());
+                return;
             }
 
             plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options).then($.proxy(function (res) {

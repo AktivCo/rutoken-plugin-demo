@@ -952,7 +952,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.DEVICE_NOT_FOUND] = "Устройство не найдено";
     this.errorDescription[this.errorCodes.DEVICE_ERROR] = "Ошибка устройства";
-    this.errorDescription[this.errorCodes.TOKEN_INVALID] = "Ошибка чтения/записи устройства. Возможно, устройство было извлечено. Попробуйте выполнить enumerate";
+    this.errorDescription[this.errorCodes.TOKEN_INVALID] = "Ошибка чтения/записи устройства. Возможно, устройство было извлечено. Попробуйте обновить список доступных устройств";
 
     this.errorDescription[this.errorCodes.CERTIFICATE_CATEGORY_BAD] = "Недопустимый тип сертификата";
     this.errorDescription[this.errorCodes.CERTIFICATE_EXISTS] = "Сертификат уже существует на устройстве";

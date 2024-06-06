@@ -1091,6 +1091,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:01 до 31.12.9999 23:59:59 включительно)";
     this.errorDescription[this.errorCodes.END_EARLIER_THAN_START] = "Дата окончания срока действия не должна быть раньше даты начала";
     this.errorDescription[this.errorCodes.KEY_START_OR_END_DATE_ALREADY_SET] = "Срок действия закрытого ключа уже задан";
+    this.errorDescription[this.errorCodes.DUPLICATED_EXTENSIONS] = "Отмена генерации CSR: заданы одинаковые расширения";
 
     this.errorDescription[this.errorCodes.JOURNAL_PAIR_NOT_SUPPORT_EXCHANGE] = "Журнальные ключевые пары не поддерживают обмен";
     this.errorDescription[this.errorCodes.DEVICE_NOT_SUPPORT_VKO] = "Устройство не поддерживает выработку ключа обмена (ВКО)";

@@ -936,7 +936,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.autoRefresh = noAutoRefresh ? false : true;
 
     this.pluginObject = pluginObject;
-    if (!this.pluginObject.valid) this.delayedReport("Error: couldn't get CryptopluginObject");
+    if (!this.pluginObject.valid) this.delayedReport("Error: couldn't get CryptoPluginObject");
 
     for (var key in this.pluginObject) {
         if (this[key]) continue;

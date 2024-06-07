@@ -266,8 +266,8 @@ testUi.prototype = {
     },
 
     changeCsrStartEndDate: function (key) {
-        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
-            if (result !== 0) {
+        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD).then(function (result) {
+            if (Object.hasOwn(result, "notBefore") || Object.hasOwn(result, "notAfter")) {
                 document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
                 document.getElementById("dateCheckboxStartCsr").disabled = true;
                 document.getElementById("dateCheckboxEndCsr").disabled = true;
@@ -275,14 +275,6 @@ testUi.prototype = {
                 document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
                 document.getElementById("dateCheckboxStartCsr").disabled = false;
                 document.getElementById("dateCheckboxEndCsr").disabled = false;
-            }
-        }, $.proxy(this.printError, this));
-
-        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (result) {
-            if (result !== 0) {
-                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                document.getElementById("dateCheckboxStartCsr").disabled = true;
-                document.getElementById("dateCheckboxEndCsr").disabled = true;
             }
         }, $.proxy(this.printError, this));
 
@@ -706,7 +698,7 @@ testUi.prototype = {
         return subject;
     },
 
-    getExtensions: function () {
+    getExtensions: function (container) {
         var inputs = $("#cert-extensions input");
         var keyUsage = [];
         var extKeyUsage = [];
@@ -730,7 +722,8 @@ testUi.prototype = {
         var extensions = {
             "keyUsage": keyUsage,
             "extKeyUsage": extKeyUsage,
-            "certificatePolicies": certificatePolicies
+            "certificatePolicies": certificatePolicies,
+            "privateKeyUsagePeriod": this.getCsrStartEndDate(container)
         };
         return extensions;
     },
@@ -779,7 +772,6 @@ testUi.prototype = {
     },
 
     getCsrStartEndDate: function (container) {
-        var startEndDate = [0, 0];
         var startDate = new Date(container.find("#startDateReq").val());
         var startTime = document.getElementById("timeInputStart").valueAsNumber;
         var endDate = new Date(container.find("#endDateReq").val());
@@ -788,18 +780,21 @@ testUi.prototype = {
         var valueGenerateStart = $(".startDateCsr[id=dateCheckboxStartCsr]:checked").val();
         var valueGenerateEnd = $(".endDateCsr[id=dateCheckboxEndCsr]:checked").val();
 
+        var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
                 throw "Дата начала действия введена не полностью";
+            
+            dates.notBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
                 throw "Дата конца действия введена не полностью";
+
+            dates.notAfter  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
         }
 
-        startEndDate[0] = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
-        startEndDate[1]  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
-        return startEndDate;
+        return dates;
     },
 
     readFile: function (container, callback) {
@@ -1086,9 +1081,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BF_FAILED_TO_ENUMERATE] = "Не удалось загрузить бинарные файлы с устройства";
     this.errorDescription[this.errorCodes.BF_TOO_MANY_FILES] = "Превышен предел количества бинарных файлов на устройстве";
 
-    this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 02.01.1970 до 31.12.9999 включительно)";
+    this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 до 31.12.9999 включительно)";
     this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";
-    this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:01 до 31.12.9999 23:59:59 включительно)";
+    this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:00 до 31.12.9999 23:59:59 включительно)";
     this.errorDescription[this.errorCodes.END_EARLIER_THAN_START] = "Дата окончания срока действия не должна быть раньше даты начала";
     this.errorDescription[this.errorCodes.KEY_START_OR_END_DATE_ALREADY_SET] = "Срок действия закрытого ключа уже задан";
     this.errorDescription[this.errorCodes.DUPLICATED_EXTENSIONS] = "Отмена генерации CSR: заданы одинаковые расширения";
@@ -1831,16 +1826,7 @@ var TestSuite = new(function () {
                 "customExtensions": ui.getCustomExtensions()
             };
 
-            try {
-                var privateKeyUsagePeriod = ui.getCsrStartEndDate(this.container);
-                options.privateKeyUsagePeriodNotBefore = privateKeyUsagePeriod[0];
-                options.privateKeyUsagePeriodNotAfter  = privateKeyUsagePeriod[1];
-            } catch (error) {
-                ui.printResult("Ошибка: " + error.toString());
-                return;
-            }
-
-            plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(), options).then($.proxy(function (res) {
+            plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(this.container), options).then($.proxy(function (res) {
                 ui.setContent(this.container, res);
                 ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));

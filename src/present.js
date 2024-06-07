@@ -757,25 +757,25 @@ testUi.prototype = {
     },
 
     getKeyStartEndDate: function (container) {
-        var startEndDate = [0, 0];
         var startDate = new Date(container.find("#startDate").val());
         var endDate = new Date(container.find("#endDate").val());
 
         var valueGenerateStart = $(".start-date[name=dateCheckboxStart]:checked").val();
         var valueGenerateEnd = $(".end-date[name=dateCheckboxEnd]:checked").val();
 
+        var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
                 throw "Дата начала действия введена не полностью";
+            dates.notBefore = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
                 throw "Дата конца действия введена не полностью";
+            dates.notAfter = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
         }
 
-        startEndDate[0] = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
-        startEndDate[1] = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
-        return startEndDate;
+        return dates;
     },
 
     getCsrStartEndDate: function (container) {
@@ -1610,9 +1610,7 @@ var TestSuite = new(function () {
 
             options.keySpec = ui.keySpecValue();
             try {
-                var privateKeyUsagePeriod = ui.getKeyStartEndDate(this.container);
-                options.privateKeyUsagePeriodNotBefore = privateKeyUsagePeriod[0];
-                options.privateKeyUsagePeriodNotAfter  = privateKeyUsagePeriod[1];
+                options.privateKeyUsagePeriod = ui.getKeyStartEndDate(this.container);
             } catch (error) {
                 ui.printResult("Ошибка: " + error.toString());
                 return;
@@ -1741,24 +1739,18 @@ var TestSuite = new(function () {
                 }, $.proxy(ui.printError, ui));
             }
 
-            var checkStart = $(".checkbox-input[name=date-info-start]:checked").val();
-            var checkEnd = $(".checkbox-input[name=date-info-end]:checked").val();
-
-            if (checkStart === "date-start") {
-                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_BEFORE).then(function (result) {
+            var checkUsagePeriod = $(".checkbox-input[name=usage-period-info]:checked").val();
+            if (checkUsagePeriod === "usage-period") {
+                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD).then(function (result) {
                     var startDate = "[не задано]";
-                    if (result !== 0)
-                        startDate = new Date(result * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
-                    ui.printResult("Начало срока действия закрытого ключа:\n" + "c " + startDate);
-                }, $.proxy(ui.printError, ui));
-            }
-
-            if (checkEnd === "date-end") {
-                plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_USAGE_PERIOD_NOT_AFTER).then(function (resultEnd) {
+                    if (Object.hasOwn(result, 'notBefore'))
+                        startDate = new Date(result.notBefore * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
+                    ui.printResult("Начало срока действия закрытого ключа:\n" + startDate);
+                    
                     var endDate = "[не задано]";
-                    if (resultEnd !== 0)
-                        endDate =  new Date(resultEnd * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
-                    ui.printResult("Конец срока действия закрытого ключа:\n" + "по " + endDate);
+                    if (Object.hasOwn(result, 'notAfter'))
+                        endDate =  new Date(result.notAfter * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
+                    ui.printResult("Конец срока действия закрытого ключа:\n" + endDate);
                 }, $.proxy(ui.printError, ui));
             }
         }

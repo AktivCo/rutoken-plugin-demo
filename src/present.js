@@ -784,7 +784,7 @@ testUi.prototype = {
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
                 throw "Дата начала действия введена не полностью";
-            
+
             dates.notBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
@@ -1087,10 +1087,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:00 до 31.12.9999 23:59:59 включительно)";
     this.errorDescription[this.errorCodes.END_EARLIER_THAN_START] = "Дата окончания срока действия не должна быть раньше даты начала";
     this.errorDescription[this.errorCodes.KEY_START_OR_END_DATE_ALREADY_SET] = "Срок действия закрытого ключа уже задан";
-    this.errorDescription[this.errorCodes.DUPLICATED_EXTENSIONS] = "Отмена генерации CSR: заданы одинаковые расширения";
+    this.errorDescription[this.errorCodes.DUPLICATE_EXTENSION] = "Параметры extensions и customExtensions задают расширение одного и того же типа";
 
-    this.errorDescription[this.errorCodes.JOURNAL_PAIR_NOT_SUPPORT_EXCHANGE] = "Журнальные ключевые пары не поддерживают обмен";
-    this.errorDescription[this.errorCodes.DEVICE_NOT_SUPPORT_VKO] = "Устройство не поддерживает выработку ключа обмена (ВКО)";
+    this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_INCOMPATIBLE_WITH_GEN_PARAMS] = "Параметры генерации не совместимы с выбранным назначением ключевой пары";
+    this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_NOT_SUPPORTED_BY_DEVICE] = "Выбранное назначение ключевой пары не поддерживается устройством";
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -1742,7 +1742,7 @@ var TestSuite = new(function () {
                     if (Object.hasOwn(result, 'notBefore'))
                         startDate = new Date(result.notBefore * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";
                     ui.printResult("Начало срока действия закрытого ключа:\n" + startDate);
-                    
+
                     var endDate = "[не задано]";
                     if (Object.hasOwn(result, 'notAfter'))
                         endDate =  new Date(result.notAfter * 1000).toLocaleDateString('ru-RU') + " 00:00:00 GMT";

@@ -1082,11 +1082,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.SERVER_RECEIVE_ERROR] = "Ошибка получения данных от сервера";
     this.errorDescription[this.errorCodes.HOST_RESOLVE_ERROR] = "Ошибка распознания хоста";
 
-    this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 до 31.12.9999 включительно)";
-    this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";
-    this.errorDescription[this.errorCodes.CSR_DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 00:00:00 до 31.12.9999 23:59:59 включительно)";
-    this.errorDescription[this.errorCodes.END_EARLIER_THAN_START] = "Дата окончания срока действия не должна быть раньше даты начала";
-    this.errorDescription[this.errorCodes.KEY_START_OR_END_DATE_ALREADY_SET] = "Срок действия закрытого ключа уже задан";
+    this.errorDescription[this.errorCodes.PRIVATE_KEY_USAGE_PERIOD_VALUE_NOT_SUPPORTED] = "Неподдерживаемое значение срока действия закрытого ключа";
+    this.errorDescription[this.errorCodes.PRIVATE_KEY_USAGE_PERIOD_VALUE_INVALID] = "Невалидное значение срока действия закрытого ключа";
+    this.errorDescription[this.errorCodes.PRIVATE_KEY_USAGE_PERIOD_NOT_OVERRIDABLE] = "Срок действия закрытого ключа уже задан";
+
     this.errorDescription[this.errorCodes.DUPLICATE_EXTENSION] = "Параметры extensions и customExtensions задают расширение одного и того же типа";
 
     this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_INCOMPATIBLE_WITH_GEN_PARAMS] = "Параметры генерации не совместимы с выбранным назначением ключевой пары";

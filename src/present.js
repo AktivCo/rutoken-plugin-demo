@@ -1061,12 +1061,6 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.TS_POLICY_MISMATCH] = "Политика в метке доверенного времени отличается от запрошенной";
     this.errorDescription[this.errorCodes.TS_NONCE_NOT_RETURNED] = "Метка доверенного времени не содержит nonce, хотя он был запрошен";
     this.errorDescription[this.errorCodes.TS_TSA_UNTRUSTED] = "Метка доверенного времени создана недоверенным TSA";
-    this.errorDescription[this.errorCodes.TS_EMPTY_RESPONSE_BODY] = "Тело ответа от TSA пусто";
-    this.errorDescription[this.errorCodes.TS_DESERIALIZE_RESPONSE_BODY_ERROR] = "Ошибка десериализации тела ответа от TSA";
-    this.errorDescription[this.errorCodes.TS_CONNECTION_ERROR] = "Ошибка соединения с TSA";
-    this.errorDescription[this.errorCodes.TS_SEND_ERROR] = "Ошибка отправки данных на TSA";
-    this.errorDescription[this.errorCodes.TS_RECEIVE_ERROR] = "Ошибка получения данных от TSA";
-    this.errorDescription[this.errorCodes.TS_HOST_RESOLVING_ERROR] = "Ошибка распознавания хоста TSA";
 
     this.errorDescription[this.errorCodes.HOST_NOT_FOUND] = "Не удалось найти сервер";
     this.errorDescription[this.errorCodes.HTTP_ERROR] = "HTTP ответ с ошибкой";
@@ -1080,6 +1074,13 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BF_ALREADY_EXISTS] = "Бинарный файл с таким именем уже существует";
     this.errorDescription[this.errorCodes.BF_FAILED_TO_ENUMERATE] = "Не удалось загрузить бинарные файлы с устройства";
     this.errorDescription[this.errorCodes.BF_TOO_MANY_FILES] = "Превышен предел количества бинарных файлов на устройстве";
+
+    this.errorDescription[this.errorCodes.EMPTY_RESPONSE_BODY] = "Тело ответа от сервера пусто";
+    this.errorDescription[this.errorCodes.DESERIALIZE_RESPONSE_BODY_ERROR] = "Ошибка десериализации тела ответа от сервера";
+    this.errorDescription[this.errorCodes.SERVER_CONNECTION_ERROR] = "Ошибка соединения с сервером";
+    this.errorDescription[this.errorCodes.SERVER_SEND_ERROR] = "Ошибка отправки данных на сервер";
+    this.errorDescription[this.errorCodes.SERVER_RECEIVE_ERROR] = "Ошибка получения данных от сервера";
+    this.errorDescription[this.errorCodes.HOST_RESOLVE_ERROR] = "Ошибка распознания хоста";
 
     this.errorDescription[this.errorCodes.DATE_OUT_OF_RANGE] = "Недопустимое значение даты (разрешенный диапазон: от 01.01.1970 до 31.12.9999 включительно)";
     this.errorDescription[this.errorCodes.INVALID_TIME_NOT_NULL] = "Недопустимое значение времени (допустимое значение: 00:00:00)";

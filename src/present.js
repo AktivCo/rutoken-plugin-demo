@@ -1472,17 +1472,26 @@ var TestSuite = new(function () {
                     ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
                     ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
 
+                    var keyExchanges = {};
+                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
+                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
+                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
+
                     message = "hashes:\n";
-                    message += "&middot hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
-                    message += "&middot software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+                    message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+                    message += "- software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
 
                     message += "signs:\n";
-                    message += "&middot hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
-                    message += "&middot software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+                    message += "- hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+                    message += "- software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
 
                     message += "ciphers:\n";
-                    message += "&middot hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-                    message += "&middot software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                    message += "- hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                    message += "- software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+
+                    message += "keyExchanges:\n";
+                    message += "- hardware: [" + result["keyExchange"]["hardware"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
+                    message += "- software: [" + result["keyExchange"]["software"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
                     break;
 
                 case plugin.TOKEN_INFO_FKN_SUPPORTED:

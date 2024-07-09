@@ -472,8 +472,6 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
         case "vendor model name":
             return plugin.TOKEN_INFO_VENDOR_MODEL_NAME;
-        case "vko support":
-            return plugin.TOKEN_INFO_VKO_SUPPORTED;
         }
     },
 
@@ -1495,7 +1493,6 @@ var TestSuite = new(function () {
                     break;
 
                 case plugin.TOKEN_INFO_FKN_SUPPORTED:
-                case plugin.TOKEN_INFO_VKO_SUPPORTED:
                 case plugin.TOKEN_INFO_PINS_INFO:
                     message = JSON.stringify(result);
                     break;

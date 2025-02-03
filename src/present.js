@@ -757,12 +757,12 @@ testUi.prototype = {
         var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
-                throw "Дата начала действия введена не полностью";
+                throw "Некорректно указана дата начала действия";
             dates.notBefore = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
-                throw "Дата конца действия введена не полностью";
+                throw "Некорректно указана дата конца действия";
             dates.notAfter = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
         }
 
@@ -781,13 +781,13 @@ testUi.prototype = {
         var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
-                throw "Дата начала действия введена не полностью";
+                throw "Некорректно указана дата начала действия";
 
             dates.notBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
-                throw "Дата конца действия введена не полностью";
+                throw "Некорректно указана дата конца действия";
 
             dates.notAfter  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
         }

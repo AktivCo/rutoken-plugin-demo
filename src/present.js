@@ -265,18 +265,10 @@ testUi.prototype = {
         return this.controls.keyList.val();
     },
 
-    changeCsrStartEndDate: function (key) {
-        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD).then(function (result) {
-            if (Object.hasOwn(result, "notBefore") || Object.hasOwn(result, "notAfter")) {
-                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
-                document.getElementById("dateCheckboxStartCsr").disabled = true;
-                document.getElementById("dateCheckboxEndCsr").disabled = true;
-            } else {
-                document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
-                document.getElementById("dateCheckboxStartCsr").disabled = false;
-                document.getElementById("dateCheckboxEndCsr").disabled = false;
-            }
-        }, $.proxy(this.printError, this));
+    disableDataReq: function() {
+        document.getElementById("KeyDateLabel").innerHTML = "";
+        document.getElementById("dateCheckboxStartCsr").disabled = true;
+        document.getElementById("dateCheckboxEndCsr").disabled = true;
 
         document.getElementById("dateCheckboxStartCsr").checked = false;
         document.getElementById("dateCheckboxEndCsr").checked = false;
@@ -290,6 +282,22 @@ testUi.prototype = {
         document.getElementById("endDateReq").disabled = true;
         document.getElementById("timeInputEnd").value = "00:00:00";
         document.getElementById("timeInputEnd").disabled = true;
+    },
+
+    changeCsrStartEndDate: function (key) {
+        plugin.pluginObject.getKeyInfo(this.device(), key, plugin.KEY_INFO_USAGE_PERIOD).then(function (result) {
+            if (Object.hasOwn(result, "notBefore") || Object.hasOwn(result, "notAfter")) {
+                document.getElementById("KeyDateLabel").innerHTML = "Срок действия закрытого ключа уже задан";
+                document.getElementById("dateCheckboxStartCsr").disabled = true;
+                document.getElementById("dateCheckboxEndCsr").disabled = true;
+            } else {
+                document.getElementById("KeyDateLabel").innerHTML = "При необходимости задайте срок действия закрытого ключа";
+                document.getElementById("dateCheckboxStartCsr").disabled = false;
+                document.getElementById("dateCheckboxEndCsr").disabled = false;
+            }
+        }, $.proxy(this.printError, this));
+
+        disableDataReq();
     },
 
     certificate: function () {
@@ -1195,6 +1203,7 @@ cryptoPlugin.prototype = {
 
     enumerateKeys: function (deviceId, marker) {
         ui.clearKeyList("Список ключевых пар обновляется...");
+        ui.disableDataReq();
         marker = (marker === undefined) ? "" : marker;
         deviceId = (deviceId === undefined) ? ui.device() : deviceId;
         this.pluginObject.enumerateKeys(deviceId, marker).then($.proxy(function (keys) {

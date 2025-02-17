@@ -1,14 +1,14 @@
 var browserify = require('browserify'),
     babelify = require('babelify'),
     buffer = require('vinyl-buffer'),
-    del = require('del'),
     gulp = require('gulp'),
     rename = require('gulp-rename'),
     source = require('vinyl-source-stream'),
     uglify = require('gulp-uglify-es').default;
+const { deleteAsync } = require('del');
 
 function clean () {
-    return del(['build']);
+    return deleteAsync(['build']);
 };
 
 function pages () {
@@ -24,7 +24,7 @@ function libs () {
 function deps () {
     return browserify('src/dependencies.js')
         .add(require.resolve('babel-polyfill'))
-        .transform('babelify', {presets: ["@babel/preset-env"], plugins:['@babel/plugin-transform-classes']})
+        .transform('babelify', {presets: ["@babel/preset-env"], plugins: ['@babel/plugin-transform-classes'], compact: true})
         .bundle()
         .pipe(source('dependencies.js'))
         .pipe(buffer())

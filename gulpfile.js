@@ -50,7 +50,7 @@ function styles () {
 };
 
 function images () {
-    return gulp.src('src/images/*.png')
+    return gulp.src('src/images/*.png', {encoding: false})
         .pipe(gulp.dest('build/images'));
 };
 

@@ -1478,6 +1478,10 @@ var TestSuite = new(function () {
                     ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
                     ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
                     ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
+                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTRACPKM] = "CIPHER_ALGORITHM_MAGMA_CTRACPKM";
+                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_ACPKM_OMAC";
+                    ciphers[plugin.CIPHER_ALGORITHM_KUZNYECHIK_CTRACPKM] = "CIPHER_ALGORITHM_KUZNYECHIK_CTRACPKM";
+                    ciphers[plugin.CIPHER_ALGORITHM_KUZNYECHIK_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNYECHIK_ACPKM_OMAC";
 
                     var keyExchanges = {};
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";

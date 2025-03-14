@@ -1978,6 +1978,8 @@ var TestSuite = new(function () {
             options.addSecurityProductsInfo = ui.checkboxState(this.container, "add-security-products-info") == "on" ? true : false;
             options.addEssCert = ui.checkboxState(this.container, "add-ess-cert") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
+            options.outputFormat = plugin[this.container.find(".sign-message-format").val()];
+
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".cms-hash-alg").val()];
             if (ui.checkboxState(this.container, "set-content-type") == "on")
@@ -2341,6 +2343,8 @@ var TestSuite = new(function () {
 
             if (ui.checkboxState(this.container, "cms-encrypt-cipher") == "on")
                 options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
+
+            options.outputFormat = plugin[this.container.find(".encrypt-message-format").val()];
 
             var elements = this.container.find(".recipient");
             var recipients = [];

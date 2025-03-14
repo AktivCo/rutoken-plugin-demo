@@ -649,6 +649,13 @@
                                     </div>
                                 </li>
                                 <li>
+                                    <label for="sign-message-format"/>Формат результирующей CMS с signed-data:</label>
+                                    <select class="sign-message-format" id="sign-message-format">
+                                        <option value="DATA_FORMAT_BASE64">Base64</option>
+                                        <option value="DATA_FORMAT_PEM">PEM</option>
+                                    </select><br>
+                                </li>
+                                <li>
                                     <label for="sign-message-result">Результат</label>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
                                 </li>
@@ -925,7 +932,14 @@ IPx1wd5hBhGV714=
                                         <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC">KUZNECHIK_CTR_ACPKM_OMAC</option>
                                     </select>
                                 </li>
+                                    <label for="encrypt-message-format"/>Формат результирующей CMS с enveloped-data:</label>
+                                    <select class="encrypt-message-format" id="encrypt-message-format">
+                                        <option value="DATA_FORMAT_BASE64">Base64</option>
+                                        <option value="DATA_FORMAT_PEM">PEM</option>
+                                    </select><br>
+                                </li>
                                 <li>
+                                    <label for="encrypt-message-result">Результат</label>
                                     <textarea id="encrypt-message-result" class="text-output" rows="7"></textarea>
                                 </li>
                             </ul>

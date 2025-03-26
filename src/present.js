@@ -69,6 +69,7 @@ function testUi(useConsole) {
             document.getElementById("paramset-2001").style = "display: inline;";
             document.getElementById("paramset-2012-256").style = "display: none;";
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = true;
         }
         else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 256") {
@@ -76,18 +77,28 @@ function testUi(useConsole) {
             document.getElementById("paramset-2012-256").disabled = false;
             document.getElementById("paramset-2012-256").style = "display: inline;";
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = true;
         }
         else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 512") {
             document.getElementById("paramset-2001").style = "display: none;";
             document.getElementById("paramset-2012-256").style = "display: none;";
             document.getElementById("paramset-2012-512").style = "display: inline;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
+            document.getElementById("rsa-keygen-size").disabled = true;
+        }
+        else if (this.options[e.target.selectedIndex].text == "ECDSA") {
+            document.getElementById("paramset-2001").style = "display: none;";
+            document.getElementById("paramset-2012-256").style = "display: none;";
+            document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: inline;";
             document.getElementById("rsa-keygen-size").disabled = true;
         } else {
             document.getElementById("paramset-2001").style = "display: none;";
             document.getElementById("paramset-2012-256").style = "display: inline;";
             document.getElementById("paramset-2012-256").disabled = true;
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = false;
         }
     });
@@ -1620,6 +1631,15 @@ var TestSuite = new(function () {
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
                 let rsaSize = parseInt(this.container.find(".rsa-keygen-size").val(), 10);
                 options.signatureSize = rsaSize;
+            } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_ECDSA) {
+                options.paramset = this.container.find(".paramset-ecdsa").val();
+                if (options.paramset === "secp384r1") {
+                    options.signatureSize = 768;
+                } else if (options.paramset === "secp521r1") {
+                    options.signatureSize = 1056;
+                } else {
+                    options.signatureSize = 512;
+                }
             }
 
             options.keySpec = ui.keySpecValue();
@@ -1723,6 +1743,9 @@ var TestSuite = new(function () {
                             break;
                         case plugin.PUBLIC_KEY_ALGORITHM_RSA_4096:
                             message = "RSA 4096";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_ECDSA:
+                            message = "ECDSA";
                             break;
                         default:
                             message = "Неизвестный тип алгоритма ключа: " + result;

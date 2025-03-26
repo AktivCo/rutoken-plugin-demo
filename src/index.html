@@ -165,6 +165,7 @@
                                         <option value="PUBLIC_KEY_ALGORITHM_GOST3410_2012_256" selected="selected">ГОСТ Р 34.10-2012 256</option>
                                         <option value="PUBLIC_KEY_ALGORITHM_GOST3410_2012_512">ГОСТ Р 34.10-2012 512</option>
                                         <option value="PUBLIC_KEY_ALGORITHM_RSA">RSA</option>
+                                        <option value="PUBLIC_KEY_ALGORITHM_ECDSA">ECDSA</option>
                                     </select>
                                 </li>
                                 <li>
@@ -211,6 +212,12 @@
                                         <option value="TC26-A">TC26-A</option>
                                         <option value="TC26-B">TC26-B</option>
                                         <option value="TC26-C">TC26-C</option>
+                                    </select>
+                                    <select id="paramset-ecdsa" aria-labelledby="gost-paramset" style="display: none" class="paramset-ecdsa">
+                                        <option value="secp256r1" selected>secp256r1</option>
+                                        <option value="secp256k1">secp256k1</option>
+                                        <option value="secp384r1">secp384r1</option>
+                                        <option value="secp521r1">secp521r1</option>
                                     </select>
                                 </li>
                                 <li>

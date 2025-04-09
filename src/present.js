@@ -1108,6 +1108,8 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_INCOMPATIBLE_WITH_GEN_PARAMS] = "Параметры генерации не совместимы с выбранным назначением ключевой пары";
     this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_NOT_SUPPORTED_BY_DEVICE] = "Выбранное назначение ключевой пары не поддерживается устройством";
 
+    this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 

@@ -273,7 +273,15 @@ testUi.prototype = {
     },
 
     key: function () {
-        return this.controls.keyList.val();
+        let selected = this.controls.keyList.find("option:selected");
+        let val = selected.val();
+
+        if (selected.attr('data-key') === undefined) {
+            if (val === null || val == undefined) throw "Список ключевых пар обновляется...";
+            else throw val;
+        }
+
+        return val;
     },
 
     disableDataReq: function() {
@@ -350,7 +358,7 @@ testUi.prototype = {
     addKey: function (keyId, label) {
         this.controls.keyList.append($("<option>", {
             'value': keyId
-        }).text(label));
+        }).text(label).attr('data-key', ""));
     },
 
     refreshKeyList: function (keys) {

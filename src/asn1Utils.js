@@ -16,6 +16,11 @@ var asn1Utils = new Object();
 asn1Utils.getCmcPkiData = function(pkcs10req) {
     pkcs10req = pkcs10req.replace(/.*-----BEGIN[^-]*(-[^-]+)*-----/g, '');
     pkcs10req = pkcs10req.replace(/-----END[^-]*(-[^-]+)*-----.*/g, '');
+    pkcs10req = pkcs10req.replace(/\s/g, '');
+
+    if (!pkcs10req.match(/^\n*([a-zA-Z0-9+\/=]+\n*)+$/))
+        throw "Invalid CSR after headers removal";
+
     var der = base64ToUint8Buffer(pkcs10req);
 
     var bodyPartId = 1;
@@ -29,7 +34,7 @@ asn1Utils.getCmcPkiData = function(pkcs10req) {
                 },
                 value: [
                     new asn1js.Integer({ value: bodyPartId }),
-                    new asn1js.RawData({ data: der })
+                    new asn1js.OctetString({ valueHex: der })
                 ]
             })
         ]
@@ -37,14 +42,14 @@ asn1Utils.getCmcPkiData = function(pkcs10req) {
 
     var pkiData = new asn1js.Sequence({
         value: [
-            new asn1js.Sequence(),
-            new asn1js.Sequence({
+            new asn1js.Sequence(),  // controlSequence
+            new asn1js.Sequence({   // reqSequence
                 value: [
                     taggedRequest.value[0]
                 ]
             }),
-            new asn1js.Sequence(),
-            new asn1js.Sequence()
+            new asn1js.Sequence(), // cmsSequence
+            new asn1js.Sequence()  // otherMsgSequence
         ]
     });
 

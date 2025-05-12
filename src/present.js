@@ -52,6 +52,10 @@ function testUi(useConsole) {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
     }
 
+    document.getElementById("use-ukm").onclick = function() {
+        document.getElementById("ukm").disabled = !this.checked;
+    }
+
     document.getElementById("cms-encrypt-cipher").onclick = function() {
         document.getElementById("cms-encrypt-alg").disabled = !this.checked;
     }
@@ -2160,7 +2164,9 @@ var TestSuite = new(function () {
             var options = {};
             ui.setContent(this.container, "");
 
-            options.ukm = ui.getContent(this.container, 1);
+            if (ui.checkboxState(this.container, "use-ukm") == "on") {
+                options.ukm = ui.getContent(this.container, 1);
+            }
 
             if (ui.useConsole) {
                 console.time("derive-key");

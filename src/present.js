@@ -1513,6 +1513,7 @@ var TestSuite = new(function () {
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
+                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
 
                     message = "hashes:\n";
                     message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";

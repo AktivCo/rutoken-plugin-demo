@@ -925,12 +925,12 @@ IPx1wd5hBhGV714=
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="in-base64"/>Данные в base64</label><br>
-                                    <label><input type="checkbox" name="cms-encrypt-cipher" id="cms-encrypt-cipher"/>Алгоритм шифрования</label>
-                                    <select class="cms-encrypt-alg" id="cms-encrypt-alg" disabled=true>
+                                    <label for="cms-encrypt-alg"/>Алгоритм шифрования:</label>
+                                    <select class="cms-encrypt-alg" id="cms-encrypt-alg">
                                         <option value="CIPHER_ALGORITHM_AES128">AES128</option>
                                         <option value="CIPHER_ALGORITHM_AES192">AES192</option>
                                         <option value="CIPHER_ALGORITHM_AES256">AES256</option>
-                                        <option value="CIPHER_ALGORITHM_GOST28147">GOST28147</option>
+                                        <option value="CIPHER_ALGORITHM_GOST28147" selected>GOST28147</option>
                                         <option value="CIPHER_ALGORITHM_MAGMA_CTR_ACPKM">MAGMA_CTRACPKM</option>
                                         <option value="CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC">MAGMA_CTR_ACPKM_OMAC</option>
                                         <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM">KUZNECHIK_CTR_ACPKM</option>

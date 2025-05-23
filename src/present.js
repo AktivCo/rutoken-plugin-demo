@@ -56,10 +56,6 @@ function testUi(useConsole) {
         document.getElementById("ukm").disabled = !this.checked;
     }
 
-    document.getElementById("cms-encrypt-cipher").onclick = function() {
-        document.getElementById("cms-encrypt-alg").disabled = !this.checked;
-    }
-
     document.getElementById("set-content-type").onclick = function() {
         document.getElementById("content-type").disabled = !this.checked;
     }
@@ -2349,8 +2345,7 @@ var TestSuite = new(function () {
                 base64: b64
             };
 
-            if (ui.checkboxState(this.container, "cms-encrypt-cipher") == "on")
-                options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
+            options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
 
             options.outputFormat = plugin[this.container.find(".encrypt-message-format").val()];
 

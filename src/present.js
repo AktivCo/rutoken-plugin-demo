@@ -1648,7 +1648,7 @@ var TestSuite = new(function () {
                 if (options.paramset === "secp384r1") {
                     options.signatureSize = 768;
                 } else if (options.paramset === "secp521r1") {
-                    options.signatureSize = 1042;
+                    options.signatureSize = 1056;
                 } else {
                     options.signatureSize = 512;
                 }

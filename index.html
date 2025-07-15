@@ -165,6 +165,7 @@
                                         <option value="PUBLIC_KEY_ALGORITHM_GOST3410_2012_256" selected="selected">ГОСТ Р 34.10-2012 256</option>
                                         <option value="PUBLIC_KEY_ALGORITHM_GOST3410_2012_512">ГОСТ Р 34.10-2012 512</option>
                                         <option value="PUBLIC_KEY_ALGORITHM_RSA">RSA</option>
+                                        <option value="PUBLIC_KEY_ALGORITHM_ECDSA">ECDSA</option>
                                     </select>
                                 </li>
                                 <li>
@@ -211,6 +212,12 @@
                                         <option value="TC26-A">TC26-A</option>
                                         <option value="TC26-B">TC26-B</option>
                                         <option value="TC26-C">TC26-C</option>
+                                    </select>
+                                    <select id="paramset-ecdsa" aria-labelledby="gost-paramset" style="display: none" class="paramset-ecdsa">
+                                        <option value="secp256r1" selected>secp256r1</option>
+                                        <option value="secp256k1">secp256k1</option>
+                                        <option value="secp384r1">secp384r1</option>
+                                        <option value="secp521r1">secp521r1</option>
                                     </select>
                                 </li>
                                 <li>
@@ -455,7 +462,7 @@
                                     </table>
                                 </li>
                                 <li>
-                                    <label id="KeyDateLabel">Срок действия закрытого ключа уже задан</label><br>
+                                    <label id="KeyDateLabel"></label>
                                 </li>
                                 <li>
                                     <label><input type="checkbox" id="dateCheckboxStartCsr" class="startDateCsr" value="dateSet" disabled/><strong>privateKeyUsagePeriod notBefore</strong></label><br>
@@ -642,6 +649,13 @@
                                     </div>
                                 </li>
                                 <li>
+                                    <label for="sign-message-format"/>Формат результирующей CMS с signed-data:</label>
+                                    <select class="sign-message-format" id="sign-message-format">
+                                        <option value="DATA_FORMAT_BASE64">Base64</option>
+                                        <option value="DATA_FORMAT_PEM">PEM</option>
+                                    </select><br>
+                                </li>
+                                <li>
                                     <label for="sign-message-result">Результат</label>
                                     <textarea id="sign-message-result" class="text-output" rows="7"></textarea>
                                 </li>
@@ -769,6 +783,11 @@ IPx1wd5hBhGV714=
                                 <li>
                                     <label for="public-key">Открытый ключ (размер и значение должно согласовываться с закрытым ключом)</label>
                                     <textarea id="public-key" class="text-input" rows="4">3d:3f:96:3e:31:98:34:ee:7a:1a:c4:f5:a2:78:a7:8c:30:00:b4:15:8b:12:64:77:00:95:5d:06:3b:47:a6:a9:d3:35:79:17:4f:22:7f:8a:4d:e6:1c:d6:79:45:93:8e:36:ee:0d:d5:0c:1a:da:1e:03:a1:ff:9c:d4:b4:78:4d</textarea>
+                                </li>
+                                <li>
+                                    <label><input type="checkbox" name="use-ukm" id="use-ukm" checked="checked">Использовать UKM (только для ГОСТ ключей)</label>
+                                </li>
+                                <li>
                                     <label for="ukm">Синхропосылка (8 байт)</label>
                                     <textarea id="ukm" class="text-input" rows="1">01:02:03:04:05:06:07:08</textarea>
                                 </li>
@@ -891,8 +910,7 @@ IPx1wd5hBhGV714=
                                         <tr>
                                             <td colspan="2">
                                                 <label for="encrypt-certificate">Тело сертификата (По умолчанию сертификат с ГОСТ ключом)</label>
-                                                <textarea id="encrypt-certificate" class="recipient" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIEWzCCBAqgAwIBAgIKfFP2xQACAALbSzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpDUllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEyMTAzMTEyMjIyNloXDTE0MTAwNDA3MDk0MVowggGDMQswCQYDVQQGEwJSVTEPMA0GA1UECBMGTW9zY293MQwwCgYDVQQHEwNtc2sxDzANBgNVBAkTBnN0cmVldDEOMAwGA1UEChMFQWt0aXYxCzAJBgNVBAsTAklUMRcwFQYDVQQQEw5wb3N0YWwgYWRkcmVzczEbMBkGA1UEDB4SBDQEPgQ7BDYEPQQ+BEEEQgRMMRkwFwYIKoUDA4EDAQESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAMSCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAUSCzEyMzQ1Njc4OTg3MS8wLQYDVQQDHiYEJAQwBDwEOAQ7BDgETwAgBBgEPARPACAEHgRHBDUEQQRCBDIEPjESMBAGA1UEQRMJcHNldWRvbnltMRAwDgYDVQQEEwdzdXJuYW1lMRMwEQYDVQQqEwpnaXZlbiBuYW1lMSIwIAYJKoZIhvcNAQkBFhNleGFtcGxlQGV4YW1wbGUuY29tMGMwHAYGKoUDAgITMBIGByqFAwICIwEGByqFAwICHgEDQwAEQAhY4OcPvPJanf/8RhuIh3jt3MAOgtHwJSspvQwPi0SUNU4wILT1M9//WlAAz4hEXqx+9pGfyUiYsg/bgKwLsmWjggF4MIIBdDALBgNVHQ8EBAMCBsAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwQwEwYDVR0gBAwwCjAIBgYqhQNkcQEwHQYDVR0OBBYEFOxa5YWf5fGZiFQew1lp0FyhfrogMB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBIoEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENlbnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggrBgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3JmMFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xsL3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYqhQMCAgMDQQAuWkeHdQran99h1XeLuepMQA9FIf4PwMzgwCi3bs4ThFQMvh5ZtSXY6aEJ1ohNxzvEAWN8elkoasoZJhWjj9zF&#10;-----END CERTIFICATE-----
-                                                </textarea>
+                                                <textarea id="encrypt-certificate" class="recipient" rows="7">-----BEGIN CERTIFICATE-----&#10;MIIEWzCCBAqgAwIBAgIKfFP2xQACAALbSzAIBgYqhQMCAgMwZTEgMB4GCSqGSIb3DQEJARYRaW5mb0BjcnlwdG9wcm8ucnUxCzAJBgNVBAYTAlJVMRMwEQYDVQQKEwpDUllQVE8tUFJPMR8wHQYDVQQDExZUZXN0IENlbnRlciBDUllQVE8tUFJPMB4XDTEyMTAzMTEyMjIyNloXDTE0MTAwNDA3MDk0MVowggGDMQswCQYDVQQGEwJSVTEPMA0GA1UECBMGTW9zY293MQwwCgYDVQQHEwNtc2sxDzANBgNVBAkTBnN0cmVldDEOMAwGA1UEChMFQWt0aXYxCzAJBgNVBAsTAklUMRcwFQYDVQQQEw5wb3N0YWwgYWRkcmVzczEbMBkGA1UEDB4SBDQEPgQ7BDYEPQQ+BEEEQgRMMRkwFwYIKoUDA4EDAQESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAMSCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAESCzEyMzQ1Njc4OTg3MRYwFAYFKoUDZAUSCzEyMzQ1Njc4OTg3MS8wLQYDVQQDHiYEJAQwBDwEOAQ7BDgETwAgBBgEPARPACAEHgRHBDUEQQRCBDIEPjESMBAGA1UEQRMJcHNldWRvbnltMRAwDgYDVQQEEwdzdXJuYW1lMRMwEQYDVQQqEwpnaXZlbiBuYW1lMSIwIAYJKoZIhvcNAQkBFhNleGFtcGxlQGV4YW1wbGUuY29tMGMwHAYGKoUDAgITMBIGByqFAwICIwEGByqFAwICHgEDQwAEQAhY4OcPvPJanf/8RhuIh3jt3MAOgtHwJSspvQwPi0SUNU4wILT1M9//WlAAz4hEXqx+9pGfyUiYsg/bgKwLsmWjggF4MIIBdDALBgNVHQ8EBAMCBsAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwQwEwYDVR0gBAwwCjAIBgYqhQNkcQEwHQYDVR0OBBYEFOxa5YWf5fGZiFQew1lp0FyhfrogMB8GA1UdIwQYMBaAFG2PXgXZX6yRF5QelZoFMDg3ehAqMFUGA1UdHwROMEwwSqBIoEaGRGh0dHA6Ly93d3cuY3J5cHRvcHJvLnJ1L0NlcnRFbnJvbGwvVGVzdCUyMENlbnRlciUyMENSWVBUTy1QUk8oMikuY3JsMIGgBggrBgEFBQcBAQSBkzCBkDAzBggrBgEFBQcwAYYnaHR0cDovL3d3dy5jcnlwdG9wcm8ucnUvb2NzcG5jL29jc3Auc3JmMFkGCCsGAQUFBzAChk1odHRwOi8vd3d3LmNyeXB0b3Byby5ydS9DZXJ0RW5yb2xsL3BraS1zaXRlX1Rlc3QlMjBDZW50ZXIlMjBDUllQVE8tUFJPKDIpLmNydDAIBgYqhQMCAgMDQQAuWkeHdQran99h1XeLuepMQA9FIf4PwMzgwCi3bs4ThFQMvh5ZtSXY6aEJ1ohNxzvEAWN8elkoasoZJhWjj9zF&#10;-----END CERTIFICATE-----</textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -906,14 +924,26 @@ IPx1wd5hBhGV714=
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="in-base64"/>Данные в base64</label><br>
-                                    <label><input type="checkbox" name="cms-encrypt-cipher" id="cms-encrypt-cipher"/>Алгоритм шифрования для RSA ключей</label>
-                                    <select class="cms-encrypt-alg" id="cms-encrypt-alg" disabled=true>
+                                    <label for="cms-encrypt-alg"/>Алгоритм шифрования:</label>
+                                    <select class="cms-encrypt-alg" id="cms-encrypt-alg">
                                         <option value="CIPHER_ALGORITHM_AES128">AES128</option>
                                         <option value="CIPHER_ALGORITHM_AES192">AES192</option>
                                         <option value="CIPHER_ALGORITHM_AES256">AES256</option>
-                                    <select>
+                                        <option value="CIPHER_ALGORITHM_GOST28147" selected>GOST28147</option>
+                                        <option value="CIPHER_ALGORITHM_MAGMA_CTR_ACPKM">MAGMA_CTRACPKM</option>
+                                        <option value="CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC">MAGMA_CTR_ACPKM_OMAC</option>
+                                        <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM">KUZNECHIK_CTR_ACPKM</option>
+                                        <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC">KUZNECHIK_CTR_ACPKM_OMAC</option>
+                                    </select>
+                                </li>
+                                    <label for="encrypt-message-format"/>Формат результирующей CMS с enveloped-data:</label>
+                                    <select class="encrypt-message-format" id="encrypt-message-format">
+                                        <option value="DATA_FORMAT_BASE64">Base64</option>
+                                        <option value="DATA_FORMAT_PEM">PEM</option>
+                                    </select><br>
                                 </li>
                                 <li>
+                                    <label for="encrypt-message-result">Результат</label>
                                     <textarea id="encrypt-message-result" class="text-output" rows="7"></textarea>
                                 </li>
                             </ul>

@@ -52,8 +52,8 @@ function testUi(useConsole) {
         document.getElementById("cms-hash-alg").disabled = !this.checked;
     }
 
-    document.getElementById("cms-encrypt-cipher").onclick = function() {
-        document.getElementById("cms-encrypt-alg").disabled = !this.checked;
+    document.getElementById("use-ukm").onclick = function() {
+        document.getElementById("ukm").disabled = !this.checked;
     }
 
     document.getElementById("set-content-type").onclick = function() {
@@ -69,6 +69,7 @@ function testUi(useConsole) {
             document.getElementById("paramset-2001").style = "display: inline;";
             document.getElementById("paramset-2012-256").style = "display: none;";
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = true;
         }
         else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 256") {
@@ -76,18 +77,28 @@ function testUi(useConsole) {
             document.getElementById("paramset-2012-256").disabled = false;
             document.getElementById("paramset-2012-256").style = "display: inline;";
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = true;
         }
         else if (this.options[e.target.selectedIndex].text == "ГОСТ Р 34.10-2012 512") {
             document.getElementById("paramset-2001").style = "display: none;";
             document.getElementById("paramset-2012-256").style = "display: none;";
             document.getElementById("paramset-2012-512").style = "display: inline;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
+            document.getElementById("rsa-keygen-size").disabled = true;
+        }
+        else if (this.options[e.target.selectedIndex].text == "ECDSA") {
+            document.getElementById("paramset-2001").style = "display: none;";
+            document.getElementById("paramset-2012-256").style = "display: none;";
+            document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: inline;";
             document.getElementById("rsa-keygen-size").disabled = true;
         } else {
             document.getElementById("paramset-2001").style = "display: none;";
             document.getElementById("paramset-2012-256").style = "display: inline;";
             document.getElementById("paramset-2012-256").disabled = true;
             document.getElementById("paramset-2012-512").style = "display: none;";
+            document.getElementById("paramset-ecdsa").style = "display: none;";
             document.getElementById("rsa-keygen-size").disabled = false;
         }
     });
@@ -262,7 +273,34 @@ testUi.prototype = {
     },
 
     key: function () {
-        return this.controls.keyList.val();
+        let selected = this.controls.keyList.find("option:selected");
+        let val = selected.val();
+
+        if (selected.attr('data-key') === undefined) {
+            if (val === null || val == undefined) throw "Список ключевых пар обновляется...";
+            else throw val;
+        }
+
+        return val;
+    },
+
+    disableDataReq: function() {
+        document.getElementById("KeyDateLabel").innerHTML = "";
+        document.getElementById("dateCheckboxStartCsr").disabled = true;
+        document.getElementById("dateCheckboxEndCsr").disabled = true;
+
+        document.getElementById("dateCheckboxStartCsr").checked = false;
+        document.getElementById("dateCheckboxEndCsr").checked = false;
+
+        document.getElementById("startDateReq").value = "";
+        document.getElementById("startDateReq").disabled = true;
+        document.getElementById("timeInputStart").value = "00:00:00";
+        document.getElementById("timeInputStart").disabled = true;
+
+        document.getElementById("endDateReq").value = "";
+        document.getElementById("endDateReq").disabled = true;
+        document.getElementById("timeInputEnd").value = "00:00:00";
+        document.getElementById("timeInputEnd").disabled = true;
     },
 
     changeCsrStartEndDate: function (key) {
@@ -278,18 +316,7 @@ testUi.prototype = {
             }
         }, $.proxy(this.printError, this));
 
-        document.getElementById("dateCheckboxStartCsr").checked = false;
-        document.getElementById("dateCheckboxEndCsr").checked = false;
-
-        document.getElementById("startDateReq").value = "";
-        document.getElementById("startDateReq").disabled = true;
-        document.getElementById("timeInputStart").value = "00:00:00";
-        document.getElementById("timeInputStart").disabled = true;
-
-        document.getElementById("endDateReq").value = "";
-        document.getElementById("endDateReq").disabled = true;
-        document.getElementById("timeInputEnd").value = "00:00:00";
-        document.getElementById("timeInputEnd").disabled = true;
+        disableDataReq();
     },
 
     certificate: function () {
@@ -331,7 +358,7 @@ testUi.prototype = {
     addKey: function (keyId, label) {
         this.controls.keyList.append($("<option>", {
             'value': keyId
-        }).text(label));
+        }).text(label).attr('data-key', ""));
     },
 
     refreshKeyList: function (keys) {
@@ -757,12 +784,12 @@ testUi.prototype = {
         var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
-                throw "Дата начала действия введена не полностью";
+                throw "Некорректно указана дата начала действия";
             dates.notBefore = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
-                throw "Дата конца действия введена не полностью";
+                throw "Некорректно указана дата конца действия";
             dates.notAfter = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) / 1000;
         }
 
@@ -781,13 +808,13 @@ testUi.prototype = {
         var dates = {};
         if (valueGenerateStart == "dateSet") {
             if (isNaN(startDate))
-                throw "Дата начала действия введена не полностью";
+                throw "Некорректно указана дата начала действия";
 
             dates.notBefore = (Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()) + startTime) / 1000;
         }
         if (valueGenerateEnd == "dateSet") {
             if (isNaN(endDate))
-                throw "Дата конца действия введена не полностью";
+                throw "Некорректно указана дата конца действия";
 
             dates.notAfter  = (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) + endTime) / 1000;
         }
@@ -983,7 +1010,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.UNSUPPORTED_BY_TOKEN] = "Операция не поддерживается токеном";
     this.errorDescription[this.errorCodes.KEY_FUNCTION_NOT_PERMITTED] = "Операция запрещена для данного типа ключа";
 
-    this.errorDescription[this.errorCodes.BASE64_DECODE_FAILED] = "Ошибка декодирования даных из BASE64";
+    this.errorDescription[this.errorCodes.BASE64_DECODE_FAILED] = "Ошибка декодирования данных из BASE64";
     this.errorDescription[this.errorCodes.PEM_ERROR] = "Ошибка разбора PEM";
     this.errorDescription[this.errorCodes.ASN1_ERROR] = "Ошибка декодирования ASN1 структуры";
 
@@ -1015,16 +1042,16 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_CERT_CHAIN_TOO_LONG] = "Слишком длинная цепочка сертификатов";
     this.errorDescription[this.errorCodes.X509_CERT_REVOKED] = "Сертификат отозван";
     this.errorDescription[this.errorCodes.X509_INVALID_CA] = "Неверный корневой сертификат";
-    this.errorDescription[this.errorCodes.X509_INVALID_NON_CA] = "Неверный некорневой сертфикат, помеченный как корневой";
+    this.errorDescription[this.errorCodes.X509_INVALID_NON_CA] = "Неверный некорневой сертификат, помеченный как корневой";
     this.errorDescription[this.errorCodes.X509_PATH_LENGTH_EXCEEDED] = "Превышена длина пути";
-    this.errorDescription[this.errorCodes.X509_PROXY_PATH_LENGTH_EXCEEDED] = "Превышина длина пути прокси";
+    this.errorDescription[this.errorCodes.X509_PROXY_PATH_LENGTH_EXCEEDED] = "Превышена длина пути прокси";
     this.errorDescription[this.errorCodes.X509_PROXY_CERTIFICATES_NOT_ALLOWED] = "Проксирующие сертификаты недопустимы";
     this.errorDescription[this.errorCodes.X509_INVALID_PURPOSE] = "Неподдерживаемое назначение сертификата";
     this.errorDescription[this.errorCodes.X509_CERT_UNTRUSTED] = "Недоверенный сертификат";
-    this.errorDescription[this.errorCodes.X509_CERT_REJECTED] = "Сертифкат отклонен";
+    this.errorDescription[this.errorCodes.X509_CERT_REJECTED] = "Сертификат отклонен";
     this.errorDescription[this.errorCodes.X509_APPLICATION_VERIFICATION] = "Ошибка проверки приложения";
-    this.errorDescription[this.errorCodes.X509_SUBJECT_ISSUER_MISMATCH] = "Несовпадения субьекта и эмитента";
-    this.errorDescription[this.errorCodes.X509_AKID_SKID_MISMATCH] = "Несовпадение идентификатора ключа у субьекта и доверенного центра";
+    this.errorDescription[this.errorCodes.X509_SUBJECT_ISSUER_MISMATCH] = "Несовпадения субъекта и эмитента";
+    this.errorDescription[this.errorCodes.X509_AKID_SKID_MISMATCH] = "Несовпадение идентификатора ключа у субъекта и доверенного центра";
     this.errorDescription[this.errorCodes.X509_AKID_ISSUER_SERIAL_MISMATCH] = "Несовпадение серийного номера субьекта и доверенного центра";
     this.errorDescription[this.errorCodes.X509_KEYUSAGE_NO_CERTSIGN] = "Ключ не может быть использован для подписи сертификатов";
     this.errorDescription[this.errorCodes.X509_UNABLE_TO_GET_CRL_ISSUER] = "Невозможно получить CRL подписанта";
@@ -1039,12 +1066,12 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_DIFFERENT_CRL_SCOPE] = "Другая область CRL";
     this.errorDescription[this.errorCodes.X509_UNSUPPORTED_EXTENSION_FEATURE] = "Неподдерживаемое расширение возможностей";
     this.errorDescription[this.errorCodes.X509_UNNESTED_RESOURCE] = "RFC 3779 неправильное наследование ресурсов";
-    this.errorDescription[this.errorCodes.X509_PERMITTED_VIOLATION] = "Неправильная структура сертифката";
-    this.errorDescription[this.errorCodes.X509_EXCLUDED_VIOLATION] = "Неправильная структура сертфиката";
-    this.errorDescription[this.errorCodes.X509_SUBTREE_MINMAX] = "Неправильная структура сертифката";
-    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_CONSTRAINT_TYPE] = "Неправильная структура сертфиката";
-    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_CONSTRAINT_SYNTAX] = "Неправильная структура сертифката";
-    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_NAME_SYNTAX] = "Неправильная структура сертфиката";
+    this.errorDescription[this.errorCodes.X509_PERMITTED_VIOLATION] = "Неправильная структура сертификата";
+    this.errorDescription[this.errorCodes.X509_EXCLUDED_VIOLATION] = "Неправильная структура сертификата";
+    this.errorDescription[this.errorCodes.X509_SUBTREE_MINMAX] = "Неправильная структура сертификата";
+    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_CONSTRAINT_TYPE] = "Неправильная структура сертификата";
+    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_CONSTRAINT_SYNTAX] = "Неправильная структура сертификата";
+    this.errorDescription[this.errorCodes.X509_UNSUPPORTED_NAME_SYNTAX] = "Неправильная структура сертификата";
     this.errorDescription[this.errorCodes.X509_CRL_PATH_VALIDATION_ERROR] = "Неправильный путь CRL";
     this.errorDescription[this.errorCodes.CMS_CERTIFICATE_ALREADY_PRESENT] = "Сертификат уже используется";
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
@@ -1088,6 +1115,8 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_INCOMPATIBLE_WITH_GEN_PARAMS] = "Параметры генерации не совместимы с выбранным назначением ключевой пары";
     this.errorDescription[this.errorCodes.KEY_SPEC_VALUE_NOT_SUPPORTED_BY_DEVICE] = "Выбранное назначение ключевой пары не поддерживается устройством";
+
+    this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -1195,6 +1224,7 @@ cryptoPlugin.prototype = {
 
     enumerateKeys: function (deviceId, marker) {
         ui.clearKeyList("Список ключевых пар обновляется...");
+        ui.disableDataReq();
         marker = (marker === undefined) ? "" : marker;
         deviceId = (deviceId === undefined) ? ui.device() : deviceId;
         this.pluginObject.enumerateKeys(deviceId, marker).then($.proxy(function (keys) {
@@ -1463,17 +1493,23 @@ var TestSuite = new(function () {
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
                     signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
+                    signs[plugin.PUBLIC_KEY_ALGORITHM_ECDSA] = "PUBLIC_KEY_ALGORITHM_ECDSA";
 
                     var ciphers = {};
                     ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
                     ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
                     ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
                     ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
+                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM";
+                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC";
+                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM";
+                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC";
 
                     var keyExchanges = {};
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
                     keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
+                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
 
                     message = "hashes:\n";
                     message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
@@ -1607,6 +1643,15 @@ var TestSuite = new(function () {
             } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_RSA) {
                 let rsaSize = parseInt(this.container.find(".rsa-keygen-size").val(), 10);
                 options.signatureSize = rsaSize;
+            } else if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_ECDSA) {
+                options.paramset = this.container.find(".paramset-ecdsa").val();
+                if (options.paramset === "secp384r1") {
+                    options.signatureSize = 768;
+                } else if (options.paramset === "secp521r1") {
+                    options.signatureSize = 1056;
+                } else {
+                    options.signatureSize = 512;
+                }
             }
 
             options.keySpec = ui.keySpecValue();
@@ -1710,6 +1755,9 @@ var TestSuite = new(function () {
                             break;
                         case plugin.PUBLIC_KEY_ALGORITHM_RSA_4096:
                             message = "RSA 4096";
+                            break;
+                        case plugin.PUBLIC_KEY_ALGORITHM_ECDSA:
+                            message = "ECDSA";
                             break;
                         default:
                             message = "Неизвестный тип алгоритма ключа: " + result;
@@ -1932,6 +1980,8 @@ var TestSuite = new(function () {
             options.addSecurityProductsInfo = ui.checkboxState(this.container, "add-security-products-info") == "on" ? true : false;
             options.addEssCert = ui.checkboxState(this.container, "add-ess-cert") == "on" ? true : false;
             options.CMS = ui.getContent(this.container, 1);
+            options.outputFormat = plugin[this.container.find(".sign-message-format").val()];
+
             if (ui.checkboxState(this.container, "rsa-hash") == "on")
                 options.rsaHashAlgorithm = plugin[this.container.find(".cms-hash-alg").val()];
             if (ui.checkboxState(this.container, "set-content-type") == "on")
@@ -2112,7 +2162,9 @@ var TestSuite = new(function () {
             var options = {};
             ui.setContent(this.container, "");
 
-            options.ukm = ui.getContent(this.container, 1);
+            if (ui.checkboxState(this.container, "use-ukm") == "on") {
+                options.ukm = ui.getContent(this.container, 1);
+            }
 
             if (ui.useConsole) {
                 console.time("derive-key");
@@ -2293,8 +2345,9 @@ var TestSuite = new(function () {
                 base64: b64
             };
 
-            if (ui.checkboxState(this.container, "cms-encrypt-cipher") == "on")
-                options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
+            options.cipherAlgorithm = plugin[this.container.find(".cms-encrypt-alg").val()]
+
+            options.outputFormat = plugin[this.container.find(".encrypt-message-format").val()];
 
             var elements = this.container.find(".recipient");
             var recipients = [];

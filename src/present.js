@@ -497,6 +497,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_PINS_INFO;
         case "fkn":
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
+        case "bioAttempts":
+            return plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO;
         case "vendor model name":
             return plugin.TOKEN_INFO_VENDOR_MODEL_NAME;
         }
@@ -1118,6 +1120,8 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
 
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "Биометрический аутентификатор не найден на токене";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 
@@ -1530,6 +1534,7 @@ var TestSuite = new(function () {
 
                 case plugin.TOKEN_INFO_FKN_SUPPORTED:
                 case plugin.TOKEN_INFO_PINS_INFO:
+                case plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO:
                     message = JSON.stringify(result);
                     break;
 

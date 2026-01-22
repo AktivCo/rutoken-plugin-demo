@@ -129,6 +129,17 @@ function testUi(useConsole) {
         }
     });
 
+    $(document).on('change', '.convolution-id', function(e) {
+        var convId = document.querySelector('input[name="convolutionIdCheckbox"]');
+        if (convId.checked) {
+            document.getElementById("convolutionId").disabled = false;
+        }
+        else {
+            document.getElementById("convolutionId").disabled = true;
+            document.getElementById('convolutionId').value = "3";
+        }
+    });
+
 	$(document).on('change', '.startDateCsr', function() {
         var dateCheckboxStart = document.getElementById("dateCheckboxStartCsr");
         if (dateCheckboxStart.checked) {
@@ -1122,6 +1133,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
 
     this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "Биометрический аутентификатор не найден на токене";
+    this.errorDescription[this.errorCodes.BIOMETRY_NOT_SUPPORTED] = "Биометрия не поддерживается на токене";
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -1636,6 +1648,12 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
+            if (ui.checkboxState(this.container, "convolutionIdCheckbox") == "on") {
+                var convId = Number(this.container.find("#convolutionId").val());
+                if (isNaN(convId))
+                    throw "Ошибка: Некорректно указан ID отпечатка";
+                options.convolutionId = parseInt(convId);
+            }
 
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
                 options.paramset = this.container.find(".paramset-2001").val();

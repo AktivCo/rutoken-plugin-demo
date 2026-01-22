@@ -241,6 +241,13 @@
                                     <input type="time" id="timeInput2" step="1" value="00:00:00" disabled style="color: gray;">
                                     <label for="GMT">GMT</label>
                                 </li>
+                                <li>
+                                    <label><input type="checkbox" name="convolutionIdCheckbox" class="convolution-id" />Задать ID отпечатка (для токенов с поддержкой биометрии)</label>
+                                </li>
+                                <li>
+                                    <label for="convolutionIdInput">ID отпечатка пальца: </label>
+                                    <input type="number" id="convolutionId" value="3" step="1" min="3" max="31" disabled style="display: inline-block; width: auto;"/>
+                                </li>
                             </ul>
                         </div>
                         <div id="EnumerateKeys" class="group">

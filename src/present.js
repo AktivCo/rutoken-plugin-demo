@@ -212,6 +212,20 @@ function testUi(useConsole) {
         optionsContainer.find("#ts-ca-cert").val("");
         ui.clearVerifySigners(optionsContainer.find(".Certificates")[0]);
     }
+
+    document.getElementById("verify-check-timestamp").onclick = function() {
+        addTst = this.checked;
+        optionsContainer = $(document).find("#timestamp-options");
+
+        if (addTst)
+            optionsContainer.show("Blind");
+        else
+            optionsContainer.hide("Blind");
+
+        optionsContainer.find("#tsp-verify-token")[0].checked = true;
+        optionsContainer.find("#tsp-ca-certs").val("");
+        ui.clearVerifySigners(optionsContainer.find(".Certificates")[0]);
+    }
 }
 
 function uiControls() {
@@ -2301,7 +2315,18 @@ var TestSuite = new(function () {
             options.requireCades = ui.checkboxState(this.container, "verify-ess") == "on" ? true : false;
 
             options.certificates = ui.getArray(this.container, ".verify-signer");
-
+            if (this.container.find("#verify-check-timestamp").prop("checked")) {
+                options.tspOptions = {};
+                options.tspOptions.verifyTsToken = true;
+  
+                var caCert = this.container.find(".ca-input").val(); 
+                if (caCert) { 
+                    options.tspOptions.CA = new Array(); 
+                    options.tspOptions.CA.push(caCert);
+                }
+  
+                options.tspOptions.certificates = ui.getArray(this.container, ".verify-ts-signer");
+            }
             var caCert = ui.getContent(this.container, 2);
             if (caCert != "") {
                 options.CA = new Array();

@@ -852,6 +852,23 @@ IPx1wd5hBhGV714=
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="verify-ess" id="verify-ess"/>Проверить идентификатор подписанта в формате ESS (необходимо для CAdES-BES, CAdES-T)</label><br>
+                                    <label><input type="checkbox" name="verify-check-timestamp" id="verify-check-timestamp" />Проверить метку доверенного времени (необходимо для CAdES-T)</label><br>
+                                    <div id="timestamp-options" style="display:none" class="subform">
+                                        <label for="ca-cert">Корневой сертификат сервера доверенного времени</label>
+                                        <textarea placeholder="Данные принимаются в формате base64" id="tsp-ca-certs" class="ca-input" rows="7"></textarea><br>
+                                        <label for="tsp-certs">Cертификаты для проверки подписи сервера доверенного времени</label><br>
+                                        <table class="Certificates">
+                                        <tr>
+                                            <td colspan="2">
+                                                <label for="ts-signer-cert">Сертификат</label>
+                                                <textarea placeholder="Опционально" id="ts-signer-cert" class="verify-ts-signer"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button class="verify-add-signer example">Добавить еще</button></td>
+                                        </tr>
+                                    </table>
+                                    </div>
                                 </li>
                                 <li>
                                     <table class="Certificates">

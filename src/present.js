@@ -679,18 +679,21 @@ testUi.prototype = {
     //     this.controls.refreshCertificateListButton.attr('disabled', true);
     // },
     printError: function (error) {
+        const rawText = (error && (error.message || error.description)) 
+            ? (error.message || error.description)
+            : (typeof error === "string" ? error : JSON.stringify(error));
+
+        const errorCodeRaw = getErrorCode(error);
+        const errorCode = Number(errorCodeRaw);
+
         if (this.useConsole) {
-            console.trace();
-            console.debug(arguments);
+            console.error("Plugin error [%d]: %s", errorCode, rawText);
         }
-        let errorCode = getErrorCode(error);
-        if (plugin.errorDescription[errorCode] === undefined)
-        {
-            this.writeln("Внутренняя ошибка (Код: " + errorCode + ") \n");
-        }
-        else
-        {
-            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + "\n");
+
+        if (!Number.isFinite(errorCode) || plugin.errorDescription[errorCode] === undefined) {
+            this.writeln("Внутренняя ошибка (Код: " + (errorCode || "неизвестен") + "): " + rawText + "\n");
+        } else {
+            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + " (Код: " + errorCode + ")\n");
         }
     },
 
@@ -1134,6 +1137,8 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "Биометрический аутентификатор не найден на токене";
     this.errorDescription[this.errorCodes.BIOMETRY_NOT_SUPPORTED] = "Биометрия не поддерживается на токене";
+    
+    this.errorDescription[this.errorCodes.ESS_MISSING_SIGNING_CERTIFICATE_ATTRIBUTE] = "Отсутствует атрибут сертификата подписи";
 
     if (this.autoRefresh) this.enumerateDevices();
 }
@@ -2293,6 +2298,7 @@ var TestSuite = new(function () {
             options.verifyCertificate = ui.checkboxState(this.container, "verify-signer-cert") == "on" ? true : false;
             options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
             options.data = ui.getContent(this.container, 1);
+            options.requireCades = ui.checkboxState(this.container, "verify-ess") == "on" ? true : false;
 
             options.certificates = ui.getArray(this.container, ".verify-signer");
 

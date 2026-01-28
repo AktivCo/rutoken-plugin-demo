@@ -596,7 +596,7 @@ testUi.prototype = {
     registerEvents: function () {
         this.controls.refreshDeviceListButton.click($.proxy(function () {
             try {
-                plugin.enumerateDevices();
+                plugin.refreshDeviceList();
             } catch (error) {
                 this.writeln(error.toString());
                 this.clearDeviceList(error.toString());
@@ -1173,7 +1173,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.NEED_CONVOLUTIONS_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
     this.errorDescription[this.errorCodes.MORE_THAT_ONE_BIO_AUTHENTICATOR_FOUND_BY_ID] = "На токене обнаружено более одного набора отпечатков пальцев с заданным ID";
 
-    if (this.autoRefresh) this.enumerateDevices();
+    if (this.autoRefresh) this.refreshDeviceList();
 }
 
 cryptoPlugin.prototype = {
@@ -1190,90 +1190,82 @@ cryptoPlugin.prototype = {
         }, 0);
     },
 
-    enumerateDevices: function (update) {
-        if (update) {
-            var options = {"mode": this.ENUMERATE_DEVICES_EVENTS};
+    refreshDeviceList: function () {
+        ui.clearDeviceList("Список устройств обновляется...");
 
-            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
-                for (key in devices) {
-                    switch (key) {
-                        case "connected":
-                            for(var d in devices[key]) {
-                                var dev = devices[key][d];
-                                // To handle fast device reconnect first try to remove it.
-                                ui.removeDevice(dev);
+        var options = {"mode": this.ENUMERATE_DEVICES_LIST};
 
-                                this.pluginObject.getDeviceInfo(dev, plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
-                                    return function (label) {
-                                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                                        ui.removeInfoInDeviceList();
-                                        ui.addDevice(device, label, false);
+        this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
+            if (Object.keys(devices).length == 0) {
+                ui.clearDeviceList("Нет доступных устройств");
+                ui.clearCertificateList("Нет доступных устройств");
+                ui.clearKeyList("Нет доступных устройств");
+                ui.clearFilesList("Нет доступных устройств");
+                return;
+            }
+            //            ui.clearKeyList("Выполните вход на устройство");
+            ui.clearDeviceList();
+            if (this.autoRefresh) {
+                this.enumerateKeys(devices[0]);
+                this.enumerateCertificates(devices[0]);
+            }
+            else ui.clearCertificateList("Обновите список сертификатов");
 
-                                        if (ui.device() == device) {
-                                            if (this.autoRefresh) this.enumerateKeys(device);
-                                            if (this.autoRefresh) this.enumerateCertificates(device);
-                                            else ui.clearCertificateList("Обновите список сертификатов");
-                                            ui.clearFilesList("Обновите список файлов");
-                                        }
-                                    };
-                                }(dev), this), $.proxy(ui.printError, ui));
+            for (var d in devices) {
+                this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
+                    return function(label) {
+                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                        ui.addDevice(device, label, false);
+                    };
+                }(devices[d]), this), $.proxy(ui.printError, ui));
+            }
+        }, this), $.proxy(ui.printError, ui));
+    },
+
+    applyDeviceDelta: function (type, slotId) {
+        switch (type) {
+            case "connected":
+                ui.removeDevice(slotId);
+
+                this.pluginObject.getDeviceInfo(slotId, plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
+                    return function (label) {
+                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                        ui.removeInfoInDeviceList();
+                        ui.addDevice(device, label, false);
+
+                        if (ui.device() == device) {
+                            if (this.autoRefresh) {
+                                this.enumerateKeys(device);
+                                this.enumerateCertificates(device);
                             }
-                            break;
-                        case "disconnected":
-                            for (var d in devices[key]) {
-                                var selectedDevice = ui.device(),
-                                    device = devices[key][d];
+                            else ui.clearCertificateList("Обновите список сертификатов");
+                            ui.clearFilesList("Обновите список файлов");
+                        }
+                    };
+                }(slotId), this), $.proxy(ui.printError, ui));
+                break;
+            case "disconnected":
+                var selectedDevice = ui.device();
 
-                                ui.removeDevice(device);
+                ui.removeDevice(slotId);
 
-                                if (device == selectedDevice) {
-                                    try {
-                                        var dev = ui.device();
-
-                                        if (this.autoRefresh) this.enumerateKeys(ui.device());
-                                        if (this.autoRefresh) this.enumerateCertificates(ui.device());
-                                        else ui.clearCertificateList("Обновите список сертификатов");
-                                        ui.clearFilesList("Обновите список файлов");
-                                    } catch (e) {
-                                        ui.clearDeviceList("Нет доступных устройств");
-                                        ui.clearCertificateList("Нет доступных устройств");
-                                        ui.clearKeyList("Нет доступных устройств");
-                                        ui.clearFilesList("Нет доступных устройств");
-                                    }
-                                }
-                            }
-                            break;
+                if (slotId == selectedDevice) {
+                    try {
+                        var dev = ui.device();
+                        if (this.autoRefresh) {
+                            this.enumerateKeys(ui.device());
+                            this.enumerateCertificates(ui.device());
+                        }
+                        else ui.clearCertificateList("Обновите список сертификатов");
+                        ui.clearFilesList("Обновите список файлов");
+                    } catch (e) {
+                        ui.clearDeviceList("Нет доступных устройств");
+                        ui.clearCertificateList("Нет доступных устройств");
+                        ui.clearKeyList("Нет доступных устройств");
+                        ui.clearFilesList("Нет доступных устройств");
                     }
                 }
-            }, this), $.proxy(ui.printError, ui));
-        } else {
-            ui.clearDeviceList("Список устройств обновляется...");
-
-            var options = {"mode": this.ENUMERATE_DEVICES_LIST};
-
-            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
-                if (Object.keys(devices).length == 0) {
-                    ui.clearDeviceList("Нет доступных устройств");
-                    ui.clearCertificateList("Нет доступных устройств");
-                    ui.clearKeyList("Нет доступных устройств");
-                    ui.clearFilesList("Нет доступных устройств");
-                    return;
-                }
-                //            ui.clearKeyList("Выполните вход на устройство");
-                ui.clearDeviceList();
-                if (this.autoRefresh) this.enumerateKeys(devices[0]);
-                if (this.autoRefresh) this.enumerateCertificates(devices[0]);
-                else ui.clearCertificateList("Обновите список сертификатов");
-
-                for (var d in devices) {
-                    this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
-                        return function(label) {
-                            if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                            ui.addDevice(device, label, false);
-                        };
-                    }(devices[d]), this), $.proxy(ui.printError, ui));
-                }
-            }, this), $.proxy(ui.printError, ui));
+                break;
         }
     },
 
@@ -2577,10 +2569,9 @@ function onPluginLoaded(pluginObject) {
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
 
-        window.setInterval(function() {
-            if (document.visibilityState == "visible") {
-                plugin.enumerateDevices(true);
-            }}, 500);
+        plugin.pluginObject.tokenMonitor(function(type, slotId) {
+            plugin.applyDeviceDelta(type, slotId);
+        });
     } catch (error) {
         ui.writeln(error);
     }

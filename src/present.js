@@ -1149,9 +1149,9 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
 
-    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "Биометрический аутентификатор не найден на токене";
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "На токене не найдено ни одного набора отпечатков пальцев";
     this.errorDescription[this.errorCodes.BIOMETRY_NOT_SUPPORTED] = "Биометрия не поддерживается на токене";
-    
+
     this.errorDescription[this.errorCodes.ESS_MISSING_SIGNING_CERTIFICATE_ATTRIBUTE] = "Отсутствует атрибут сертификата подписи";
 
     if (this.autoRefresh) this.enumerateDevices();

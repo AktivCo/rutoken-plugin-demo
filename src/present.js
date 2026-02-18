@@ -1154,6 +1154,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.ESS_MISSING_SIGNING_CERTIFICATE_ATTRIBUTE] = "Отсутствует атрибут сертификата подписи";
 
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND_BY_ID] = "На токене не найден набор отпечатков пальцев с заданным идентификатором";
+    this.errorDescription[this.errorCodes.NEED_CONVOLUTION_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
+    this.errorDescription[this.errorCodes.MORE_THAT_ONE_BIO_AUTHENTICATOR_FOUND_BY_ID] = "На токене обнаружено более одного набора отпечатков пальцев с заданным ID";
+
     if (this.autoRefresh) this.enumerateDevices();
 }
 

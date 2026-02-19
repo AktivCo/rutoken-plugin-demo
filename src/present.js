@@ -1697,7 +1697,10 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
-            if (ui.checkboxState(this.container, "convolutionIdCheckbox") == "on") options.convolutionId = this.container.find("#convolutionId").val();
+            if (ui.checkboxState(this.container, "convolutionIdCheckbox") == "on"){
+                options.linkToBiometrics = true;
+                options.convolutionId = this.container.find("#convolutionId").val();
+            }
 
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
                 options.paramset = this.container.find(".paramset-2001").val();

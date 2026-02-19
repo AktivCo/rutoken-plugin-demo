@@ -133,20 +133,24 @@ function testUi(useConsole) {
         var convId = document.querySelector('input[name="convolutionIdCheckbox"]');
         if (convId.checked) {
             document.getElementById("convolutionId").disabled = false;
+            document.getElementById('convolutionId').style.opacity = '1';
         }
         else {
             document.getElementById("convolutionId").disabled = true;
-            document.getElementById('convolutionId').value = "3";
+            document.getElementById('convolutionId').style.opacity = '0.3';
         }
+        document.getElementById('convolutionId').value = "";
     });
 
     $(document).on('change', '.radio-input', function(e) {
         var value = $(".radio-input:radio[name=device-info]:checked").val();
         if (value == "bio attempts"){
             document.getElementById("convolutionIdForAttempts").disabled = false;
+            document.getElementById('convolutionIdForAttempts').style.opacity = '1';
         }
         else {
             document.getElementById("convolutionIdForAttempts").disabled = true;
+            document.getElementById('convolutionIdForAttempts').style.opacity = '0.3';
         }
         document.getElementById('convolutionIdForAttempts').value = "";
     });

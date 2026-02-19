@@ -140,6 +140,17 @@ function testUi(useConsole) {
         }
     });
 
+    $(document).on('change', '.radio-input', function(e) {
+        var value = $(".radio-input:radio[name=device-info]:checked").val();
+        if (value == "bio attempts"){
+            document.getElementById("convolutionIdForAttempts").disabled = false;
+        }
+        else {
+            document.getElementById("convolutionIdForAttempts").disabled = true;
+        }
+        document.getElementById('convolutionIdForAttempts').value = "";
+    });
+
 	$(document).on('change', '.startDateCsr', function() {
         var dateCheckboxStart = document.getElementById("dateCheckboxStartCsr");
         if (dateCheckboxStart.checked) {
@@ -522,7 +533,7 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_PINS_INFO;
         case "fkn":
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
-        case "bioAttempts":
+        case "bio attempts":
             return plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO;
         case "vendor model name":
             return plugin.TOKEN_INFO_VENDOR_MODEL_NAME;
@@ -1448,140 +1459,151 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var info = ui.infoType();
+            if (info == plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO){
+                var options = {};
+                options.convolutionId = document.getElementById("convolutionIdForAttempts").value;
 
-            plugin.pluginObject.getDeviceInfo(ui.device(), info).then(function (result) {
-                var message = result;
+                plugin.pluginObject.getDeviceInfoEx(ui.device(), info, options).then(function (result) {
+                    var message = result;
+                    message = JSON.stringify(result);
+                    message += " (" + info + ")";
+                    ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
+            else {
+                plugin.pluginObject.getDeviceInfo(ui.device(), info).then(function (result) {
+                    var message = result;
 
-                switch (info) {
-                case plugin.TOKEN_INFO_DEVICE_TYPE:
-                    message = "Невозможно определить тип устройства";
-                    switch (result) {
-                    case plugin.TOKEN_TYPE_UNKNOWN:
-                        message = "Неизвестное устройство";
+                    switch (info) {
+                    case plugin.TOKEN_INFO_DEVICE_TYPE:
+                        message = "Невозможно определить тип устройства";
+                        switch (result) {
+                        case plugin.TOKEN_TYPE_UNKNOWN:
+                            message = "Неизвестное устройство";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_ECP:
+                            message = "Рутокен ЭЦП";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_WEB:
+                            message = "Рутокен Web";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
+                            message = "Рутокен ЭЦП SC";
+                            break;
+                        }
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_ECP:
-                        message = "Рутокен ЭЦП";
+
+                    case plugin.TOKEN_INFO_FORMATS:
+                        var m = {};
+                        m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
+                        m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
+
+                        message = "[" + result.map(function(value) {
+                            return m[value];
+                        }).join(", ") + "]";
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_WEB:
-                        message = "Рутокен Web";
+
+                    case plugin.TOKEN_INFO_FEATURES:
+                        var m = result;
+                        var bio = {};
+                        bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
+                        bio[plugin.BIO_TYPE_NOT_SPECIFIED] = "BIO_TYPE_NOT_SPECIFIED";
+
+                        var interfaces = {};
+                        interfaces[plugin.INTERFACE_TYPE_USB] = "INTERFACE_TYPE_USB";
+                        interfaces[plugin.INTERFACE_TYPE_BT] = "INTERFACE_TYPE_BT";
+                        interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
+                        interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
+                        interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
+                        interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_A] = "INTERFACE_TYPE_NFC";
+                        interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_B] = "INTERFACE_TYPE_NFC";
+
+                        var smType = {};
+                        smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";
+                        smType[plugin.SECURE_MESSAGING_ON] = "SECURE_MESSAGING_ON";
+                        smType[plugin.SECURE_MESSAGING_ENHANCED] = "SECURE_MESSAGING_ENHANCED";
+                        smType[plugin.SECURE_MESSAGING_UNSUPPORTED] = "SECURE_MESSAGING_UNSUPPORTED";
+                        smType[plugin.SECURE_MESSAGING_NOT_SPECIFIED] = "SECURE_MESSAGING_NOT_SPECIFIED";
+
+                        m["interfaces"] = result["interfaces"].map(function (value) { return interfaces[value]; });
+                        m["bio"] = bio[result["bio"]];
+                        m["smType"] = smType[result["smType"]];
+
+                        message = JSON.stringify(m);
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
-                        message = "Рутокен ЭЦП SC";
+
+                    case plugin.TOKEN_INFO_SUPPORTED_MECHANISMS:
+                        var hashes = {};
+                        hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
+                        hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
+                        hashes[plugin.HASH_TYPE_GOST3411_12_512] = "HASH_TYPE_GOST3411_12_512";
+                        hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
+                        hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
+                        hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
+                        hashes[plugin.HASH_TYPE_SHA384] = "HASH_TYPE_SHA384";
+                        hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
+
+                        var signs = {};
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_GOST3410_2001";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_256";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_512";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_512] = "PUBLIC_KEY_ALGORITHM_RSA_512";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_768] = "PUBLIC_KEY_ALGORITHM_RSA_768";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1024] = "PUBLIC_KEY_ALGORITHM_RSA_1024";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1280] = "PUBLIC_KEY_ALGORITHM_RSA_1280";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_ECDSA] = "PUBLIC_KEY_ALGORITHM_ECDSA";
+
+                        var ciphers = {};
+                        ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
+                        ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
+                        ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
+                        ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
+                        ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM";
+                        ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC";
+                        ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM";
+                        ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC";
+
+                        var keyExchanges = {};
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
+
+                        message = "hashes:\n";
+                        message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+
+                        message += "signs:\n";
+                        message += "- hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+
+                        message += "ciphers:\n";
+                        message += "- hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+
+                        message += "keyExchanges:\n";
+                        message += "- hardware: [" + result["keyExchange"]["hardware"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["keyExchange"]["software"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
+                        break;
+
+                    case plugin.TOKEN_INFO_FKN_SUPPORTED:
+                    case plugin.TOKEN_INFO_PINS_INFO:
+                        message = JSON.stringify(result);
+                        break;
+
+                    case plugin.TOKEN_INFO_FREE_MEMORY:
+                        message += " byte(s)";
                         break;
                     }
-                    break;
 
-                case plugin.TOKEN_INFO_FORMATS:
-                    var m = {};
-                    m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
-                    m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
-
-                    message = "[" + result.map(function(value) {
-                        return m[value];
-                    }).join(", ") + "]";
-                    break;
-
-                case plugin.TOKEN_INFO_FEATURES:
-                    var m = result;
-                    var bio = {};
-                    bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
-                    bio[plugin.BIO_TYPE_NOT_SPECIFIED] = "BIO_TYPE_NOT_SPECIFIED";
-
-                    var interfaces = {};
-                    interfaces[plugin.INTERFACE_TYPE_USB] = "INTERFACE_TYPE_USB";
-                    interfaces[plugin.INTERFACE_TYPE_BT] = "INTERFACE_TYPE_BT";
-                    interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
-                    interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
-                    interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
-                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_A] = "INTERFACE_TYPE_NFC";
-                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_B] = "INTERFACE_TYPE_NFC";
-
-                    var smType = {};
-                    smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";
-                    smType[plugin.SECURE_MESSAGING_ON] = "SECURE_MESSAGING_ON";
-                    smType[plugin.SECURE_MESSAGING_ENHANCED] = "SECURE_MESSAGING_ENHANCED";
-                    smType[plugin.SECURE_MESSAGING_UNSUPPORTED] = "SECURE_MESSAGING_UNSUPPORTED";
-                    smType[plugin.SECURE_MESSAGING_NOT_SPECIFIED] = "SECURE_MESSAGING_NOT_SPECIFIED";
-
-                    m["interfaces"] = result["interfaces"].map(function (value) { return interfaces[value]; });
-                    m["bio"] = bio[result["bio"]];
-                    m["smType"] = smType[result["smType"]];
-
-                    message = JSON.stringify(m);
-                    break;
-
-                case plugin.TOKEN_INFO_SUPPORTED_MECHANISMS:
-                    var hashes = {};
-                    hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
-                    hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
-                    hashes[plugin.HASH_TYPE_GOST3411_12_512] = "HASH_TYPE_GOST3411_12_512";
-                    hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
-                    hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
-                    hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
-                    hashes[plugin.HASH_TYPE_SHA384] = "HASH_TYPE_SHA384";
-                    hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
-
-                    var signs = {};
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_GOST3410_2001";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_256";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_512";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_512] = "PUBLIC_KEY_ALGORITHM_RSA_512";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_768] = "PUBLIC_KEY_ALGORITHM_RSA_768";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1024] = "PUBLIC_KEY_ALGORITHM_RSA_1024";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1280] = "PUBLIC_KEY_ALGORITHM_RSA_1280";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_ECDSA] = "PUBLIC_KEY_ALGORITHM_ECDSA";
-
-                    var ciphers = {};
-                    ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
-                    ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
-                    ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
-                    ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
-                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM";
-                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC";
-                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM";
-                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC";
-
-                    var keyExchanges = {};
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
-
-                    message = "hashes:\n";
-                    message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
-
-                    message += "signs:\n";
-                    message += "- hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
-
-                    message += "ciphers:\n";
-                    message += "- hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-
-                    message += "keyExchanges:\n";
-                    message += "- hardware: [" + result["keyExchange"]["hardware"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["keyExchange"]["software"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
-                    break;
-
-                case plugin.TOKEN_INFO_FKN_SUPPORTED:
-                case plugin.TOKEN_INFO_PINS_INFO:
-                case plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO:
-                    message = JSON.stringify(result);
-                    break;
-
-                case plugin.TOKEN_INFO_FREE_MEMORY:
-                    message += " byte(s)";
-                    break;
-                }
-
-                message += " (" + info + ")";
-                ui.printResult(message);
-            }, $.proxy(ui.printError, ui));
+                    message += " (" + info + ")";
+                    ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
         }
     })();
 

@@ -103,7 +103,16 @@
                                     <label><input class="radio-input" type="radio" name="device-info" value="free memory" />Свободная память</label><br>
                                     <label><input class="radio-input" type="radio" name="device-info" value="pins"/>Информация о PIN-кодах</label><br>
                                     <label><input class="radio-input" type="radio" name="device-info" value="fkn" />Поддержка ФКН</label><br>
-                                    <label><input class="radio-input" type="radio" name="device-info" value="bioAttempts" />Количество попыток входа по отпечатку</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="bio attempts" />Количество попыток входа по отпечатку пальца
+                                        <label style="display: inline-block; font-style: italic;">
+                                            (ID набора отпечатков: 
+                                            <input type="text" id="convolutionIdForAttempts" disabled value="" 
+                                                    style="display: inline-block; font-style: italic;
+                                                        width: 40px; min-width: 40px; max-width: 40px; 
+                                                        padding: 0; margin: 0;
+                                                        text-align: center;" />)
+                                        </label>
+                                    </label><br>
                                 </li>
                             </ul>
                         </div>
@@ -242,7 +251,7 @@
                                     <label for="GMT">GMT</label>
                                 </li>
                                 <li>
-                                    <label><input type="checkbox" name="convolutionIdCheckbox" class="convolution-id" />Задать идентификатор набора отпечатков пальцев (для токенов с поддержкой биометрии)</label>
+                                    <label><input type="checkbox" name="convolutionIdCheckbox" class="convolution-id" />Создать ключевую пару, защищенную отпечатком (для токенов с поддержкой биометрии)</label>
                                 </li>
                                 <li>
                                     <label for="convolutionIdInput">ID набора отпечатков пальцев [3-31]: </label>

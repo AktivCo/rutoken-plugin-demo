@@ -129,30 +129,30 @@ function testUi(useConsole) {
         }
     });
 
-    $(document).on('change', '.convolution-id', function(e) {
-        var convId = document.querySelector('input[name="convolutionIdCheckbox"]');
+    $(document).on('change', '.convolutions-id', function(e) {
+        var convId = document.querySelector('input[name="convolutionsIdCheckbox"]');
         if (convId.checked) {
-            document.getElementById("convolutionId").disabled = false;
-            document.getElementById('convolutionId').style.opacity = '1';
+            document.getElementById("convolutionsId").disabled = false;
+            document.getElementById('convolutionsId').style.opacity = '1';
         }
         else {
-            document.getElementById("convolutionId").disabled = true;
-            document.getElementById('convolutionId').style.opacity = '0.3';
+            document.getElementById("convolutionsId").disabled = true;
+            document.getElementById('convolutionsId').style.opacity = '0.3';
         }
-        document.getElementById('convolutionId').value = "";
+        document.getElementById('convolutionsId').value = "";
     });
 
     $(document).on('change', '.radio-input', function(e) {
         var value = $(".radio-input:radio[name=device-info]:checked").val();
         if (value == "bio attempts"){
-            document.getElementById("convolutionIdForAttempts").disabled = false;
-            document.getElementById('convolutionIdForAttempts').style.opacity = '1';
+            document.getElementById("convolutionsIdForAttempts").disabled = false;
+            document.getElementById('convolutionsIdForAttempts').style.opacity = '1';
         }
         else {
-            document.getElementById("convolutionIdForAttempts").disabled = true;
-            document.getElementById('convolutionIdForAttempts').style.opacity = '0.3';
+            document.getElementById("convolutionsIdForAttempts").disabled = true;
+            document.getElementById('convolutionsIdForAttempts').style.opacity = '0.3';
         }
-        document.getElementById('convolutionIdForAttempts').value = "";
+        document.getElementById('convolutionsIdForAttempts').value = "";
     });
 
 	$(document).on('change', '.startDateCsr', function() {
@@ -1170,7 +1170,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.ESS_MISSING_SIGNING_CERTIFICATE_ATTRIBUTE] = "Отсутствует атрибут сертификата подписи";
 
     this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND_BY_ID] = "На токене не найден набор отпечатков пальцев с заданным идентификатором";
-    this.errorDescription[this.errorCodes.NEED_CONVOLUTION_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
+    this.errorDescription[this.errorCodes.NEED_CONVOLUTIONS_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
     this.errorDescription[this.errorCodes.MORE_THAT_ONE_BIO_AUTHENTICATOR_FOUND_BY_ID] = "На токене обнаружено более одного набора отпечатков пальцев с заданным ID";
 
     if (this.autoRefresh) this.enumerateDevices();
@@ -1465,7 +1465,7 @@ var TestSuite = new(function () {
             var info = ui.infoType();
             if (info == plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO){
                 var options = {};
-                options.convolutionId = document.getElementById("convolutionIdForAttempts").value;
+                options.convolutionsId = document.getElementById("convolutionsIdForAttempts").value;
 
                 plugin.pluginObject.getDeviceInfoEx(ui.device(), info, options).then(function (result) {
                     var message = result;
@@ -1697,9 +1697,9 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
-            if (ui.checkboxState(this.container, "convolutionIdCheckbox") == "on"){
+            if (ui.checkboxState(this.container, "convolutionsIdCheckbox") == "on"){
                 options.linkToBiometrics = true;
-                options.convolutionId = this.container.find("#convolutionId").val();
+                options.convolutionsId = this.container.find("#convolutionsId").val();
             }
 
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {

@@ -716,7 +716,8 @@ testUi.prototype = {
         const errorCode = Number(errorCodeRaw);
 
         if (this.useConsole) {
-            console.error("Plugin error [%d]: %s", errorCode, rawText);
+            const text = rawText.split(": ").slice(1).join(": ");
+            console.error("Plugin error [%d]: %s", errorCode, text);
         }
 
         if (!Number.isFinite(errorCode) || plugin.errorDescription[errorCode] === undefined) {

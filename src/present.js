@@ -2589,12 +2589,21 @@ var TestSuite = new(function () {
                 console.time("sign");
                 console.log("detached: ", options.detached);
             }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
+
+            plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_ALGORITHM).then($.proxy(function (result) {
+                if (result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001 && 
+                    result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256 &&
+                    result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512) {
+                    ui.printError({message: "25"});
+                    return;
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+                plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("sign");
+                    }
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui));
             }, this), $.proxy(ui.printError, ui));
         }
     });

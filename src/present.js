@@ -1469,12 +1469,15 @@ cryptoPlugin.prototype = {
     },
 
     loginBio: function () {
-        this.pluginObject.loginBio(ui.device(), { "convolutionsId" : ui.convolutionsId() , "timeout" : 10000 } ).then($.proxy(function (isLoginBioSuccessful) {
+        this.pluginObject.loginBio(ui.device(), { "convolutionsId" : ui.convolutionsId() , "timeout" : 10000 },
+        function (isLoginBioSuccessful) {
             if (isLoginBioSuccessful) {
                 ui.writeln("Биометрическая аутентификация успешна");
             } else {
                 ui.writeln("Биометрическая аутентификация не пройдена");
             }
+        }).then($.proxy(function () {
+            ui.writeln("Приложите палец к сканеру");
         }, this), $.proxy(ui.printError, ui));
     },
 

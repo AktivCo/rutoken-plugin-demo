@@ -2714,6 +2714,21 @@ var TestSuite = new(function () {
         }
     });
 
+    this.enrollFingerprint = new(function () {
+        Test.call(this)
+        this.description = function () {
+            return "Добавление отпечатка пальцев на токен";
+        }
+
+        this.runTest = function () {
+            ui.writeln("Приложите палец к сканеру");
+            plugin.pluginObject.enrollFingerprint(ui.device()).then($.proxy(function (res) {
+                    ui.writeln("Отпечаток пальца создан.\n Идентификатор набора сверток отпечатков пальца на токене: ");
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui));
+        }
+    });
+
     this.EncryptMessage = new(function () {
         Test.call(this);
         this.description = function () {

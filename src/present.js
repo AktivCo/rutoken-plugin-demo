@@ -1206,7 +1206,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.FINGERPRINT_SCANNER_NOT_FOUND] = "Сканер отпечатков пальцев не обнаружен";
     this.errorDescription[this.errorCodes.BIO_LIBS_NOT_FOUND] = "Библиотеки для поддержки био аутентификации не обнаружены";
     this.errorDescription[this.errorCodes.FINGERPRINT_SCAN] = "Отпечаток пальца не получен со сканера";
-    this.errorDescription[this.errorCodes.FEATURE_NOT_SUPPORTED] = "Функционал не реализован на данной платформе";
+    this.errorDescription[this.errorCodes.FUNCTIONALITY_NOT_SUPPORTED] = "Функционал не реализован на данной платформе";
 
     if (this.autoRefresh) this.refreshDeviceList();
 }
@@ -1939,10 +1939,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var keyId = ui.key();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
             var authPromise;
 
-            if (isLoginBioRequired) {
+            if (result) {
                 ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
                 authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                     if (isLoginBioSuccessful) {
@@ -1985,10 +1985,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var keyId = ui.key();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2060,10 +2060,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var keyId = ui.key();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2225,10 +2225,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var certId = ui.certificate();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2293,10 +2293,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var certId = ui.certificate();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2419,10 +2419,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var keyId = ui.key();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2476,10 +2476,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var keyId = ui.key();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {
@@ -2564,10 +2564,10 @@ var TestSuite = new(function () {
             var deviceId = ui.device();
             var certId = ui.certificate();
 
-            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
                 var authPromise;
 
-                if (isLoginBioRequired) {
+                if (result) {
                     ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
                     authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
                         if (isLoginBioSuccessful) {

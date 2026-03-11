@@ -1206,6 +1206,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.FINGERPRINT_SCANNER_NOT_FOUND] = "Сканер отпечатков пальцев не обнаружен";
     this.errorDescription[this.errorCodes.BIO_LIBS_NOT_FOUND] = "Библиотеки для поддержки био аутентификации не обнаружены";
     this.errorDescription[this.errorCodes.FINGERPRINT_SCAN] = "Отпечаток пальца не получен со сканера";
+    this.errorDescription[this.errorCodes.FEATURE_NOT_SUPPORTED] = "Функционал не реализован на данной платформе";
 
     if (this.autoRefresh) this.refreshDeviceList();
 }

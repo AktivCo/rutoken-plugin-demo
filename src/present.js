@@ -607,6 +607,10 @@ testUi.prototype = {
         return container.find("input:checkbox[name=" + name + "]:checked").val();
     },
 
+    setVersion: function () {
+        document.getElementById('plugin-version').textContent = "Rutoken Plugin v" + plugin.pluginObject.version;
+    },
+
     registerEvents: function () {
         this.controls.refreshDeviceListButton.click($.proxy(function () {
             try {
@@ -2951,6 +2955,7 @@ function onPluginLoaded(pluginObject) {
 
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
+        ui.setVersion();
 
         plugin.pluginObject.tokenMonitor(function(type, slotId) {
             plugin.applyDeviceDelta(type, slotId);

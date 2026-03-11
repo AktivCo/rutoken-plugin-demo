@@ -1207,6 +1207,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.BIO_LIBS_NOT_FOUND] = "Библиотеки для поддержки био аутентификации не обнаружены";
     this.errorDescription[this.errorCodes.FINGERPRINT_SCAN] = "Отпечаток пальца не получен со сканера";
     this.errorDescription[this.errorCodes.FUNCTIONALITY_NOT_SUPPORTED] = "Функционал не реализован на данной платформе";
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_LOCKED] = "Биометрический аутентификатор ключа заблокирован";
+    this.errorDescription[this.errorCodes.USER_NOT_LOGGED_IN_BIO] = "Для выполнения операции требуется вход с помощью биометрического аутентификатора";
+    this.errorDescription[this.errorCodes.ALREADY_LOGGED_IN_BIO] = "Вход с помощью биометрического аутентификатора уже выполнен";
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_MISMATCH] = "Вход по биометрии выполнен не с помощью биометрического аутентификатора с которым связан данный объект";
 
     if (this.autoRefresh) this.refreshDeviceList();
 }

@@ -1174,6 +1174,10 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.NEED_CONVOLUTIONS_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
     this.errorDescription[this.errorCodes.MORE_THAT_ONE_BIO_AUTHENTICATOR_FOUND_BY_ID] = "На токене обнаружено более одного набора отпечатков пальцев с заданным ID";
 
+    this.errorDescription[this.errorCodes.FINGERPRINT_SCANNER_NOT_FOUND] = "Сканер отпечатков пальцев не обнаружен";
+    this.errorDescription[this.errorCodes.BIO_LIBS_NOT_FOUND] = "Библиотеки для поддержки био аутентификации не обнаружены";
+    this.errorDescription[this.errorCodes.FINGERPRINT_SCAN] = "Отпечаток пальца не получен со сканера";
+
     if (this.autoRefresh) this.refreshDeviceList();
 }
 

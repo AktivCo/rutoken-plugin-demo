@@ -263,6 +263,10 @@ function uiControls() {
     this.removePinButton = $("#remove-pin");
 
     this.pinInput = $("#device-pin");
+
+    this.loginBioButton = $("#loginBio");
+    this.logoutBioButton = $("#logoutBio");
+    this.convolutionsIdForLoginBio = $("#convolutionsIdForLoginBio");
 }
 
 uiControls.prototype = {
@@ -282,7 +286,11 @@ uiControls.prototype = {
     savePinButton: null,
     removePinButton: null,
 
-    pinInput: null
+    pinInput: null,
+
+    loginBioButton: null,
+    logoutBioButton: null,
+    convolutionsIdForLoginBio: null
 };
 
 testUi.prototype = {
@@ -304,6 +312,10 @@ testUi.prototype = {
 
     pin: function () {
         return this.controls.pinInput.val();
+    },
+
+    convolutionsId: function () {
+        return this.controls.convolutionsIdForLoginBio.val();
     },
 
     device: function () {
@@ -679,6 +691,23 @@ testUi.prototype = {
                 this.clearKeyList("Обновите список ключевых пар");
                 this.clearCertificateList("Обновите список сертификатов");
                 this.clearFilesList("Обновите список файлов");
+            }
+        }, this));
+
+        this.controls.loginBioButton.click($.proxy(function () {
+            this.writeln("Вход по биометрии:");
+            try {
+                plugin.loginBio();
+            } catch (error) {
+                this.writeln(error.toString());
+            }
+        }, this));
+
+        this.controls.logoutBioButton.click($.proxy(function () {
+            try {
+                plugin.logoutBio();
+            } catch (error) {
+                this.writeln(error.toString());
             }
         }, this));
     },
@@ -1436,6 +1465,22 @@ cryptoPlugin.prototype = {
             ui.writeln("PIN-код удален из кэша\n");
             ui.clearKeyList("Выполните вход на устройство");
         }, this), $.proxy(ui.printError, ui));
+    },
+
+    loginBio: function () {
+        this.pluginObject.loginBio(ui.device(), { "convolutionsId" : ui.convolutionsId() , "timeout" : 10000 } ).then($.proxy(function (isLoginBioSuccessful) {
+            if (isLoginBioSuccessful) {
+                ui.writeln("Биометрическая аутентификация успешна");
+            } else {
+                ui.writeln("Биометрическая аутентификация не пройдена");
+            }
+        }, this), $.proxy(ui.printError, ui));
+    },
+
+    logoutBio: function () {
+        this.pluginObject.logoutBio(ui.device(), { "convolutionsId" : ui.convolutionsId() } ).then($.proxy(function(){
+            ui.writeln("Выход выполнен");
+        }, this), $.proxy(ui.printError, ui));
     }
 }
 
@@ -1890,11 +1935,42 @@ var TestSuite = new(function () {
             return "Удаление ключевой пары с устройства";
         };
         this.runTest = function () {
-            plugin.pluginObject.deleteKeyPair(ui.device(), ui.key()).then($.proxy(function () {
-                ui.printResult();
-                if (plugin.autoRefresh) plugin.enumerateKeys();
-                else ui.clearKeyList("Обновите список ключевых пар");
-            }, this), $.proxy(ui.printError, ui));
+            var deviceId = ui.device();
+            var keyId = ui.key();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+            var authPromise;
+
+            if (isLoginBioRequired) {
+                ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                    if (isLoginBioSuccessful) {
+                        ui.writeln("Биометрическая аутентификация успешна");
+                        return { success: true, needsLogout: true };
+                    } else {
+                        ui.writeln("Биометрическая аутентификация не пройдена");
+                        return { success: false };
+                    }
+                }, this), $.proxy(ui.printError, ui));
+            } else {
+                authPromise = Promise.resolve({ success: true, needsLogout: false });
+            }
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+
+                plugin.pluginObject.deleteKeyPair(deviceId, keyId).then($.proxy(function () {
+                    ui.printResult();
+                    if (plugin.autoRefresh) plugin.enumerateKeys();
+                    else ui.clearKeyList("Обновите список ключевых пар");
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                    }
+                }, this));
+            }, this));
+        }, this), $.proxy(ui.printError, ui));
         };
     })();
 
@@ -1904,12 +1980,44 @@ var TestSuite = new(function () {
             return "Получение журнала операций на токене";
         };
         this.runTest = function () {
-            plugin.pluginObject.getJournal(ui.device(), ui.key(), {}).then($.proxy(function (j) {
-                if (j === null) ui.printResult();
-                else {
-                    ui.printResult(j);
-                    ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
+
+            var deviceId = ui.device();
+            var keyId = ui.key();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
                 }
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    plugin.pluginObject.getJournal(deviceId, keyId, {}).then($.proxy(function (j) {
+                        if (j === null) ui.printResult();
+                        else {
+                            ui.printResult(j);
+                            ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
+                        }
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         };
     })();
@@ -1948,9 +2056,40 @@ var TestSuite = new(function () {
                 "customExtensions": ui.getCustomExtensions()
             };
 
-            plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(this.container), options).then($.proxy(function (res) {
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+            var deviceId = ui.device();
+            var keyId = ui.key();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
+                }
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    plugin.pluginObject.createPkcs10(deviceId, keyId, ui.getSubject(), ui.getExtensions(this.container), options).then($.proxy(function (res) {
+                        ui.setContent(this.container, res);
+                        ui.printResult(res);
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         };
     })();
@@ -2082,19 +2221,52 @@ var TestSuite = new(function () {
                 options.tspOptions.certificates = ui.getArray( this.container, ".verify-ts-signer");
             }
 
-            if (ui.useConsole) {
-                console.time("sign");
-                console.log("HW", options.useHardwareHash);
-                console.log("detached: ", options.detached);
-                console.log("system-info: ", options.addSystemInfo);
-                console.log("dataFormat: ", dataFormat);
-            }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
+            var deviceId = ui.device();
+            var certId = ui.certificate();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    ui.writeln("Ключевая пара сертификата не защищена отпечатком пальца.");
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    if (ui.useConsole) {
+                        console.time("sign");
+                        console.log("HW", options.useHardwareHash);
+                        console.log("detached: ", options.detached);
+                        console.log("system-info: ", options.addSystemInfo);
+                        console.log("dataFormat: ", dataFormat);
+                    }
+                    plugin.pluginObject.sign(deviceId, certId, ui.getContent(this.container), dataFormat, options).then($.proxy(function (res) {
+                        if (ui.useConsole) {
+                            console.timeEnd("sign");
+                        }
+                        ui.setContent(this.container, res);
+                        ui.printResult(res);
+
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -2117,10 +2289,42 @@ var TestSuite = new(function () {
             options.eContentType = "1.3.6.1.5.5.7.12.2"; // id-cct-PKIData
 
             var dataFormat = plugin["DATA_FORMAT_BASE64"];
+            var deviceId = ui.device();
+            var certId = ui.certificate();
 
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), data, dataFormat, options).then($.proxy(function (res) {
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    ui.writeln("Ключевая пара сертификата не защищена отпечатком пальца.");
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
+                }
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    plugin.pluginObject.sign(deviceId, certId, data, dataFormat, options).then($.proxy(function (res) {
+                        ui.setContent(this.container, res);
+                        ui.printResult(res)
+
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -2210,12 +2414,46 @@ var TestSuite = new(function () {
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.computeHash);
             }
-            plugin.pluginObject.rawSign(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign-hash");
+
+            var deviceId = ui.device();
+            var keyId = ui.key();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    plugin.pluginObject.rawSign(deviceId, keyId, ui.getContent(this.container, 0), options).then($.proxy(function (res) {
+                        if (ui.useConsole) {
+                            console.timeEnd("sign-hash");
+                        }
+                        ui.writeln("Результат хеширования:");
+                        ui.setContent(this.container, res);
+                        ui.printResult(res);
+
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         };
     });
@@ -2234,15 +2472,47 @@ var TestSuite = new(function () {
                 options.ukm = ui.getContent(this.container, 1);
             }
 
-            if (ui.useConsole) {
-                console.time("derive-key");
-            }
-            plugin.pluginObject.derive(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("derive-key");
+            var deviceId = ui.device();
+            var keyId = ui.key();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    if (ui.useConsole) {
+                        console.time("derive-key");
+                    }
+                    plugin.pluginObject.derive(deviceId, keyId, ui.getContent(this.container, 0), options).then($.proxy(function (res) {
+                        if (ui.useConsole) {
+                            console.timeEnd("derive-key");
+                        }
+                        ui.setContent(this.container, res);
+                        ui.printResult(res);
+
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        }
+                    }, this));
+                }, this));
             }, this), $.proxy(ui.printError, ui));
         };
     });
@@ -2289,16 +2559,48 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             ui.setContent(this.container, "");
-            if (ui.useConsole) {
-                console.time("authenticate");
-            }
-            plugin.pluginObject.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container)).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("authenticate");
+
+            var deviceId = ui.device();
+            var certId = ui.certificate();
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (isLoginBioRequired) {
+                var authPromise;
+
+                if (isLoginBioRequired) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    authPromise = plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 }).then($.proxy(function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                            return { success: true, needsLogout: true };
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена");
+                            return { success: false };
+                        }
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromise = Promise.resolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
-            }, this), $.proxy(ui.printError, ui))
+
+                authPromise.then($.proxy(function (authResult) {
+                    if (!authResult.success) return;
+
+                    if (ui.useConsole) {
+                        console.time("authenticate");
+                    }
+                    plugin.pluginObject.authenticate(deviceId, certId, ui.getContent(this.container)).then($.proxy(function (res) {
+                        if (ui.useConsole) {
+                            console.timeEnd("authenticate");
+                        }
+                        ui.setContent(this.container, res);
+                        ui.printResult(res);
+                    }, this), $.proxy(ui.printError, ui))
+                    .then($.proxy(function () {
+                        if (authResult.needsLogout) {
+                            plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        }
+                    }, this));
+                }, this));
+            }, this), $.proxy(ui.printError, ui));
         }
     });
 

@@ -1501,7 +1501,7 @@ cryptoPlugin.prototype = {
     },
 
     logoutBio: function () {
-        this.pluginObject.logoutBio(ui.device(), { "convolutionsId" : ui.convolutionsId() } ).then($.proxy(function(){
+        this.pluginObject.logoutBio(ui.device()).then($.proxy(function(){
             ui.writeln("Выход по биометрии выполнен\n");
         }, this), $.proxy(ui.printError, ui));
     },
@@ -2001,7 +2001,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2053,7 +2053,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2129,7 +2129,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2308,7 +2308,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2368,7 +2368,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2500,7 +2500,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2562,7 +2562,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": keyId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2662,7 +2662,7 @@ var TestSuite = new(function () {
                 }, this), $.proxy(ui.printError, ui))
                 .then($.proxy(function () {
                     if (authResult.needsLogout) {
-                        plugin.pluginObject.logoutBio(deviceId, { "objectId": certId });
+                        plugin.pluginObject.logoutBio(deviceId);
                     }
                 }, this));
             }, this));
@@ -2775,21 +2775,6 @@ var TestSuite = new(function () {
                     } else {
                         ui.writeln("Подпись доверенной метки времени недействительна\n");
                     }
-                }, this), $.proxy(ui.printError, ui));
-        }
-    });
-
-    this.enrollFingerprint = new(function () {
-        Test.call(this)
-        this.description = function () {
-            return "Добавление отпечатка пальцев на токен";
-        }
-
-        this.runTest = function () {
-            ui.writeln("Приложите палец к сканеру");
-            plugin.pluginObject.enrollFingerprint(ui.device()).then($.proxy(function (res) {
-                    ui.writeln("Отпечаток пальца создан.\n Идентификатор набора сверток отпечатков пальца на токене: ");
-                    ui.printResult(res);
                 }, this), $.proxy(ui.printError, ui));
         }
     });

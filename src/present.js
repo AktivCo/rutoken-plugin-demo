@@ -1538,7 +1538,7 @@ var TestSuite = new(function () {
                 var options = {};
                 options.convolutionsId = document.getElementById("convolutionsIdForAttempts").value;
 
-                plugin.pluginObject.getDeviceInfoEx(ui.device(), info, options).then(function (result) {
+                plugin.pluginObject.getDeviceInfo(ui.device(), info, options).then(function (result) {
                     var message = result;
                     message = JSON.stringify(result);
                     message += " (" + info + ")";

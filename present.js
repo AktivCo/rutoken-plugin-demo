@@ -129,6 +129,32 @@ function testUi(useConsole) {
         }
     });
 
+    $(document).on('change', '.convolutions-id', function(e) {
+        var convId = document.querySelector('input[name="convolutionsIdCheckbox"]');
+        if (convId.checked) {
+            document.getElementById("convolutionsId").disabled = false;
+            document.getElementById('convolutionsId').style.opacity = '1';
+        }
+        else {
+            document.getElementById("convolutionsId").disabled = true;
+            document.getElementById('convolutionsId').style.opacity = '0.3';
+        }
+        document.getElementById('convolutionsId').value = "";
+    });
+
+    $(document).on('change', '.radio-input', function(e) {
+        var value = $(".radio-input:radio[name=device-info]:checked").val();
+        if (value == "bio attempts"){
+            document.getElementById("convolutionsIdForAttempts").disabled = false;
+            document.getElementById('convolutionsIdForAttempts').style.opacity = '1';
+        }
+        else {
+            document.getElementById("convolutionsIdForAttempts").disabled = true;
+            document.getElementById('convolutionsIdForAttempts').style.opacity = '0.3';
+        }
+        document.getElementById('convolutionsIdForAttempts').value = "";
+    });
+
 	$(document).on('change', '.startDateCsr', function() {
         var dateCheckboxStart = document.getElementById("dateCheckboxStartCsr");
         if (dateCheckboxStart.checked) {
@@ -201,6 +227,20 @@ function testUi(useConsole) {
         optionsContainer.find("#ts-ca-cert").val("");
         ui.clearVerifySigners(optionsContainer.find(".Certificates")[0]);
     }
+
+    document.getElementById("verify-check-timestamp").onclick = function() {
+        addTst = this.checked;
+        optionsContainer = $(document).find("#timestamp-options");
+
+        if (addTst)
+            optionsContainer.show("Blind");
+        else
+            optionsContainer.hide("Blind");
+
+        optionsContainer.find("#tsp-verify-token")[0].checked = true;
+        optionsContainer.find("#tsp-ca-certs").val("");
+        ui.clearVerifySigners(optionsContainer.find(".Certificates")[0]);
+    }
 }
 
 function uiControls() {
@@ -223,6 +263,11 @@ function uiControls() {
     this.removePinButton = $("#remove-pin");
 
     this.pinInput = $("#device-pin");
+
+    this.loginBioButton = $("#loginBio");
+    this.logoutBioButton = $("#logoutBio");
+    this.convolutionsIdForLoginBio = $("#convolutionsIdForLoginBio");
+    this.stopLoginBioButton = $("#stopLoginBio");
 }
 
 uiControls.prototype = {
@@ -242,7 +287,12 @@ uiControls.prototype = {
     savePinButton: null,
     removePinButton: null,
 
-    pinInput: null
+    pinInput: null,
+
+    loginBioButton: null,
+    logoutBioButton: null,
+    convolutionsIdForLoginBio: null,
+    stopLoginBioButton: null
 };
 
 testUi.prototype = {
@@ -264,6 +314,10 @@ testUi.prototype = {
 
     pin: function () {
         return this.controls.pinInput.val();
+    },
+
+    convolutionsId: function () {
+        return this.controls.convolutionsIdForLoginBio.val();
     },
 
     device: function () {
@@ -497,6 +551,8 @@ testUi.prototype = {
             return plugin.TOKEN_INFO_PINS_INFO;
         case "fkn":
             return plugin.TOKEN_INFO_FKN_SUPPORTED;
+        case "bio attempts":
+            return plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO;
         case "vendor model name":
             return plugin.TOKEN_INFO_VENDOR_MODEL_NAME;
         }
@@ -551,10 +607,14 @@ testUi.prototype = {
         return container.find("input:checkbox[name=" + name + "]:checked").val();
     },
 
+    setVersion: function () {
+        document.getElementById('plugin-version').textContent = "Rutoken Plugin v" + plugin.pluginObject.version;
+    },
+
     registerEvents: function () {
         this.controls.refreshDeviceListButton.click($.proxy(function () {
             try {
-                plugin.enumerateDevices();
+                plugin.refreshDeviceList();
             } catch (error) {
                 this.writeln(error.toString());
                 this.clearDeviceList(error.toString());
@@ -639,6 +699,32 @@ testUi.prototype = {
                 this.clearFilesList("Обновите список файлов");
             }
         }, this));
+
+        this.controls.loginBioButton.click($.proxy(function () {
+            this.writeln("Вход по биометрии:");
+            try {
+                plugin.loginBio();
+            } catch (error) {
+                this.writeln(error.toString());
+            }
+        }, this));
+
+        this.controls.logoutBioButton.click($.proxy(function () {
+            try {
+                plugin.logoutBio();
+            } catch (error) {
+                this.writeln(error.toString());
+            }
+        }, this));
+
+
+        this.controls.stopLoginBioButton.click($.proxy(function () {
+            try {
+                plugin.stopLoginBio();
+            } catch (error) {
+                this.writeln(error.toString());
+            }
+        }, this));
     },
 
     // TBD: enable/disable controls
@@ -666,18 +752,22 @@ testUi.prototype = {
     //     this.controls.refreshCertificateListButton.attr('disabled', true);
     // },
     printError: function (error) {
+        const rawText = (error && (error.message || error.description)) 
+            ? (error.message || error.description)
+            : (typeof error === "string" ? error : JSON.stringify(error));
+
+        const errorCodeRaw = getErrorCode(error);
+        const errorCode = Number(errorCodeRaw);
+
         if (this.useConsole) {
-            console.trace();
-            console.debug(arguments);
+            const text = rawText.split(": ").slice(1).join(": ");
+            console.error("Plugin error [%d]: %s", errorCode, text);
         }
-        let errorCode = getErrorCode(error);
-        if (plugin.errorDescription[errorCode] === undefined)
-        {
-            this.writeln("Внутренняя ошибка (Код: " + errorCode + ") \n");
-        }
-        else
-        {
-            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + "\n");
+
+        if (!Number.isFinite(errorCode) || plugin.errorDescription[errorCode] === undefined) {
+            this.writeln("Внутренняя ошибка (Код: " + (errorCode || "неизвестен") + "): " + rawText + "\n");
+        } else {
+            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + " (Код: " + errorCode + ")\n");
         }
     },
 
@@ -977,7 +1067,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.CERTIFICATE_CATEGORY_BAD] = "Недопустимый тип сертификата";
     this.errorDescription[this.errorCodes.CERTIFICATE_EXISTS] = "Сертификат уже существует на устройстве";
     this.errorDescription[this.errorCodes.CERTIFICATE_NOT_FOUND] = "Сертификат не найден";
-    this.errorDescription[this.errorCodes.CERTIFICATE_HASH_NOT_UNIQUE] = "Хэш сертификата не уникален";
+    this.errorDescription[this.errorCodes.CERTIFICATE_HASH_NOT_UNIQUE] = "Хеш сертификата не уникален";
     this.errorDescription[this.errorCodes.CA_CERTIFICATES_NOT_FOUND] = "Корневые сертификаты не найдены";
     this.errorDescription[this.errorCodes.CERTIFICATE_VERIFICATION_ERROR] = "Ошибка проверки сертификата";
 
@@ -1074,6 +1164,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
     this.errorDescription[this.errorCodes.X509_UNSUPPORTED_NAME_SYNTAX] = "Неправильная структура сертификата";
     this.errorDescription[this.errorCodes.X509_CRL_PATH_VALIDATION_ERROR] = "Неправильный путь CRL";
     this.errorDescription[this.errorCodes.CMS_CERTIFICATE_ALREADY_PRESENT] = "Сертификат уже используется";
+    this.errorDescription[this.errorCodes.CMS_CONTENT_TYPE_NOT_SIGNED_DATA] = "Содержимое CMS не является подписанными данными";
     this.errorDescription[this.errorCodes.CANT_HARDWARE_VERIFY_CMS] = "Проверка множественной подписи с вычислением хеша на устройстве не поддерживается";
     this.errorDescription[this.errorCodes.DECRYPT_UNSUCCESSFUL] = "Расшифрование не удалось";
 
@@ -1118,7 +1209,25 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.KEY_PAIR_IS_JOURNAL] = "Операция несовместима с журнальной ключевой парой";
 
-    if (this.autoRefresh) this.enumerateDevices();
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND] = "На токене не найдено ни одного набора отпечатков пальцев";
+    this.errorDescription[this.errorCodes.BIOMETRY_NOT_SUPPORTED] = "Биометрия не поддерживается на токене";
+
+    this.errorDescription[this.errorCodes.ESS_MISSING_SIGNING_CERTIFICATE_ATTRIBUTE] = "Отсутствует атрибут сертификата подписи";
+
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_NOT_FOUND_BY_ID] = "На токене не найден набор отпечатков пальцев с заданным идентификатором";
+    this.errorDescription[this.errorCodes.NEED_CONVOLUTIONS_ID] = "На токене обнаружено несколько наборов отпечатков пальцев, необходимо задать идентификатор набора отпечатков пальцев";
+    this.errorDescription[this.errorCodes.MORE_THAT_ONE_BIO_AUTHENTICATOR_FOUND_BY_ID] = "На токене обнаружено более одного набора отпечатков пальцев с заданным ID";
+
+    this.errorDescription[this.errorCodes.FINGERPRINT_SCANNER_NOT_FOUND] = "Сканер отпечатков пальцев не обнаружен";
+    this.errorDescription[this.errorCodes.BIO_LIBS_NOT_FOUND] = "Библиотеки для поддержки био аутентификации не обнаружены";
+    this.errorDescription[this.errorCodes.FINGERPRINT_SCAN] = "Отпечаток пальца не получен со сканера";
+    this.errorDescription[this.errorCodes.FUNCTIONALITY_NOT_SUPPORTED] = "Функционал не реализован на данной платформе";
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_LOCKED] = "Биометрический аутентификатор ключа заблокирован";
+    this.errorDescription[this.errorCodes.USER_NOT_LOGGED_IN_BIO] = "Для выполнения операции требуется вход с помощью биометрического аутентификатора";
+    this.errorDescription[this.errorCodes.ALREADY_LOGGED_IN_BIO] = "Вход с помощью биометрического аутентификатора уже выполнен";
+    this.errorDescription[this.errorCodes.BIO_AUTHENTICATOR_MISMATCH] = "Вход по биометрии выполнен не с помощью биометрического аутентификатора с которым связан данный объект";
+
+    if (this.autoRefresh) this.refreshDeviceList();
 }
 
 cryptoPlugin.prototype = {
@@ -1135,90 +1244,82 @@ cryptoPlugin.prototype = {
         }, 0);
     },
 
-    enumerateDevices: function (update) {
-        if (update) {
-            var options = {"mode": this.ENUMERATE_DEVICES_EVENTS};
+    refreshDeviceList: function () {
+        ui.clearDeviceList("Список устройств обновляется...");
 
-            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
-                for (key in devices) {
-                    switch (key) {
-                        case "connected":
-                            for(var d in devices[key]) {
-                                var dev = devices[key][d];
-                                // To handle fast device reconnect first try to remove it.
-                                ui.removeDevice(dev);
+        var options = {"mode": this.ENUMERATE_DEVICES_LIST};
 
-                                this.pluginObject.getDeviceInfo(dev, plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
-                                    return function (label) {
-                                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                                        ui.removeInfoInDeviceList();
-                                        ui.addDevice(device, label, false);
+        this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
+            if (Object.keys(devices).length == 0) {
+                ui.clearDeviceList("Нет доступных устройств");
+                ui.clearCertificateList("Нет доступных устройств");
+                ui.clearKeyList("Нет доступных устройств");
+                ui.clearFilesList("Нет доступных устройств");
+                return;
+            }
+            //            ui.clearKeyList("Выполните вход на устройство");
+            ui.clearDeviceList();
+            if (this.autoRefresh) {
+                this.enumerateKeys(devices[0]);
+                this.enumerateCertificates(devices[0]);
+            }
+            else ui.clearCertificateList("Обновите список сертификатов");
 
-                                        if (ui.device() == device) {
-                                            if (this.autoRefresh) this.enumerateKeys(device);
-                                            if (this.autoRefresh) this.enumerateCertificates(device);
-                                            else ui.clearCertificateList("Обновите список сертификатов");
-                                            ui.clearFilesList("Обновите список файлов");
-                                        }
-                                    };
-                                }(dev), this), $.proxy(ui.printError, ui));
+            for (var d in devices) {
+                this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
+                    return function(label) {
+                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                        ui.addDevice(device, label, false);
+                    };
+                }(devices[d]), this), $.proxy(ui.printError, ui));
+            }
+        }, this), $.proxy(ui.printError, ui));
+    },
+
+    applyDeviceDelta: function (type, slotId) {
+        switch (type) {
+            case "connected":
+                ui.removeDevice(slotId);
+
+                this.pluginObject.getDeviceInfo(slotId, plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
+                    return function (label) {
+                        if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
+                        ui.removeInfoInDeviceList();
+                        ui.addDevice(device, label, false);
+
+                        if (ui.device() == device) {
+                            if (this.autoRefresh) {
+                                this.enumerateKeys(device);
+                                this.enumerateCertificates(device);
                             }
-                            break;
-                        case "disconnected":
-                            for (var d in devices[key]) {
-                                var selectedDevice = ui.device(),
-                                    device = devices[key][d];
+                            else ui.clearCertificateList("Обновите список сертификатов");
+                            ui.clearFilesList("Обновите список файлов");
+                        }
+                    };
+                }(slotId), this), $.proxy(ui.printError, ui));
+                break;
+            case "disconnected":
+                var selectedDevice = ui.device();
 
-                                ui.removeDevice(device);
+                ui.removeDevice(slotId);
 
-                                if (device == selectedDevice) {
-                                    try {
-                                        var dev = ui.device();
-
-                                        if (this.autoRefresh) this.enumerateKeys(ui.device());
-                                        if (this.autoRefresh) this.enumerateCertificates(ui.device());
-                                        else ui.clearCertificateList("Обновите список сертификатов");
-                                        ui.clearFilesList("Обновите список файлов");
-                                    } catch (e) {
-                                        ui.clearDeviceList("Нет доступных устройств");
-                                        ui.clearCertificateList("Нет доступных устройств");
-                                        ui.clearKeyList("Нет доступных устройств");
-                                        ui.clearFilesList("Нет доступных устройств");
-                                    }
-                                }
-                            }
-                            break;
+                if (slotId == selectedDevice) {
+                    try {
+                        var dev = ui.device();
+                        if (this.autoRefresh) {
+                            this.enumerateKeys(ui.device());
+                            this.enumerateCertificates(ui.device());
+                        }
+                        else ui.clearCertificateList("Обновите список сертификатов");
+                        ui.clearFilesList("Обновите список файлов");
+                    } catch (e) {
+                        ui.clearDeviceList("Нет доступных устройств");
+                        ui.clearCertificateList("Нет доступных устройств");
+                        ui.clearKeyList("Нет доступных устройств");
+                        ui.clearFilesList("Нет доступных устройств");
                     }
                 }
-            }, this), $.proxy(ui.printError, ui));
-        } else {
-            ui.clearDeviceList("Список устройств обновляется...");
-
-            var options = {"mode": this.ENUMERATE_DEVICES_LIST};
-
-            this.pluginObject.enumerateDevices(options).then($.proxy(function (devices) {
-                if (Object.keys(devices).length == 0) {
-                    ui.clearDeviceList("Нет доступных устройств");
-                    ui.clearCertificateList("Нет доступных устройств");
-                    ui.clearKeyList("Нет доступных устройств");
-                    ui.clearFilesList("Нет доступных устройств");
-                    return;
-                }
-                //            ui.clearKeyList("Выполните вход на устройство");
-                ui.clearDeviceList();
-                if (this.autoRefresh) this.enumerateKeys(devices[0]);
-                if (this.autoRefresh) this.enumerateCertificates(devices[0]);
-                else ui.clearCertificateList("Обновите список сертификатов");
-
-                for (var d in devices) {
-                    this.pluginObject.getDeviceInfo(devices[d], plugin.TOKEN_INFO_LABEL).then($.proxy(function (device) {
-                        return function(label) {
-                            if (label == "Rutoken ECP <no label>") label = "Rutoken ECP #" + device.toString();
-                            ui.addDevice(device, label, false);
-                        };
-                    }(devices[d]), this), $.proxy(ui.printError, ui));
-                }
-            }, this), $.proxy(ui.printError, ui));
+                break;
         }
     },
 
@@ -1384,6 +1485,31 @@ cryptoPlugin.prototype = {
             ui.writeln("PIN-код удален из кэша\n");
             ui.clearKeyList("Выполните вход на устройство");
         }, this), $.proxy(ui.printError, ui));
+    },
+
+    loginBio: function () {
+        this.pluginObject.loginBio(ui.device(), { "convolutionsId" : ui.convolutionsId() , "timeout" : 10000 },
+        function (isLoginBioSuccessful) {
+            if (isLoginBioSuccessful) {
+                ui.writeln("Биометрическая аутентификация успешна\n");
+            } else {
+                ui.writeln("Биометрическая аутентификация не пройдена\n");
+            }
+        }).then($.proxy(function () {
+            ui.writeln("Приложите палец к сканеру");
+        }, this), $.proxy(ui.printError, ui));
+    },
+
+    logoutBio: function () {
+        this.pluginObject.logoutBio(ui.device()).then($.proxy(function(){
+            ui.writeln("Выход по биометрии выполнен\n");
+        }, this), $.proxy(ui.printError, ui));
+    },
+
+    stopLoginBio: function () {
+        this.pluginObject.stopLoginBio().then($.proxy(function(){
+            ui.writeln("Процесс биометрической аутентификации остановливается...");
+        }, this), $.proxy(ui.printError, ui));
     }
 }
 
@@ -1408,139 +1534,151 @@ var TestSuite = new(function () {
         };
         this.runTest = function () {
             var info = ui.infoType();
+            if (info == plugin.TOKEN_INFO_BIO_ATTEMPTS_INFO){
+                var options = {};
+                options.convolutionsId = document.getElementById("convolutionsIdForAttempts").value;
 
-            plugin.pluginObject.getDeviceInfo(ui.device(), info).then(function (result) {
-                var message = result;
+                plugin.pluginObject.getDeviceInfo(ui.device(), info, options).then(function (result) {
+                    var message = result;
+                    message = JSON.stringify(result);
+                    message += " (" + info + ")";
+                    ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
+            else {
+                plugin.pluginObject.getDeviceInfo(ui.device(), info).then(function (result) {
+                    var message = result;
 
-                switch (info) {
-                case plugin.TOKEN_INFO_DEVICE_TYPE:
-                    message = "Невозможно определить тип устройства";
-                    switch (result) {
-                    case plugin.TOKEN_TYPE_UNKNOWN:
-                        message = "Неизвестное устройство";
+                    switch (info) {
+                    case plugin.TOKEN_INFO_DEVICE_TYPE:
+                        message = "Невозможно определить тип устройства";
+                        switch (result) {
+                        case plugin.TOKEN_TYPE_UNKNOWN:
+                            message = "Неизвестное устройство";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_ECP:
+                            message = "Рутокен ЭЦП";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_WEB:
+                            message = "Рутокен Web";
+                            break;
+                        case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
+                            message = "Рутокен ЭЦП SC";
+                            break;
+                        }
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_ECP:
-                        message = "Рутокен ЭЦП";
+
+                    case plugin.TOKEN_INFO_FORMATS:
+                        var m = {};
+                        m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
+                        m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
+
+                        message = "[" + result.map(function(value) {
+                            return m[value];
+                        }).join(", ") + "]";
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_WEB:
-                        message = "Рутокен Web";
+
+                    case plugin.TOKEN_INFO_FEATURES:
+                        var m = result;
+                        var bio = {};
+                        bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
+                        bio[plugin.BIO_TYPE_NOT_SPECIFIED] = "BIO_TYPE_NOT_SPECIFIED";
+
+                        var interfaces = {};
+                        interfaces[plugin.INTERFACE_TYPE_USB] = "INTERFACE_TYPE_USB";
+                        interfaces[plugin.INTERFACE_TYPE_BT] = "INTERFACE_TYPE_BT";
+                        interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
+                        interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
+                        interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
+                        interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_A] = "INTERFACE_TYPE_NFC";
+                        interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_B] = "INTERFACE_TYPE_NFC";
+
+                        var smType = {};
+                        smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";
+                        smType[plugin.SECURE_MESSAGING_ON] = "SECURE_MESSAGING_ON";
+                        smType[plugin.SECURE_MESSAGING_ENHANCED] = "SECURE_MESSAGING_ENHANCED";
+                        smType[plugin.SECURE_MESSAGING_UNSUPPORTED] = "SECURE_MESSAGING_UNSUPPORTED";
+                        smType[plugin.SECURE_MESSAGING_NOT_SPECIFIED] = "SECURE_MESSAGING_NOT_SPECIFIED";
+
+                        m["interfaces"] = result["interfaces"].map(function (value) { return interfaces[value]; });
+                        m["bio"] = bio[result["bio"]];
+                        m["smType"] = smType[result["smType"]];
+
+                        message = JSON.stringify(m);
                         break;
-                    case plugin.TOKEN_TYPE_RUTOKEN_ECP_SC:
-                        message = "Рутокен ЭЦП SC";
+
+                    case plugin.TOKEN_INFO_SUPPORTED_MECHANISMS:
+                        var hashes = {};
+                        hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
+                        hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
+                        hashes[plugin.HASH_TYPE_GOST3411_12_512] = "HASH_TYPE_GOST3411_12_512";
+                        hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
+                        hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
+                        hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
+                        hashes[plugin.HASH_TYPE_SHA384] = "HASH_TYPE_SHA384";
+                        hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
+
+                        var signs = {};
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_GOST3410_2001";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_256";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_512";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_512] = "PUBLIC_KEY_ALGORITHM_RSA_512";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_768] = "PUBLIC_KEY_ALGORITHM_RSA_768";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1024] = "PUBLIC_KEY_ALGORITHM_RSA_1024";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1280] = "PUBLIC_KEY_ALGORITHM_RSA_1280";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
+                        signs[plugin.PUBLIC_KEY_ALGORITHM_ECDSA] = "PUBLIC_KEY_ALGORITHM_ECDSA";
+
+                        var ciphers = {};
+                        ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
+                        ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
+                        ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
+                        ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
+                        ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM";
+                        ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC";
+                        ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM";
+                        ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC";
+
+                        var keyExchanges = {};
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
+                        keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
+
+                        message = "hashes:\n";
+                        message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
+
+                        message += "signs:\n";
+                        message += "- hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
+
+                        message += "ciphers:\n";
+                        message += "- hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
+
+                        message += "keyExchanges:\n";
+                        message += "- hardware: [" + result["keyExchange"]["hardware"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
+                        message += "- software: [" + result["keyExchange"]["software"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
+                        break;
+
+                    case plugin.TOKEN_INFO_FKN_SUPPORTED:
+                    case plugin.TOKEN_INFO_PINS_INFO:
+                        message = JSON.stringify(result);
+                        break;
+
+                    case plugin.TOKEN_INFO_FREE_MEMORY:
+                        message += " byte(s)";
                         break;
                     }
-                    break;
 
-                case plugin.TOKEN_INFO_FORMATS:
-                    var m = {};
-                    m[plugin.DEVICE_DATA_FORMAT_PLAIN] = "DEVICE_DATA_FORMAT_PLAIN";
-                    m[plugin.DEVICE_DATA_FORMAT_SAFETOUCH] = "DEVICE_DATA_FORMAT_SAFETOUCH";
-
-                    message = "[" + result.map(function(value) {
-                        return m[value];
-                    }).join(", ") + "]";
-                    break;
-
-                case plugin.TOKEN_INFO_FEATURES:
-                    var m = result;
-                    var bio = {};
-                    bio[plugin.BIO_TYPE_NOT_SUPPORTED] = "BIO_TYPE_NOT_SUPPORTED";
-                    bio[plugin.BIO_TYPE_NOT_SPECIFIED] = "BIO_TYPE_NOT_SPECIFIED";
-
-                    var interfaces = {};
-                    interfaces[plugin.INTERFACE_TYPE_USB] = "INTERFACE_TYPE_USB";
-                    interfaces[plugin.INTERFACE_TYPE_BT] = "INTERFACE_TYPE_BT";
-                    interfaces[plugin.INTERFACE_TYPE_UART] = "INTERFACE_TYPE_UART";
-                    interfaces[plugin.INTERFACE_TYPE_ISO] = "INTERFACE_TYPE_ISO";
-                    interfaces[plugin.INTERFACE_TYPE_SD] = "INTERFACE_TYPE_SD";
-                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_A] = "INTERFACE_TYPE_NFC";
-                    interfaces[plugin.INTERFACE_TYPE_NFC_TYPE_B] = "INTERFACE_TYPE_NFC";
-
-                    var smType = {};
-                    smType[plugin.SECURE_MESSAGING_OFF] = "SECURE_MESSAGING_OFF";
-                    smType[plugin.SECURE_MESSAGING_ON] = "SECURE_MESSAGING_ON";
-                    smType[plugin.SECURE_MESSAGING_ENHANCED] = "SECURE_MESSAGING_ENHANCED";
-                    smType[plugin.SECURE_MESSAGING_UNSUPPORTED] = "SECURE_MESSAGING_UNSUPPORTED";
-                    smType[plugin.SECURE_MESSAGING_NOT_SPECIFIED] = "SECURE_MESSAGING_NOT_SPECIFIED";
-
-                    m["interfaces"] = result["interfaces"].map(function (value) { return interfaces[value]; });
-                    m["bio"] = bio[result["bio"]];
-                    m["smType"] = smType[result["smType"]];
-
-                    message = JSON.stringify(m);
-                    break;
-
-                case plugin.TOKEN_INFO_SUPPORTED_MECHANISMS:
-                    var hashes = {};
-                    hashes[plugin.HASH_TYPE_GOST3411_94] = "HASH_TYPE_GOST3411_94";
-                    hashes[plugin.HASH_TYPE_GOST3411_12_256] = "HASH_TYPE_GOST3411_12_256";
-                    hashes[plugin.HASH_TYPE_GOST3411_12_512] = "HASH_TYPE_GOST3411_12_512";
-                    hashes[plugin.HASH_TYPE_MD5] = "HASH_TYPE_MD5";
-                    hashes[plugin.HASH_TYPE_SHA1] = "HASH_TYPE_SHA1";
-                    hashes[plugin.HASH_TYPE_SHA256] = "HASH_TYPE_SHA256";
-                    hashes[plugin.HASH_TYPE_SHA384] = "HASH_TYPE_SHA384";
-                    hashes[plugin.HASH_TYPE_SHA512] = "HASH_TYPE_SHA512";
-
-                    var signs = {};
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_GOST3410_2001";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_256";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_GOST3410_2012_512";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_512] = "PUBLIC_KEY_ALGORITHM_RSA_512";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_768] = "PUBLIC_KEY_ALGORITHM_RSA_768";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1024] = "PUBLIC_KEY_ALGORITHM_RSA_1024";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1280] = "PUBLIC_KEY_ALGORITHM_RSA_1280";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1536] = "PUBLIC_KEY_ALGORITHM_RSA_1536";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_1792] = "PUBLIC_KEY_ALGORITHM_RSA_1792";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_2048] = "PUBLIC_KEY_ALGORITHM_RSA_2048";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_RSA_4096] = "PUBLIC_KEY_ALGORITHM_RSA_4096";
-                    signs[plugin.PUBLIC_KEY_ALGORITHM_ECDSA] = "PUBLIC_KEY_ALGORITHM_ECDSA";
-
-                    var ciphers = {};
-                    ciphers[plugin.CIPHER_ALGORITHM_AES128] = "CIPHER_ALGORITHM_AES128";
-                    ciphers[plugin.CIPHER_ALGORITHM_AES192] = "CIPHER_ALGORITHM_AES192";
-                    ciphers[plugin.CIPHER_ALGORITHM_AES256] = "CIPHER_ALGORITHM_AES256";
-                    ciphers[plugin.CIPHER_ALGORITHM_GOST28147] = "CIPHER_ALGORITHM_GOST28147";
-                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM";
-                    ciphers[plugin.CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_MAGMA_CTR_ACPKM_OMAC";
-                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM";
-                    ciphers[plugin.CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC] = "CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC";
-
-                    var keyExchanges = {};
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2001";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_256";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_VKO_GOST3410_2012_512";
-                    keyExchanges[plugin.PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH] = "PUBLIC_KEY_ALGORITHM_EXCHANGE_ECDH";
-
-                    message = "hashes:\n";
-                    message += "- hardware: [" + result["hash"]["hardware"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["hash"]["software"].map(function (value) { return hashes[value]; }).join(", ") + "]\n";
-
-                    message += "signs:\n";
-                    message += "- hardware: [" + result["sign"]["hardware"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["sign"]["software"].map(function (value) { return signs[value]; }).join(", ") + "]\n";
-
-                    message += "ciphers:\n";
-                    message += "- hardware: [" + result["cipher"]["hardware"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["cipher"]["software"].map(function (value) { return ciphers[value]; }).join(", ") + "]\n";
-
-                    message += "keyExchanges:\n";
-                    message += "- hardware: [" + result["keyExchange"]["hardware"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
-                    message += "- software: [" + result["keyExchange"]["software"].map(function (value) { return keyExchanges[value]; }).join(", ") + "]\n";
-                    break;
-
-                case plugin.TOKEN_INFO_FKN_SUPPORTED:
-                case plugin.TOKEN_INFO_PINS_INFO:
-                    message = JSON.stringify(result);
-                    break;
-
-                case plugin.TOKEN_INFO_FREE_MEMORY:
-                    message += " byte(s)";
-                    break;
-                }
-
-                message += " (" + info + ")";
-                ui.printResult(message);
-            }, $.proxy(ui.printError, ui));
+                    message += " (" + info + ")";
+                    ui.printResult(message);
+                }, $.proxy(ui.printError, ui));
+            }
         }
     })();
 
@@ -1630,6 +1768,10 @@ var TestSuite = new(function () {
             if (ui.checkboxState(this.container, "need-confirm") == "on") options.needConfirm = true;
             if (ui.checkboxState(this.container, "journal") == "on") options.keyType = plugin.KEY_TYPE_JOURNAL;
             if (ui.checkboxState(this.container, "set-external-id") == "on") options.id = this.container.find("#generate-key-id").val();
+            if (ui.checkboxState(this.container, "convolutionsIdCheckbox") == "on"){
+                options.linkToBiometrics = true;
+                options.convolutionsId = this.container.find("#convolutionsId").val();
+            }
 
             if (algorithm === plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001) {
                 options.paramset = this.container.find(".paramset-2001").val();
@@ -1822,11 +1964,47 @@ var TestSuite = new(function () {
             return "Удаление ключевой пары с устройства";
         };
         this.runTest = function () {
-            plugin.pluginObject.deleteKeyPair(ui.device(), ui.key()).then($.proxy(function () {
-                ui.printResult();
-                if (plugin.autoRefresh) plugin.enumerateKeys();
-                else ui.clearKeyList("Обновите список ключевых пар");
+            var deviceId = ui.device();
+            var keyId = ui.key();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
+            if (result) {
+                ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 },
+                function (isLoginBioSuccessful) {
+                    if (isLoginBioSuccessful) {
+                        ui.writeln("Биометрическая аутентификация успешна");
+                        authPromiseResolve({ success: true, needsLogout: true });
+                    } else {
+                        ui.writeln("Биометрическая аутентификация не пройдена\n");
+                        authPromiseResolve({ success: false, needsLogout: false });
+                    }
+                }).then($.proxy(function () {
+                    ui.writeln("Приложите палец к сканеру");
+                }, this), $.proxy(ui.printError, ui));
+            } else {
+                authPromiseResolve({ success: true, needsLogout: false });
+                }
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+
+                plugin.pluginObject.deleteKeyPair(deviceId, keyId).then($.proxy(function () {
+                    ui.printResult();
+                    if (plugin.autoRefresh) plugin.enumerateKeys();
+                    else ui.clearKeyList("Обновите список ключевых пар");
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         };
     })();
 
@@ -1836,13 +2014,49 @@ var TestSuite = new(function () {
             return "Получение журнала операций на токене";
         };
         this.runTest = function () {
-            plugin.pluginObject.getJournal(ui.device(), ui.key(), {}).then($.proxy(function (j) {
-                if (j === null) ui.printResult();
-                else {
-                    ui.printResult(j);
-                    ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
+
+            var deviceId = ui.device();
+            var keyId = ui.key();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
                 }
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                plugin.pluginObject.getJournal(deviceId, keyId, {}).then($.proxy(function (j) {
+                    if (j === null) ui.printResult();
+                    else {
+                        ui.printResult(j);
+                        ui.setContent(this.container, "journal: " + j.journal + "\nsignature: " + j.signature);
+                    }
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         };
     })();
 
@@ -1880,10 +2094,45 @@ var TestSuite = new(function () {
                 "customExtensions": ui.getCustomExtensions()
             };
 
-            plugin.pluginObject.createPkcs10(ui.device(), ui.key(), ui.getSubject(), ui.getExtensions(this.container), options).then($.proxy(function (res) {
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+            var deviceId = ui.device();
+            var keyId = ui.key();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
+                }
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                plugin.pluginObject.createPkcs10(deviceId, keyId, ui.getSubject(), ui.getExtensions(this.container), options).then($.proxy(function (res) {
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         };
     })();
 
@@ -2014,20 +2263,55 @@ var TestSuite = new(function () {
                 options.tspOptions.certificates = ui.getArray( this.container, ".verify-ts-signer");
             }
 
-            if (ui.useConsole) {
-                console.time("sign");
-                console.log("HW", options.useHardwareHash);
-                console.log("detached: ", options.detached);
-                console.log("system-info: ", options.addSystemInfo);
-                console.log("dataFormat: ", dataFormat);
-            }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), dataFormat, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
+            var deviceId = ui.device();
+            var certId = ui.certificate();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                if (ui.useConsole) {
+                    console.time("sign");
+                    console.log("HW", options.useHardwareHash);
+                    console.log("detached: ", options.detached);
+                    console.log("system-info: ", options.addSystemInfo);
+                    console.log("dataFormat: ", dataFormat);
+                }
+                plugin.pluginObject.sign(deviceId, certId, ui.getContent(this.container), dataFormat, options).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("sign");
+                    }
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         }
     });
 
@@ -2049,11 +2333,45 @@ var TestSuite = new(function () {
             options.eContentType = "1.3.6.1.5.5.7.12.2"; // id-cct-PKIData
 
             var dataFormat = plugin["DATA_FORMAT_BASE64"];
+            var deviceId = ui.device();
+            var certId = ui.certificate();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
 
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), data, dataFormat, options).then($.proxy(function (res) {
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
+                }
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                plugin.pluginObject.sign(deviceId, certId, data, dataFormat, options).then($.proxy(function (res) {
+                    ui.setContent(this.container, res);
+                    ui.printResult(res)
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         }
     });
 
@@ -2142,13 +2460,50 @@ var TestSuite = new(function () {
                 console.log("HW", options.useHardwareHash);
                 console.log("detached: ", options.computeHash);
             }
-            plugin.pluginObject.rawSign(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign-hash");
+
+            var deviceId = ui.device();
+            var keyId = ui.key();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                plugin.pluginObject.rawSign(deviceId, keyId, ui.getContent(this.container, 0), options).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("sign-hash");
+                    }
+                    ui.writeln("Результат хеширования:");
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         };
     });
 
@@ -2166,16 +2521,51 @@ var TestSuite = new(function () {
                 options.ukm = ui.getContent(this.container, 1);
             }
 
-            if (ui.useConsole) {
-                console.time("derive-key");
-            }
-            plugin.pluginObject.derive(ui.device(), ui.key(), ui.getContent(this.container, 0), options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("derive-key");
+            var deviceId = ui.device();
+            var keyId = ui.key();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, keyId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : keyId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
             }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                if (ui.useConsole) {
+                    console.time("derive-key");
+                }
+                plugin.pluginObject.derive(deviceId, keyId, ui.getContent(this.container, 0), options).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("derive-key");
+                    }
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         };
     });
 
@@ -2203,12 +2593,21 @@ var TestSuite = new(function () {
                 console.time("sign");
                 console.log("detached: ", options.detached);
             }
-            plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("sign");
+
+            plugin.pluginObject.getKeyInfo(ui.device(), ui.key(), plugin.KEY_INFO_ALGORITHM).then($.proxy(function (result) {
+                if (result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2001 && 
+                    result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_256 &&
+                    result !== plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512) {
+                    ui.printError({message: "25"});
+                    return;
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
+                plugin.pluginObject.sign(ui.device(), ui.certificate(), ui.getContent(this.container), isBase64, options).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("sign");
+                    }
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui));
             }, this), $.proxy(ui.printError, ui));
         }
     });
@@ -2221,16 +2620,52 @@ var TestSuite = new(function () {
 
         this.runTest = function () {
             ui.setContent(this.container, "");
-            if (ui.useConsole) {
-                console.time("authenticate");
-            }
-            plugin.pluginObject.authenticate(ui.device(), ui.certificate(), ui.getContent(this.container)).then($.proxy(function (res) {
-                if (ui.useConsole) {
-                    console.timeEnd("authenticate");
+
+            var deviceId = ui.device();
+            var certId = ui.certificate();
+            var authPromiseResolve;
+            var authPromise = new Promise(function(resolve) {
+                authPromiseResolve = resolve;
+            });
+
+            plugin.pluginObject.isLoginBioRequired(deviceId, certId).then($.proxy(function (result) {
+                if (result) {
+                    ui.writeln("Ключевая пара сертификата защищена отпечатком пальца.\nВход по биометрии:");
+                    plugin.pluginObject.loginBio(deviceId, { "objectId" : certId, "timeout" : 10000 },
+                    function (isLoginBioSuccessful) {
+                        if (isLoginBioSuccessful) {
+                            ui.writeln("Биометрическая аутентификация успешна");
+                             authPromiseResolve({ success: true, needsLogout: true });
+                        } else {
+                            ui.writeln("Биометрическая аутентификация не пройдена\n");
+                            authPromiseResolve({ success: false, needsLogout: false });
+                        }
+                    }).then($.proxy(function () {
+                        ui.writeln("Приложите палец к сканеру");
+                    }, this), $.proxy(ui.printError, ui));
+                } else {
+                    authPromiseResolve({ success: true, needsLogout: false });
                 }
-                ui.setContent(this.container, res);
-                ui.printResult(res);
-            }, this), $.proxy(ui.printError, ui))
+            }, this), $.proxy(ui.printError, ui));
+
+            authPromise.then($.proxy(function (authResult) {
+                if (!authResult.success) return;
+                if (ui.useConsole) {
+                    console.time("authenticate");
+                }
+                plugin.pluginObject.authenticate(deviceId, certId, ui.getContent(this.container)).then($.proxy(function (res) {
+                    if (ui.useConsole) {
+                        console.timeEnd("authenticate");
+                    }
+                    ui.setContent(this.container, res);
+                    ui.printResult(res);
+                }, this), $.proxy(ui.printError, ui))
+                .then($.proxy(function () {
+                    if (authResult.needsLogout) {
+                        plugin.pluginObject.logoutBio(deviceId);
+                    }
+                }, this));
+            }, this));
         }
     });
 
@@ -2269,9 +2704,21 @@ var TestSuite = new(function () {
             options.verifyCertificate = ui.checkboxState(this.container, "verify-signer-cert") == "on" ? true : false;
             options.base64 = ui.checkboxState(this.container, "in-base64") == "on" ? true : false;
             options.data = ui.getContent(this.container, 1);
+            options.requireCades = ui.checkboxState(this.container, "verify-ess") == "on" ? true : false;
 
             options.certificates = ui.getArray(this.container, ".verify-signer");
-
+            if (this.container.find("#verify-check-timestamp").prop("checked")) {
+                options.tspOptions = {};
+                options.tspOptions.verifyTsToken = true;
+  
+                var caCert = this.container.find(".ca-input").val(); 
+                if (caCert) { 
+                    options.tspOptions.CA = new Array(); 
+                    options.tspOptions.CA.push(caCert);
+                }
+  
+                options.tspOptions.certificates = ui.getArray(this.container, ".verify-ts-signer");
+            }
             var caCert = ui.getContent(this.container, 2);
             if (caCert != "") {
                 options.CA = new Array();
@@ -2493,11 +2940,11 @@ function onPluginLoaded(pluginObject) {
 
         plugin = new cryptoPlugin(pluginObject, noAutoRefresh);
         ui.registerEvents();
+        ui.setVersion();
 
-        window.setInterval(function() {
-            if (document.visibilityState == "visible") {
-                plugin.enumerateDevices(true);
-            }}, 500);
+        plugin.pluginObject.tokenMonitor(function(type, slotId) {
+            plugin.applyDeviceDelta(type, slotId);
+        });
     } catch (error) {
         ui.writeln(error);
     }

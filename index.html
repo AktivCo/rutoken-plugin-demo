@@ -27,13 +27,18 @@
         <div id="container">
             <header id="header">
                 <dl>
-                    <dt><img src="images/logo_rutoken.png" width="165" height="71" alt="" /></dt>
+                    <dt>
+                        <img src="images/logo_rutoken.png" width="165" height="71" alt="" />
+                    </dt>
+                    <dt>
+                        <a style="color: darkgray; margin-left: 10px; margin-top: 10px; font-weight: bold;" id="plugin-version"> Rutoken Plugin v</a>
+                    </dt>
+
                     <dd>
                         <ul>
                             <li><a href="http://www.rutoken.ru/products/all/rutoken-plugin/" target="_blank">Рутокен Плагин</a></li>
                             <li><a href="http://www.rutoken.ru/support/download/rutoken-plugin/" target="_blank">Загрузить</a></li>
-                            <li><a href="https://dev.rutoken.ru/display/PUB/RutokenPluginDoc" target="_blank">Документация</a></li>
-                            <li><a href="http://forum.rutoken.ru/forum/15/" target="_blank">Форум</a></li>
+                            <li><a href="https://plugin.api.rutoken.ru/" target="_blank">Документация</a></li>
                         </ul>
                     </dd>
                 </dl>
@@ -56,6 +61,14 @@
                             <button id="logout">Выйти</button>
                             <button id="save-pin">Сохранить PIN-код</button>
                             <button id="remove-pin">Удалить PIN-код</button>
+                        </dd>
+                    </dl><dl>
+                        <dt><label for="login-bio">Идентификатор набора отпечатков пальцев:</label></dt>
+                        <dd>
+                            <input  id="convolutionsIdForLoginBio" type="text"   value="" />
+                            <button id="loginBio">Войти по биометрии</button>
+                            <button id="logoutBio">Выйти по биометрии</button>
+                            <button id="stopLoginBio">Остановить попытку войти по биометрии</button>
                         </dd>
                     </dl><dl>
                         <dt><label for="key-list">Ключи на устройстве: </label></dt>
@@ -103,6 +116,16 @@
                                     <label><input class="radio-input" type="radio" name="device-info" value="free memory" />Свободная память</label><br>
                                     <label><input class="radio-input" type="radio" name="device-info" value="pins"/>Информация о PIN-кодах</label><br>
                                     <label><input class="radio-input" type="radio" name="device-info" value="fkn" />Поддержка ФКН</label><br>
+                                    <label><input class="radio-input" type="radio" name="device-info" value="bio attempts" />Количество попыток входа по отпечатку пальца
+                                        <label style="display: inline-block; font-style: italic;">
+                                            (ID набора отпечатков пальцев [3-31]: 
+                                            <input type="text" id="convolutionsIdForAttempts" disabled value="" 
+                                                    style="display: inline-block; font-style: italic;
+                                                        width: 40px; min-width: 40px; max-width: 40px; 
+                                                        padding: 0; margin: 0; opacity: 0.3;
+                                                        text-align: center;" />)
+                                        </label>
+                                    </label><br>
                                 </li>
                             </ul>
                         </div>
@@ -240,6 +263,16 @@
                                     <input type="time" id="timeInput2" step="1" value="00:00:00" disabled style="color: gray;">
                                     <label for="GMT">GMT</label>
                                 </li>
+                                <li>
+                                    <label><input type="checkbox" name="convolutionsIdCheckbox" class="convolutions-id" />Создать ключевую пару, защищенную отпечатком (для токенов с поддержкой биометрии)</label>
+                                </li>
+                                <li>
+                                    <label for="convolutionsIdInput">ID набора отпечатков пальцев [3-31]: </label>
+                                    <input type="text" id="convolutionsId" value="" disabled 
+                                                    style="display: inline-block; 
+                                                    width: 40px; min-width: 40px; max-width: 40px; 
+                                                    opacity: 0.3;" />
+                                </li>
                             </ul>
                         </div>
                         <div id="EnumerateKeys" class="group">
@@ -312,7 +345,7 @@
                                 <li>
                                     <label>subjectSignTool:</label>
                                     <input type="text" class="subject-sign-tool input" value='СКЗИ "РУТОКЕН ЭЦП"' />
-                                    <label>Алгоритм хэширования:</label>
+                                    <label>Алгоритм хеширования:</label>
                                     <select class="hash-algorithm">
                                         <option value="HASH_TYPE_GOST3411_94">ГОСТ Р 34.11-94</option>
                                         <option value="HASH_TYPE_GOST3411_12_256" selected="selected">ГОСТ Р 34.11-12 256</option>
@@ -582,7 +615,7 @@
                                 </li>
                                 <li>
                                     <label><input type="checkbox" name="use-hw-hash" />Вычислить хеш на устройстве (необходимо если на ключе установлен атрибут подтверждения операции)</label><br>
-                                    <label><input type="checkbox" name="rsa-hash" id="cms-rsa-hash"/>Алгоритм хэширования для RSA ключей</label>
+                                    <label><input type="checkbox" name="rsa-hash" id="cms-rsa-hash"/>Алгоритм хеширования для RSA ключей</label>
                                     <select class="cms-hash-alg" id="cms-hash-alg" disabled=true>
                                         <option value="HASH_TYPE_MD5">MD5</option>
                                         <option value="HASH_TYPE_SHA1">SHA1</option>
@@ -843,6 +876,26 @@ IPx1wd5hBhGV714=
                                     <textarea placeholder="Опционально - в случае если проверяется detached подпись" id="data" class="text-input" rows="7"></textarea>
                                 </li>
                                 <li>
+                                    <label><input type="checkbox" name="verify-ess" id="verify-ess"/>Проверить идентификатор подписанта в формате ESS (необходимо для CAdES-BES, CAdES-T)</label><br>
+                                    <label><input type="checkbox" name="verify-check-timestamp" id="verify-check-timestamp" />Проверить метку доверенного времени (необходимо для CAdES-T)</label><br>
+                                    <div id="timestamp-options" style="display:none" class="subform">
+                                        <label for="ca-cert">Корневой сертификат сервера доверенного времени</label>
+                                        <textarea placeholder="Данные принимаются в формате base64" id="tsp-ca-certs" class="ca-input" rows="7"></textarea><br>
+                                        <label for="tsp-certs">Cертификаты для проверки подписи сервера доверенного времени</label><br>
+                                        <table class="Certificates">
+                                        <tr>
+                                            <td colspan="2">
+                                                <label for="ts-signer-cert">Сертификат</label>
+                                                <textarea placeholder="Опционально" id="ts-signer-cert" class="verify-ts-signer"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><button class="verify-add-signer example">Добавить еще</button></td>
+                                        </tr>
+                                    </table>
+                                    </div>
+                                </li>
+                                <li>
                                     <table class="Certificates">
                                         <tr>
                                             <td colspan="2">
@@ -935,6 +988,9 @@ IPx1wd5hBhGV714=
                                         <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM">KUZNECHIK_CTR_ACPKM</option>
                                         <option value="CIPHER_ALGORITHM_KUZNECHIK_CTR_ACPKM_OMAC">KUZNECHIK_CTR_ACPKM_OMAC</option>
                                     </select>
+                                    <label style="color: grey; font-size: 14px;"><br>Примечание:</label>
+                                    <label style="color: grey; font-size: 12px;"><br>Шифрование происходит на временном ключе openssl. 
+                                    В данном сегменте поддержка токеном генерации ключей выбранного типа не имеет значения для шифрования.</label>
                                 </li>
                                     <label for="encrypt-message-format"/>Формат результирующей CMS с enveloped-data:</label>
                                     <select class="encrypt-message-format" id="encrypt-message-format">

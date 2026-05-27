@@ -760,8 +760,7 @@ testUi.prototype = {
         const errorCode = Number(errorCodeRaw);
 
         if (this.useConsole) {
-            const text = rawText.split(": ").slice(1).join(": ");
-            console.error("Plugin error [%d]: %s", errorCode, text);
+            console.error("Plugin error [%d]: %s", errorCode, rawText);
         }
 
         if (!Number.isFinite(errorCode) || plugin.errorDescription[errorCode] === undefined) {

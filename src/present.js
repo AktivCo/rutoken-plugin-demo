@@ -1870,9 +1870,6 @@ var TestSuite = new(function () {
                         case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512:
                             message = "ГОСТ Р 34.10-2012 512";
                             break;
-                        case plugin.PUBLIC_KEY_ALGORITHM_RSA:
-                            message = "RSA";
-                            break;
                         case plugin.PUBLIC_KEY_ALGORITHM_RSA_512:
                             message = "RSA 512";
                             break;

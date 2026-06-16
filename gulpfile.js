@@ -5,10 +5,13 @@ var browserify = require('browserify'),
     rename = require('gulp-rename'),
     source = require('vinyl-source-stream'),
     uglify = require('gulp-uglify-es').default;
-const { deleteAsync } = require('del');
+const del = async (patterns, options) => {
+    const { deleteAsync } = await import('del');
+    return deleteAsync(patterns, options);
+};
 
 function clean () {
-    return deleteAsync(['build']);
+    return del(['build']);
 };
 
 function pages () {

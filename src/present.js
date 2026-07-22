@@ -1069,6 +1069,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.PKCS11_LOAD_FAILED] = "Не удалось загрузить PKCS#11 библиотеку";
 
+    this.errorDescription[this.errorCodes.CANNOT_SAVE_PIN_IN_CACHE] = "Произошла ошибка при сохранении PIN-кода в кеше";
     this.errorDescription[this.errorCodes.PIN_LENGTH_INVALID] = "Некорректная длина PIN-кода";
     this.errorDescription[this.errorCodes.PIN_INCORRECT] = "Некорректный PIN-код";
     this.errorDescription[this.errorCodes.PIN_LOCKED] = "PIN-код заблокирован";

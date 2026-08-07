@@ -752,22 +752,18 @@ testUi.prototype = {
     //     this.controls.refreshCertificateListButton.attr('disabled', true);
     // },
     printError: function (error) {
-        const rawText = (error && (error.message || error.description)) 
-            ? (error.message || error.description)
-            : (typeof error === "string" ? error : JSON.stringify(error));
-
-        const errorCodeRaw = getErrorCode(error);
-        const errorCode = Number(errorCodeRaw);
-
         if (this.useConsole) {
-            const text = rawText.split(": ").slice(1).join(": ");
-            console.error("Plugin error [%d]: %s", errorCode, text);
+            console.error("Plugin error [%d]: %s", error.message, (error.description) ? error.description : "No description");
+            console.trace();
+            console.debug(arguments);
         }
-
-        if (!Number.isFinite(errorCode) || plugin.errorDescription[errorCode] === undefined) {
-            this.writeln("Внутренняя ошибка (Код: " + (errorCode || "неизвестен") + "): " + rawText + "\n");
-        } else {
-            this.writeln("Ошибка: " + plugin.errorDescription[errorCode] + " (Код: " + errorCode + ")\n");
+        if (plugin.errorDescription[error.message] === undefined)
+        {
+            this.writeln("Внутренняя ошибка (Код: " + error.message + ") \n");
+        }
+        else
+        {
+            this.writeln("Ошибка: " + plugin.errorDescription[error.message] + "\n");
         }
     },
 
@@ -1073,6 +1069,7 @@ function cryptoPlugin(pluginObject, noAutoRefresh) {
 
     this.errorDescription[this.errorCodes.PKCS11_LOAD_FAILED] = "Не удалось загрузить PKCS#11 библиотеку";
 
+    this.errorDescription[this.errorCodes.CANNOT_SAVE_PIN_IN_CACHE] = "Произошла ошибка при сохранении PIN-кода в кеше";
     this.errorDescription[this.errorCodes.PIN_LENGTH_INVALID] = "Некорректная длина PIN-кода";
     this.errorDescription[this.errorCodes.PIN_INCORRECT] = "Некорректный PIN-код";
     this.errorDescription[this.errorCodes.PIN_LOCKED] = "PIN-код заблокирован";
@@ -1346,8 +1343,7 @@ cryptoPlugin.prototype = {
 
             ui.changeCsrStartEndDate(keys[0]);
         }, this), function (error) {
-            let errorCode = getErrorCode(error);
-            if (errorCode == plugin.errorCodes.USER_NOT_LOGGED_IN) ui.clearKeyList(plugin.errorDescription[errorCode]);
+            if (error.message == plugin.errorCodes.USER_NOT_LOGGED_IN) ui.clearKeyList(plugin.errorDescription[error.message]);
             else ui.printError(error);
         });
     },
@@ -1870,9 +1866,6 @@ var TestSuite = new(function () {
                             break;
                         case plugin.PUBLIC_KEY_ALGORITHM_GOST3410_2012_512:
                             message = "ГОСТ Р 34.10-2012 512";
-                            break;
-                        case plugin.PUBLIC_KEY_ALGORITHM_RSA:
-                            message = "RSA";
                             break;
                         case plugin.PUBLIC_KEY_ALGORITHM_RSA_512:
                             message = "RSA 512";
@@ -2953,15 +2946,6 @@ function onPluginLoaded(pluginObject) {
 function initUi() {
     var useConsole = (document.location.search.indexOf("log") !== -1);
     ui = new testUi(useConsole);
-}
-
-function getErrorCode(error) {
-    let errorCode = 0;
-    if (isNmPlugin)
-        errorCode = parseInt(error.message);
-    else
-        errorCode = error;
-    return errorCode;
 }
 
 function showError(reason) {
